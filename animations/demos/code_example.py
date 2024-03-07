@@ -1,6 +1,7 @@
 from manim import *
 
 
+# https://stackoverflow.com/questions/75363537/fix-long-text-and-distorted-text-in-manim
 class MyCode(Scene):
     def construct(self):
         NN_text = """
