@@ -3,7 +3,6 @@ from typing import Set
 import torch
 
 from manim import *
-from animations.colors import *
 from soft.datasets import SupervisedDataset
 from soft.fuzzy.logic.rules import LinguisticVariables, Rule
 from soft.utilities.reproducibility import set_rng, load_configuration
@@ -16,7 +15,7 @@ from soft.fuzzy.logic.rules.creation.wang_mendel import wang_mendel_method
 from soft.fuzzy.unsupervised.granulation.online.clip import (
     apply_categorical_learning_induced_partitioning as CLIP,
 )
-from animations.common import get_data_and_env, display_cart_pole
+from animations.common import ItemColor, get_data_and_env, display_cart_pole
 
 set_rng(0)
 
@@ -30,12 +29,12 @@ class WMDemo(Scene):
     def make_fuzzy_set(self, ax, center, width, label=None):
         gaussian_graph = ax.plot(
             lambda x: Gaussian(centers=center, widths=width)(x).degrees.item(),
-            stroke_color=INACTIVE_ITEM_2,
+            stroke_color=ItemColor.INACTIVE_2,
         )
         return gaussian_graph
 
     def construct(self):
-        method = Text("Wang-Mendel Method", color=BACKGROUND_ITEM)
+        method = Text("Wang-Mendel Method", color=str(ItemColor.BACKGROUND))
         self.play(AddTextLetterByLetter(method, run_time=1))
         self.wait(1)
         self.play(FadeOut(method))
@@ -117,7 +116,7 @@ class WMDemo(Scene):
                 x_length=3,
                 y_length=2,
                 axis_config=dict(
-                    stroke_color=BACKGROUND_ITEM,
+                    stroke_color=ItemColor.BACKGROUND,
                     stroke_width=3,
                     numbers_to_exclude=[0],
                 ),
@@ -128,7 +127,7 @@ class WMDemo(Scene):
             else:
                 ax.next_to(old_axes)
             attribute_title = Text(
-                attributes[var_idx], font_size=20, color=BACKGROUND_ITEM
+                attributes[var_idx], font_size=20, color=str(ItemColor.BACKGROUND)
             )
             attribute_title.next_to(ax, UP)
             # self.play(Create(VGroup(ax, attribute_title)))
@@ -190,13 +189,13 @@ class WMDemo(Scene):
                 new_center = terms[var_idx].centers[term_idx].item()
                 assert center == new_center
                 new_state.append(new_center)
-                animations.append(fuzzy_set.animate.set_color(ACTIVE_ITEM_2))
+                animations.append(fuzzy_set.animate.set_color(ItemColor.ACTIVE_2))
                 # self.play(fuzzy_set.animate.set_fill('#FFA500', 0.7))
                 # calculate area under the curve
                 ax = axes[var_idx]
                 x_min, x_max = X[:, var_idx].min(), X[:, var_idx].max()
                 area = ax.get_area(
-                    fuzzy_set, x_range=(x_min, x_max), color=ACTIVE_ITEM_2, opacity=0.4
+                    fuzzy_set, x_range=(x_min, x_max), color=str(ItemColor.ACTIVE_2), opacity=0.4
                 )
                 areas.append(area)
                 animations.append(FadeIn(area))
@@ -232,7 +231,7 @@ class WMDemo(Scene):
             self.env_img.become(new_env_img)
             self.wait(1e-1)
 
-            text_rule = Text(rule, font_size=24, color=BACKGROUND_ITEM)
+            text_rule = Text(rule, font_size=24, color=str(ItemColor.BACKGROUND))
             text_rule.to_edge(UP)
             animations.append(AddTextLetterByLetter(text_rule, run_time=1))
             self.play(*animations)
@@ -241,7 +240,7 @@ class WMDemo(Scene):
             for var_idx, term_idx in animated_rule:
                 animations.append(
                     self.fuzzy_sets[var_idx]["plot"][term_idx].animate.set_color(
-                        INACTIVE_ITEM_2
+                        ItemColor.INACTIVE_2
                     )
                 )
                 animations.append(FadeOut(areas[var_idx]))

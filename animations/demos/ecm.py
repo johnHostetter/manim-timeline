@@ -1,7 +1,6 @@
 import torch
 
 from manim import *
-from animations.colors import *
 from time import time
 from copy import deepcopy
 from sklearn import manifold
@@ -13,7 +12,9 @@ from soft.fuzzy.unsupervised.cluster.online.ecm import (
     apply_evolving_clustering_method as ECM,
     LabeledClusters,
 )
-from animations.common import make_axes, add_labels_to_axes, display_cart_pole, get_data_and_env
+from animations.common import (
+    ItemColor, make_axes, add_labels_to_axes, display_cart_pole, get_data_and_env
+)
 
 set_rng(2)
 
@@ -143,7 +144,7 @@ def run_ecm(scene, axes, tsne_X, X, visited_X, env):
         animations.append(previous_spot_dot.animate.set_opacity(0.25))
         center = labeled_clusters.clusters.centers[cluster_idx].detach().numpy()
         circle = Circle(radius=config.clustering.distance_threshold)
-        circle.set_stroke(ACTIVE_ITEM_2, 3)
+        circle.set_stroke(str(ItemColor.ACTIVE_2), 3)
         circle.move_to(axes.c2p(center[0], center[1]))
         animations.append(dot.animate.move_to(axes.c2p(center[0], center[1])))
         animations.append(Create(circle))
@@ -184,7 +185,7 @@ class ECMDemo(Scene):
         self.add(background)
 
     def construct(self):
-        method = Text("Evolving Clustering Method", color=BACKGROUND_ITEM)
+        method = Text("Evolving Clustering Method", color=str(ItemColor.BACKGROUND))
         self.play(AddTextLetterByLetter(method, run_time=1))
         self.wait(1)
         self.fuzzy_sets, self.data_dots = [], []
@@ -219,7 +220,7 @@ class ECMDemo(Scene):
                             dot.animate.move_to(axes.c2p(tsne_x[0], tsne_x[1]))
                         )
                     except IndexError:
-                        dot = Dot(color=ACTIVE_ITEM_1)
+                        dot = Dot(color=ItemColor.ACTIVE_ITEM_1)
                         self.data_dots.append(dot)
                         dot.move_to(axes.c2p(tsne_x[0], tsne_x[1]))
                         animations.append(FadeIn(dot))

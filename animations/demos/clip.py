@@ -1,9 +1,8 @@
 from manim import *
-from animations.colors import *
 from soft.datasets import SupervisedDataset
 from soft.fuzzy.logic.rules import LinguisticVariables
 from soft.utilities.reproducibility import set_rng, load_configuration
-from animations.common import make_axes, add_labels_to_axes, get_data_and_env
+from animations.common import ItemColor, make_axes, add_labels_to_axes, get_data_and_env
 from soft.fuzzy.sets.continuous.impl import Gaussian
 from soft.fuzzy.unsupervised.granulation.online.clip import (
     apply_categorical_learning_induced_partitioning as CLIP,
@@ -23,12 +22,12 @@ class CLIPDemo(Scene):
         temp_gaussian: Gaussian = Gaussian(centers=center, widths=width)
         gaussian_graph = axes.plot(
             lambda x: temp_gaussian(x).degrees.item(),
-            stroke_color=ACTIVE_ITEM_2,
+            stroke_color=ItemColor.ACTIVE_2,
             # use_smoothing=True,
             # color=ORANGE
         )
         gaussian_label = axes.get_graph_label(
-            gaussian_graph, Text("New Fuzzy Set"), color=ACTIVE_ITEM_2, direction=UP
+            gaussian_graph, Text("New Fuzzy Set"), color=ItemColor.ACTIVE_2, direction=UP
         )
         self.fuzzy_sets.append(gaussian_graph)
         # self.add(gaussian_graph)
@@ -40,8 +39,8 @@ class CLIPDemo(Scene):
         self.wait()
         self.play(
             FadeOut(gaussian_label),
-            gaussian_graph.animate.set_color(INACTIVE_ITEM_2),
-            dot.animate.set_color(INACTIVE_ITEM_1),
+            gaussian_graph.animate.set_color(ItemColor.INACTIVE_2),
+            dot.animate.set_color(ItemColor.INACTIVE_1),
             # dot.animate.set_glow_factor(1.0)
         )
 
@@ -51,7 +50,7 @@ class CLIPDemo(Scene):
             for idx, center in enumerate(new_terms.centers.flatten()):
                 gaussian_graph = axes.plot(
                     lambda x: new_terms(x).degrees[idx].detach().numpy().item(),
-                    stroke_color=INACTIVE_ITEM_2,
+                    stroke_color=ItemColor.INACTIVE_2,
                     # use_smoothing=True,
                     # color=GREEN
                 )
@@ -79,7 +78,7 @@ class CLIPDemo(Scene):
 
     def construct(self):
         method = Text(
-            "Categorical Learning-Induced Partitioning", color=BACKGROUND_ITEM
+            "Categorical Learning-Induced Partitioning", color=str(ItemColor.BACKGROUND)
         )
         self.play(AddTextLetterByLetter(method, run_time=1))
         self.wait(1)
@@ -113,7 +112,7 @@ class CLIPDemo(Scene):
         old_terms, new_terms = None, None
         for idx, x in enumerate(X):
             x: float = x.item()  # x is a 1D tensor
-            dot = Dot(color=ACTIVE_ITEM_1)
+            dot = Dot(color=str(ItemColor.ACTIVE_1))
             self.data_dots.append(dot)
             dot.move_to(axes.c2p(0, 0))
             self.play(dot.animate.move_to(axes.c2p(x, 0)))
@@ -122,7 +121,7 @@ class CLIPDemo(Scene):
                 degree = old_terms(x).degrees.max().item()
                 self.play(dot.animate.move_to(axes.c2p(x, degree)))
                 line_graph = axes.plot(
-                    lambda x: config["kappa"], stroke_color=ACTIVE_ITEM_2
+                    lambda x: config["kappa"], stroke_color=ItemColor.ACTIVE_2
                 )
                 dashed_line_graph = DashedVMobject(line_graph)
                 self.play(Create(dashed_line_graph), run_time=2)
@@ -132,7 +131,7 @@ class CLIPDemo(Scene):
                 else:
                     message = Text("Not Satisfied")
                 dashed_line_label = axes.get_graph_label(
-                    line_graph, message, color=ACTIVE_ITEM_2, direction=UP
+                    line_graph, message, color=ItemColor.ACTIVE_2, direction=UP
                 )
                 self.play(FadeIn(dashed_line_label))
                 self.wait()
@@ -172,7 +171,7 @@ class CLIPDemo(Scene):
                     dot.animate.set_glow_factor(1.0),
                 )
             # self.revise_fuzzy_sets(axes, new_terms, X)
-            self.play(dot.animate.set_color(INACTIVE_ITEM_1))
+            self.play(dot.animate.set_color(str(ItemColor.INACTIVE_1)))
             self.wait()
             old_terms = new_terms
         self.wait(1)
