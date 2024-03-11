@@ -27,8 +27,12 @@ class WMDemo(Scene):
         self.add(background)
 
     def make_fuzzy_set(self, ax, center, width, label=None):
+        min_x: float = ax.x_range[0].item()
+        max_x: float = ax.x_range[1].item()
+        step_val: float = (max_x - min_x) / 100  # the default is 1.0
         gaussian_graph = ax.plot(
             lambda x: Gaussian(centers=center, widths=width)(x).degrees.item(),
+            x_range=(min_x, max_x, step_val),
             stroke_color=ItemColor.INACTIVE_2,
         )
         return gaussian_graph
@@ -47,7 +51,7 @@ class WMDemo(Scene):
         with config.unfreeze():
             config.fuzzy.partition.kappa = 0.2
             config.fuzzy.partition.epsilon = 0.6
-            config.clustering.distance_threshold = 1.0
+            config.clustering.distance_threshold = 0.4
         linguistic_variables: LinguisticVariables = CLIP(
             SupervisedDataset(inputs=X, targets=None), config
         )
@@ -195,8 +199,11 @@ class WMDemo(Scene):
                 ax = axes[var_idx]
                 x_min, x_max = X[:, var_idx].min(), X[:, var_idx].max()
                 area = ax.get_area(
-                    fuzzy_set, x_range=(x_min, x_max), color=str(ItemColor.ACTIVE_2), opacity=0.4
-                )
+                    fuzzy_set,
+                    x_range=(x_min, x_max),
+                    color=str(ItemColor.ACTIVE_2),
+                    opacity=0.4,
+                ).round_corners(radius=0.1, components_per_rounded_corner=3)
                 areas.append(area)
                 animations.append(FadeIn(area))
 

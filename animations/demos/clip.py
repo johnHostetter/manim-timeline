@@ -27,7 +27,10 @@ class CLIPDemo(Scene):
             # color=ORANGE
         )
         gaussian_label = axes.get_graph_label(
-            gaussian_graph, Text("New Fuzzy Set"), color=ItemColor.ACTIVE_2, direction=UP
+            gaussian_graph,
+            Text("New Fuzzy Set"),
+            color=ItemColor.ACTIVE_2,
+            direction=UP,
         )
         self.fuzzy_sets.append(gaussian_graph)
         # self.add(gaussian_graph)

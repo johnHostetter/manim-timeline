@@ -13,7 +13,11 @@ from soft.fuzzy.unsupervised.cluster.online.ecm import (
     LabeledClusters,
 )
 from animations.common import (
-    ItemColor, make_axes, add_labels_to_axes, display_cart_pole, get_data_and_env
+    ItemColor,
+    make_axes,
+    add_labels_to_axes,
+    display_cart_pole,
+    get_data_and_env,
 )
 
 set_rng(2)
@@ -220,7 +224,7 @@ class ECMDemo(Scene):
                             dot.animate.move_to(axes.c2p(tsne_x[0], tsne_x[1]))
                         )
                     except IndexError:
-                        dot = Dot(color=ItemColor.ACTIVE_ITEM_1)
+                        dot = Dot(color=ItemColor.ACTIVE_1)
                         self.data_dots.append(dot)
                         dot.move_to(axes.c2p(tsne_x[0], tsne_x[1]))
                         animations.append(FadeIn(dot))
