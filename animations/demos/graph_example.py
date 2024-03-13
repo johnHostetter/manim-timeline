@@ -50,7 +50,10 @@ class MyGraph(MovingCameraScene):
                 if v["type"] == "premise":
                     y_pos = (int(v["name"][1:]) / len(vertices)) * max_y_pos
                 elif v["type"] == "output":
-                    y_pos = (v["data"] / len(vertices)) * (max_y_pos / 2)
+                    idx: int = v["data"]
+                    if len(vertices) == 1:
+                        idx = 1
+                    y_pos = (idx / len(vertices)) * (max_y_pos / 2)
                 else:
                     y_pos = (v["data"] / len(vertices)) * max_y_pos
                 my_layout[v.index] = [v["layer"], y_pos, 0]
