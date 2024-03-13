@@ -8,7 +8,12 @@ from soft.computing.blueprints.factory import SystematicDesignProcess
 from soft.computing.knowledge import KnowledgeBase
 from soft.computing.organize import SelfOrganize
 from soft.datasets import SupervisedDataset
-from soft.fuzzy.logic.controller import Specifications, Engine, Mapping, SpaceConfiguration
+from soft.fuzzy.logic.controller import (
+    Specifications,
+    Engine,
+    Mapping,
+    SpaceConfiguration,
+)
 from soft.fuzzy.logic.controller.impl import ZeroOrderTSK
 from soft.utilities.reproducibility import load_configuration
 
@@ -17,7 +22,7 @@ from soft.utilities.reproducibility import load_configuration
 def get_self_organize() -> SelfOrganize:
     config = load_configuration()
     with config.unfreeze():
-        config.clustering.distance_threshold = 0.25
+        config.clustering.distance_threshold = 0.2
     return SystematicDesignProcess(
         algorithms=["clip", "ecm", "wang_mendel"], config=config
     ).build(
@@ -34,15 +39,23 @@ class MyGraph(MovingCameraScene):
         # lt = {v: [layout[v][0], layout[v][1], 0] for v in range(len(layout))}
         my_layout = {}
         max_y_pos: float = 5.0
-        for vertex_type in ["variable", "premise", "rule", "consequence"]:
+        grouped_vertices = {}
+        label_dict = {}
+        layer_types = ["input", "premise", "rule", "consequence", "output"]
+        for vertex_type in layer_types:
             vertices = graph.vs.select(type_eq=vertex_type)
+            grouped_vertices[vertex_type] = []
             for i, v in enumerate(vertices):
                 print(v)
                 if v["type"] == "premise":
                     y_pos = (int(v["name"][1:]) / len(vertices)) * max_y_pos
+                elif v["type"] == "output":
+                    y_pos = (v["data"] / len(vertices)) * (max_y_pos / 2)
                 else:
-                    y_pos = v["data"] / len(vertices) * max_y_pos
+                    y_pos = (v["data"] / len(vertices)) * max_y_pos
                 my_layout[v.index] = [v["layer"], y_pos, 0]
+                label_dict[v.index] = v["name"]
+                grouped_vertices[vertex_type].append(v.index)
                 # lt[v] = [lt[v][0], lt[v][1], i]
         # try:
         #     labels = [
@@ -66,8 +79,8 @@ class MyGraph(MovingCameraScene):
             },
             edge_config={
                 "stroke_width": 2,
-                "tip_config": {"tip_length": 0.05, "tip_width": 0.05}
-            }
+                "tip_config": {"tip_length": 0.05, "tip_width": 0.05},
+            },
         )
         g.shift(DOWN, LEFT)
         g.scale(2)
@@ -82,34 +95,68 @@ class MyGraph(MovingCameraScene):
             Create(g),
             # self.camera.frame.animate.set_width(g.get_width() * 0.7),
             self.camera.frame.animate.move_to(g.get_center()),
-            run_time=5
+            run_time=5,
         )
         self.wait()
 
-        # get a new layout for this graph
-        new_layout: Layout = graph.layout_sugiyama()
-        move_vertices = [
-            g[v].animate.move_to(pos + [0.0])
-            for v, pos in zip(g.vertices, new_layout.coords)
+        self.play(g.animate.shift(RIGHT * 2))
+
+        layer_colors = [BLUE, GREEN, RED, YELLOW, PURPLE]
+        animations = [
+            self.camera.frame.animate.set(width=g.get_width() * 2.0),
         ]
-        self.play(*move_vertices, run_time=1)
+        for layer_type, layer_color in zip(layer_types, layer_colors):
+            layer_vertices = [g.vertices[v] for v in grouped_vertices[layer_type]]
+            surrounding_rectangle = SurroundingRectangle(
+                VGroup(*layer_vertices),
+                color=layer_color,
+                buff=0.25,
+                corner_radius=0.25,
+            )
+            layer_label = Text(layer_type.capitalize() + " Layer").next_to(
+                surrounding_rectangle, LEFT
+            )
+            animation = AnimationGroup(
+                *[
+                    Create(surrounding_rectangle, run_time=2),
+                    Write(layer_label, run_time=1),
+                    AnimationGroup(
+                        *[v.animate.set_color(layer_color) for v in layer_vertices],
+                        run_time=0.5
+                    )
+                ],
+            )
+            animations.append(animation)
 
-        # move the camera to the new graph location
-        self.camera.frame.save_state()
-        animation_to_move_camera = self.camera.frame.animate.scale(1.5).move_to(
-            g.get_center()
-        )  # 1.5 zoom out
-        move_vertices += [animation_to_move_camera]
-        self.play(*move_vertices, run_time=5)
-        self.wait()
+        for animation in animations:
+            self.play(animation)
+            self.wait()
 
-        # tex_labels = []
-        # for v in g.vertices:
-        #     # label = MathTex(label_dict[v]).scale(0.5).next_to(g.vertices[v], UR)
-        #     label = Text(label_dict[v]).scale(0.25).next_to(g.vertices[v], UR)
-        #     tex_labels.append(label)
-        # self.play(Create(VGroup(*tex_labels)))
+        # # get a new layout for this graph
+        # new_layout: Layout = graph.layout_sugiyama()
+        # move_vertices = [
+        #     g[v].animate.move_to(pos + [0.0])
+        #     for v, pos in zip(g.vertices, new_layout.coords)
+        # ]
+        # self.play(*move_vertices, run_time=1)
+        #
+        # # move the camera to the new graph location
+        # self.camera.frame.save_state()
+        # animation_to_move_camera = self.camera.frame.animate.scale(1.5).move_to(
+        #     g.get_center()
+        # )  # 1.5 zoom out
+        # move_vertices += [animation_to_move_camera]
+        # self.play(*move_vertices, run_time=5)
         # self.wait()
+
+        tex_labels = []
+        for v in g.vertices:
+            # label = MathTex(label_dict[v]).scale(0.5).next_to(g.vertices[v], UR)
+            label = Text(label_dict[v]).scale(0.25).next_to(g.vertices[v], UR)
+            tex_labels.append(label)
+        self.play(Create(VGroup(*tex_labels)))
+        self.wait()
+        print(g.edges)
 
     def construct(self):
         vertices = [1, 2, 3, 4, 5, 6]
@@ -133,27 +180,34 @@ class MyGraph(MovingCameraScene):
             specifications=Specifications(
                 t_norm="algebraic_product",
                 engine=Engine(
-                    type="tsk", defuzzification="product",
-                    confidences=False, ignore_missing=False
+                    type="tsk",
+                    defuzzification="product",
+                    confidences=False,
+                    ignore_missing=False,
                 ),
                 mapping=Mapping(
                     input=SpaceConfiguration(dim=4, max_terms=3, expandable=True),
                     output=SpaceConfiguration(dim=1, max_terms=3, expandable=True),
                 ),
-                number_of_rules=32
+                number_of_rules=32,
             ),
-            knowledge_base=knowledge_base
+            knowledge_base=knowledge_base,
         )
-        print("Number of fuzzy logic rules: ", len(flc.knowledge_base.get_fuzzy_logic_rules()))
+        print(
+            "Number of fuzzy logic rules: ",
+            len(flc.knowledge_base.get_fuzzy_logic_rules()),
+        )
         print(flc)
 
-        # each column is a in the form of (variable index, term index, rule index)
-        rule_premise_indices: torch.Tensor = flc.engine.input_links.to_sparse().indices().transpose(
-            0, 1
+        # each column is a in the form of (input index, term index, rule index)
+        rule_premise_indices: torch.Tensor = (
+            flc.engine.input_links.to_sparse().indices().transpose(0, 1)
         )
         sorted_rule_premise_indices: torch.Tensor = rule_premise_indices[
-            rule_premise_indices[:, -1].argsort()]
+            rule_premise_indices[:, -1].argsort()
+        ]
         from itertools import groupby
+
         grouped_premise_indices: Dict[int, torch.Tensor] = {
             rule_idx.item(): torch.vstack(list(group))[:, :-1]
             for rule_idx, group in groupby(sorted_rule_premise_indices, lambda x: x[-1])
@@ -164,28 +218,36 @@ class MyGraph(MovingCameraScene):
         edges = set()
         for rule_idx, premise_indices in grouped_premise_indices.items():
             print(f"Rule {rule_idx + 1}:")
+            target_name: str = "R" + str(rule_idx)
+            consequence_name: str = "C" + str(rule_idx)
+            output_id = "O" + str(0)
+
             for var_idx, term_idx in premise_indices:
                 print(f"Variable {var_idx + 1} with term {term_idx + 1}")
                 vertex_id: torch.Tensor = var_idx * max_terms + term_idx  # 1d tensor
-                var_id = "V" + str(var_idx.item())
-                source_id = "P" + str(vertex_id.item())
-                target_id = "R" + str(rule_idx)
-                consequence_id = "C" + str(rule_idx)
-                vs[var_id] = var_idx.item()
-                vs[source_id] = (var_idx.item(), term_idx.item())
-                vs[target_id] = rule_idx
-                vs[consequence_id] = rule_idx
-                edges.add((var_id, source_id))  # connect the variable to the premise term
-                edges.add((source_id, target_id))  # connect the term to the rule
-                edges.add((target_id, consequence_id))  # connect the rule to the consequence
+                var_name: str = "V" + str(var_idx.item())
+                source_name: str = "P" + str(vertex_id.item())
+                vs[var_name] = var_idx.item()
+                vs[source_name] = (var_idx.item(), term_idx.item())
+                vs[target_name] = rule_idx
+                vs[consequence_name] = rule_idx
+                vs[output_id] = 0
+                edges.add(
+                    (var_name, source_name)
+                )  # connect the input to the premise term
+                edges.add((source_name, target_name))  # connect the term to the rule
+            edges.add(
+                (target_name, consequence_name)
+            )  # connect the rule to the consequence
+            edges.add((consequence_name, output_id))  # connect the consequence to the output node
             print()
 
-        graph = ig.Graph()
+        graph = ig.Graph(directed=True)
         for vertex_id, vertex_data in vs.items():
-            vertex_type = "variable"
+            vertex_type = "input"
             layer_order = -1
             if vertex_id[0] == "V":
-                vertex_type = "variable"
+                vertex_type = "input"
                 layer_order = 0
             elif "P" in vertex_id:
                 vertex_type = "premise"
@@ -196,9 +258,20 @@ class MyGraph(MovingCameraScene):
             elif "C" in vertex_id:
                 vertex_type = "consequence"
                 layer_order = 3
-            graph.add_vertex(str(vertex_id), type=vertex_type, data=vertex_data, layer=layer_order)
+            elif "O" in vertex_id:
+                vertex_type = "output"
+                layer_order = 4
+            graph.add_vertex(
+                str(vertex_id), type=vertex_type, data=vertex_data, layer=layer_order
+            )
         for edge in edges:
-            graph.add_edge(*edge)
+            source_id: int = graph.vs.find(name=str(edge[0])).index
+            target_id: int = graph.vs.find(name=str(edge[1])).index
+            added_edge = graph.add_edge(source=source_id, target=target_id)
+            assert source_id == added_edge.source, \
+                f"Incorrect edge source: {source_id, added_edge.source}"
+            assert target_id == added_edge.target, \
+                f"Incorrect edge target: {target_id, added_edge.target}"
         self.plot_graph(graph)
 
 
