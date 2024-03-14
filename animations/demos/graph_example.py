@@ -1,3 +1,5 @@
+from itertools import groupby
+
 import math
 import torch
 from manim import *
@@ -16,6 +18,12 @@ from soft.fuzzy.logic.controller import (
 )
 from soft.fuzzy.logic.controller.impl import ZeroOrderTSK
 from soft.utilities.reproducibility import load_configuration
+
+config.background_color = WHITE
+light_theme_style = {
+    "fill_color": BLACK,
+    "background_stroke_color": WHITE,
+}
 
 
 # https://stackoverflow.com/questions/76175939/manim-add-labels-near-vertices
@@ -38,28 +46,36 @@ class MyGraph(MovingCameraScene):
         # layout: Layout = graph.layout_auto()
         # lt = {v: [layout[v][0], layout[v][1], 0] for v in range(len(layout))}
         my_layout = {}
-        max_y_pos: float = 5.0
+        max_consequence_term_y_pos: float = 0.0
         grouped_vertices = {}
         label_dict = {}
         layer_types = ["input", "premise", "rule", "consequence", "output"]
         for vertex_type in layer_types:
-            vertices = graph.vs.select(type_eq=vertex_type)
+            vertices: ig.VertexSeq = graph.vs.select(type_eq=vertex_type)
+            vertex_indices: List[int] = [int(v["name"][1:]) for v in vertices]
+            num_of_min_vertices: int = min(vertex_indices)
+            num_of_max_vertices: int = max(vertex_indices) + 1
+
             grouped_vertices[vertex_type] = []
-            for i, v in enumerate(vertices):
+            for v in vertices:
                 print(v)
-                if v["type"] == "premise":
-                    y_pos = (int(v["name"][1:]) / len(vertices)) * max_y_pos
-                elif v["type"] == "output":
+                y_pos: float = (
+                   int(v["name"][1:]) - num_of_min_vertices
+                ) / (num_of_max_vertices - num_of_min_vertices)
+                y_pos *= 3.0
+                if v["type"] == "consequence":
+                    # get the maximum y position of the consequence vertices
+                    # so the output node can be centered with respect to them
+                    max_consequence_term_y_pos = max(max_consequence_term_y_pos, y_pos)
+                if v["type"] == "output":
+                    # place the output vertex in the center of the graph
                     idx: int = v["data"]
                     if len(vertices) == 1:
                         idx = 1
-                    y_pos = (idx / len(vertices)) * (max_y_pos / 2)
-                else:
-                    y_pos = (v["data"] / len(vertices)) * max_y_pos
+                    y_pos: float = (idx / len(vertices)) * (max_consequence_term_y_pos / 2)
                 my_layout[v.index] = [v["layer"], y_pos, 0]
                 label_dict[v.index] = v["name"]
                 grouped_vertices[vertex_type].append(v.index)
-                # lt[v] = [lt[v][0], lt[v][1], i]
         # try:
         #     labels = [
         #         func if isinstance(func, str) else func.__name__.replace("_", " ")
@@ -73,20 +89,23 @@ class MyGraph(MovingCameraScene):
         g = DiGraph(
             graph.vs.indices,
             graph.get_edgelist(),
+            label_fill_color=BLACK,
             layout=my_layout,
             vertex_config={
-                # "fill_color": BLUE,
-                # "stroke_color": WHITE,
-                # "stroke_width": 2,
+                "fill_color": BLACK,
+                "stroke_color": BLACK,
+                "stroke_width": 2,
                 "radius": 0.025,
             },
             edge_config={
-                "stroke_width": 2,
-                "tip_config": {"tip_length": 0.05, "tip_width": 0.05},
+                "stroke_color": "BLACK",
+                "stroke_width": 1,
+                "tip_config": {"tip_length": 0.035, "tip_width": 0.035},
             },
+
         )
         g.shift(DOWN, LEFT)
-        g.scale(2)
+        g.scale(1.35)
         g.rotate(PI / 2)
 
         self.add(g)
@@ -106,7 +125,7 @@ class MyGraph(MovingCameraScene):
 
         layer_colors = [BLUE, GREEN, RED, YELLOW, PURPLE]
         animations = [
-            self.camera.frame.animate.set(width=g.get_width() * 2.0),
+            # self.camera.frame.animate.set(width=g.get_width() * 3.0),
         ]
         for layer_type, layer_color in zip(layer_types, layer_colors):
             layer_vertices = [g.vertices[v] for v in grouped_vertices[layer_type]]
@@ -116,7 +135,9 @@ class MyGraph(MovingCameraScene):
                 buff=0.25,
                 corner_radius=0.25,
             )
-            layer_label = Text(layer_type.capitalize() + " Layer").next_to(
+            layer_label = Text(
+                layer_type.capitalize() + " Layer", color=BLACK, font_size=24
+            ).next_to(
                 surrounding_rectangle, LEFT
             )
             animation = AnimationGroup(
@@ -152,14 +173,15 @@ class MyGraph(MovingCameraScene):
         # self.play(*move_vertices, run_time=5)
         # self.wait()
 
-        tex_labels = []
-        for v in g.vertices:
-            # label = MathTex(label_dict[v]).scale(0.5).next_to(g.vertices[v], UR)
-            label = Text(label_dict[v]).scale(0.25).next_to(g.vertices[v], UR)
-            tex_labels.append(label)
-        self.play(Create(VGroup(*tex_labels)))
-        self.wait()
-        print(g.edges)
+        # # label the graph's vertices
+        # tex_labels = []
+        # for v in g.vertices:
+        #     # label = MathTex(label_dict[v]).scale(0.5).next_to(g.vertices[v], UR)
+        #     label = Text(label_dict[v], color=BLACK).scale(0.25).next_to(g.vertices[v], UR)
+        #     tex_labels.append(label)
+        # self.play(Create(VGroup(*tex_labels)))
+        # self.wait()
+        # print(g.edges)
 
     def construct(self):
         vertices = [1, 2, 3, 4, 5, 6]
@@ -202,14 +224,13 @@ class MyGraph(MovingCameraScene):
         )
         print(flc)
 
-        # each column is a in the form of (input index, term index, rule index)
+        # each column is in the form of (input index, term index, rule index)
         rule_premise_indices: torch.Tensor = (
             flc.engine.input_links.to_sparse().indices().transpose(0, 1)
         )
         sorted_rule_premise_indices: torch.Tensor = rule_premise_indices[
             rule_premise_indices[:, -1].argsort()
         ]
-        from itertools import groupby
 
         grouped_premise_indices: Dict[int, torch.Tensor] = {
             rule_idx.item(): torch.vstack(list(group))[:, :-1]
