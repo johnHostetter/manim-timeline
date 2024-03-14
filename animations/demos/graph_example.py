@@ -6,10 +6,10 @@ from manim import *
 import igraph as ig
 from igraph import Layout
 
-from soft.computing.blueprints.factory import SystematicDesignProcess
-from soft.computing.knowledge import KnowledgeBase
-from soft.computing.organize import SelfOrganize
 from soft.datasets import SupervisedDataset
+from soft.computing.organize import SelfOrganize
+from soft.computing.knowledge import KnowledgeBase
+from soft.computing.blueprints.factory import SystematicDesignProcess
 from soft.fuzzy.logic.controller import (
     Specifications,
     Engine,
@@ -28,11 +28,11 @@ light_theme_style = {
 
 # https://stackoverflow.com/questions/76175939/manim-add-labels-near-vertices
 def get_self_organize() -> SelfOrganize:
-    config = load_configuration()
-    with config.unfreeze():
-        config.clustering.distance_threshold = 0.2
+    soft_config = load_configuration()
+    with soft_config.unfreeze():
+        soft_config.clustering.distance_threshold = 0.2
     return SystematicDesignProcess(
-        algorithms=["clip", "ecm", "wang_mendel"], config=config
+        algorithms=["clip", "ecm", "wang_mendel"], config=soft_config
     ).build(
         training_data=SupervisedDataset(
             inputs=torch.rand((250, 4)), targets=torch.rand((250, 1))

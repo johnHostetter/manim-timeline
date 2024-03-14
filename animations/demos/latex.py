@@ -1,20 +1,15 @@
 from manim import *
-from manim.typing import Point3D
+
+config.background_color = WHITE
 
 
 class MovingFrameBox(Scene):
     def construct(self):
-        cql_header = Text("Conservative Q-Learning", font_size=36)
+        cql_header = Text("Conservative Q-Learning", font_size=36, color=BLACK)
         self.play(Write(cql_header))
         self.wait(3)
         self.play(cql_header.animate.to_edge(UP))
         self.wait()
-        text = MathTex(
-            "\\frac{d}{dx}f(x)g(x)=",
-            "f(x)\\frac{d}{dx}g(x)",
-            "+",
-            "g(x)\\frac{d}{dx}f(x)",
-        )
         myTemplate = TexTemplate()
         myTemplate.add_to_preamble(r"\usepackage{mathrsfs}")
         upper_text = MathTex(
@@ -24,6 +19,7 @@ class MovingFrameBox(Scene):
             "\mathbb{E}_{a^{\dag} \sim \hat{\pi}_{\\beta}(a^{\dag} \mid \mathbf{s})} "
             "[Q(\mathbf{s}, a^{\dag})] "
             "\Bigg ]",
+            color=BLACK
             # "+ \\frac{1}{2} \mathbb{E}_{\mathbf{s}, a^{\dag}, \mathbf{s}' \sim \mathcal{D}} "
             # "\Bigg [ \Big(Q(\mathbf{s}, a^{\dag}) - \\big( \mathscr{R}(\mathbf{s}, a^{\dag}) + "
             # "\gamma [\max_{a \in \mathscr{A}} Q(\mathbf{s}', a)] \\big ) \Big)^{2} \Bigg ]"
@@ -40,10 +36,11 @@ class MovingFrameBox(Scene):
             "\\big ) "
             "\Big)^{2} "
             "\Bigg ]",
+            color=BLACK
         ).move_to((0.0, -1.0, 0.0))
         self.play(Write(upper_text, run_time=2))
         self.play(Write(lower_text, run_time=2))
-        text1 = Text("Augmentation by Conservative Q-Learning", font_size=24)
+        text1 = Text("Augmentation by Conservative Q-Learning", font_size=24, color=BLACK)
         # attach text to above the framebox
         text1.next_to(upper_text, UP)
         text2 = Text("Standard Bellman Error", font_size=24)
@@ -65,17 +62,6 @@ class MovingFrameBox(Scene):
         )
         self.wait()
 
-        parameters = Paragraph(
-            r"where $\alpha \geq 0$ is a trade-off factor, ",
-            "the magnitude of the adjustment lessens.",
-            r"The behavior policy, $\\hat{\\pi}_{\\beta}$, ",
-            r"collected the training data $\\mathcal{D}$, ",
-            r"$\\gamma \\in [0, 1]$ is the discount factor, ",
-            r"$\\mathbf{s}'$ is the next state \\emph{after} state $\\mathbf{s}$ ",
-            r"and $\\mathcal{R}$ is the reward function.}",
-            font_size=24,
-        )
-        parameters.next_to(text2, DOWN)
         self.play(AnimationGroup(FadeOut(framebox2), Unwrite(text2)))
         move_formula = Group(upper_text, lower_text).animate.shift(UP * 0.5)
         self.play(move_formula)
@@ -84,24 +70,25 @@ class MovingFrameBox(Scene):
         # self.play(Write(parameters))
         # eqns = MathTex(r"2x - 3 & = -7 \\ 2x & = -4 \\ x & = -2")
         eqns = [
-            Text("where ", font_size=24),
-            MathTex(r"\alpha \geq 0", font_size=36),
+            Text("where ", font_size=24, color=BLACK),
+            MathTex(r"\alpha \geq 0", font_size=36, color=BLACK),
             Text(
                 "is a trade-off factor determining the magnitude of the adjustment. ",
-                font_size=24,
+                font_size=24, color=BLACK,
             ),
-            Text("A behavior policy ", font_size=24),
-            MathTex(r"\hat{\pi}_{\beta}", font_size=36),
-            Text("collected training data ", font_size=24),
-            MathTex(r"\mathcal{D},", font_size=36),
-            MathTex(r"\gamma \in [0, 1]", font_size=36),
-            Text("is the discount factor, ", font_size=24),
-            MathTex(r"\mathbf{s}'", font_size=36),
-            Text("is the next state after state ", font_size=24, t2s={"after": ITALIC}),
-            MathTex(r"\mathbf{s}", font_size=36),
-            Text("and ", font_size=24),
-            MathTex(r"\mathcal{R}", font_size=36),
-            Text("is the reward function.", font_size=24),
+            Text("A behavior policy ", font_size=24, color=BLACK),
+            MathTex(r"\hat{\pi}_{\beta}", font_size=36, color=BLACK),
+            Text("collected training data ", font_size=24, color=BLACK),
+            MathTex(r"\mathcal{D},", font_size=36, color=BLACK),
+            MathTex(r"\gamma \in [0, 1]", font_size=36, color=BLACK),
+            Text("is the discount factor, ", font_size=24, color=BLACK),
+            MathTex(r"\mathbf{s}'", font_size=36, color=BLACK),
+            Text("is the next state after state ", font_size=24, color=BLACK,
+                 t2s={"after": ITALIC}),
+            MathTex(r"\mathbf{s}", font_size=36, color=BLACK),
+            Text("and ", font_size=24, color=BLACK),
+            MathTex(r"\mathcal{R}", font_size=36, color=BLACK),
+            Text("is the reward function.", font_size=24, color=BLACK),
         ]
         new_loc = text2.get_center() + DOWN
         new_loc[0] = text2.get_x(LEFT)
