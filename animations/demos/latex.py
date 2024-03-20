@@ -19,7 +19,7 @@ class MovingFrameBox(Scene):
             "\mathbb{E}_{a^{\dag} \sim \hat{\pi}_{\\beta}(a^{\dag} \mid \mathbf{s})} "
             "[Q(\mathbf{s}, a^{\dag})] "
             "\Bigg ]",
-            color=BLACK
+            color=BLACK,
             # "+ \\frac{1}{2} \mathbb{E}_{\mathbf{s}, a^{\dag}, \mathbf{s}' \sim \mathcal{D}} "
             # "\Bigg [ \Big(Q(\mathbf{s}, a^{\dag}) - \\big( \mathscr{R}(\mathbf{s}, a^{\dag}) + "
             # "\gamma [\max_{a \in \mathscr{A}} Q(\mathbf{s}', a)] \\big ) \Big)^{2} \Bigg ]"
@@ -36,11 +36,13 @@ class MovingFrameBox(Scene):
             "\\big ) "
             "\Big)^{2} "
             "\Bigg ]",
-            color=BLACK
+            color=BLACK,
         ).move_to((0.0, -1.0, 0.0))
         self.play(Write(upper_text, run_time=2))
         self.play(Write(lower_text, run_time=2))
-        text1 = Text("Augmentation by Conservative Q-Learning", font_size=24, color=BLACK)
+        text1 = Text(
+            "Augmentation by Conservative Q-Learning", font_size=24, color=BLACK
+        )
         # attach text to above the framebox
         text1.next_to(upper_text, UP)
         text2 = Text("Standard Bellman Error", font_size=24)
@@ -74,7 +76,8 @@ class MovingFrameBox(Scene):
             MathTex(r"\alpha \geq 0", font_size=36, color=BLACK),
             Text(
                 "is a trade-off factor determining the magnitude of the adjustment. ",
-                font_size=24, color=BLACK,
+                font_size=24,
+                color=BLACK,
             ),
             Text("A behavior policy ", font_size=24, color=BLACK),
             MathTex(r"\hat{\pi}_{\beta}", font_size=36, color=BLACK),
@@ -83,8 +86,12 @@ class MovingFrameBox(Scene):
             MathTex(r"\gamma \in [0, 1]", font_size=36, color=BLACK),
             Text("is the discount factor, ", font_size=24, color=BLACK),
             MathTex(r"\mathbf{s}'", font_size=36, color=BLACK),
-            Text("is the next state after state ", font_size=24, color=BLACK,
-                 t2s={"after": ITALIC}),
+            Text(
+                "is the next state after state ",
+                font_size=24,
+                color=BLACK,
+                t2s={"after": ITALIC},
+            ),
             MathTex(r"\mathbf{s}", font_size=36, color=BLACK),
             Text("and ", font_size=24, color=BLACK),
             MathTex(r"\mathcal{R}", font_size=36, color=BLACK),
