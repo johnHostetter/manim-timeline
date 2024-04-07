@@ -20,9 +20,9 @@ from soft.fuzzy.logic.controller import (
     Mapping,
     SpaceConfiguration,
 )
-from soft.fuzzy.logic.controller.impl import ZeroOrderTSK
+from soft.fuzzy.sets.continuous.impl import Gaussian, Lorentzian
 from soft.fuzzy.sets.continuous.abstract import ContinuousFuzzySet
-from soft.fuzzy.sets.continuous.impl import Gaussian
+from soft.fuzzy.logic.controller.impl import ZeroOrderTSK
 from soft.utilities.reproducibility import load_configuration
 
 config.background_color = WHITE
@@ -250,7 +250,7 @@ class MyGraph(MovingCameraScene):
         input_size: int = 4
         hidden_size: int = 16
         output_size: int = 1
-        NN_text = f"""
+        neural_network_text: str = f"""
         import torch
         hidden_size: int = {hidden_size}
         model = torch.nn.Sequential(
@@ -262,7 +262,7 @@ class MyGraph(MovingCameraScene):
         )
         """
         code_text = Code(
-            code=NN_text,
+            code=neural_network_text,
             tab_width=4,
             background_stroke_width=1,
             background_stroke_color=WHITE,
@@ -385,19 +385,18 @@ class MyGraph(MovingCameraScene):
         return vs, edges
 
     def construct(self):
-        vertices = [1, 2, 3, 4, 5, 6]
-        labels = "ABCDEF"
-        label_dict = {i: label for i, label in zip(vertices, labels)}
-        edges = [(1, 2), (2, 3), (3, 4), (4, 1), (1, 5), (5, 2), (2, 6), (6, 3)]
-        lt = {
-            1: [0, 0, 0],
-            2: [2, 0, 0],
-            3: [2, 2, 0],
-            4: [0, 2, 0],
-            5: [1, math.sqrt(3), 0],
-            6: [2 + math.sqrt(3), 1, 0],
-        }
-
+        # vertices = [1, 2, 3, 4, 5, 6]
+        # labels = "ABCDEF"
+        # label_dict = {i: label for i, label in zip(vertices, labels)}
+        # edges = [(1, 2), (2, 3), (3, 4), (4, 1), (1, 5), (5, 2), (2, 6), (6, 3)]
+        # lt = {
+        #     1: [0, 0, 0],
+        #     2: [2, 0, 0],
+        #     3: [2, 2, 0],
+        #     4: [0, 2, 0],
+        #     5: [1, math.sqrt(3), 0],
+        #     6: [2 + math.sqrt(3), 1, 0],
+        # }
         model_graphs = {}
         for model_type in ["dnn", "flc"]:
             if model_type == "dnn":
@@ -498,17 +497,19 @@ class MyGraph(MovingCameraScene):
                 (AxisConfig(-6.0, 6.0, step=2.0), AxisConfig(-1.1, 1.1, step=0.1)),
                 (AxisConfig(-6.0, 6.0, step=2.0), AxisConfig(-1.1, 1.1, step=0.1)),
                 (AxisConfig(-6.0, 6.0, step=2.0), AxisConfig(0.0, 6.0, step=1.0)),
-            ]
+            ],
         )
         self.sample_neuron_and_show(
             model_graphs["flc"],
             next_graph=None,
             activation_funcs=[
-                ("Gaussian", Gaussian(centers=0.0, widths=1.0))
+                ("Gaussian", Gaussian(centers=0.0, widths=1.0)),
+                ("Lorentzian", Lorentzian(centers=0.0, widths=1.0)),
             ],
             axis_configs=[
-                (AxisConfig(-6.0, 6.0, step=2.0), AxisConfig(0.0, 1.1, step=0.1))
-            ]
+                (AxisConfig(-6.0, 6.0, step=2.0), AxisConfig(0.0, 1.1, step=0.1)),
+                (AxisConfig(-6.0, 6.0, step=2.0), AxisConfig(0.0, 1.1, step=0.1)),
+            ],
         )
         self.wait(5)
 
@@ -546,9 +547,11 @@ class MyGraph(MovingCameraScene):
         #     Create(activation_plot_group),
         # )
         prev_axes = None
+        prev_title = None
+        prev_axis_labels = None
         prev_activation_plot_func = None
         for idx, (axis_config_pair, activation_func_pair) in enumerate(
-                zip(axis_configs, activation_funcs)
+            zip(axis_configs, activation_funcs)
         ):
             # place axes at this neuron
             activation_func_name, activation_func = activation_func_pair
@@ -564,45 +567,76 @@ class MyGraph(MovingCameraScene):
             #     axes, x_label="Input", y_label="Degree of Activation", text_color=WHITE
             # )
 
-            axes.move_to(example_neuron).scale(0.005)
+            # axes.move_to(example_neuron).scale(0.005)
             # the result is the labels (VGroup of length 2 with two axis labels as Tex objects)
-            axis_labels = axes.get_axis_labels(x_label="Input", y_label="Degree of Activation")
+
+            axis_labels = axes.get_axis_labels(x_label="Input", y_label="Response")
             # activation_plot_group = (
             #     VGroup(axes, x_axis_lbl, y_axis_lbl).move_to(example_neuron).scale(0.005)
             # )
+            title = Text(activation_func_name, color=WHITE).next_to(axes, UP)
+            axis_labels[0].shift(1 * DOWN)
+            axis_labels[1].rotate(PI / 2).shift(3 * LEFT)
+            VGroup(axes, axis_labels[0], axis_labels[1], title).move_to(
+                example_neuron
+            ).scale(0.0025)
 
             # create or update the plot axes
             if prev_axes is None:
                 self.play(
                     Create(axes),
                     Create(axis_labels),
+                    Create(title),
                 )
             else:
+                print(f"prev: {prev_axes}, curr: {axes}")
                 self.play(
-                    TransformMatchingShapes(
+                    Transform(
                         mobject=prev_axes,
                         target_mobject=axes,
                         replace_mobject_with_target_in_scene=True,
                     ),
                 )
+                self.play(
+                    Uncreate(prev_axis_labels),
+                    Uncreate(prev_title),
+                    Create(axis_labels),
+                    Create(title),
+                )
 
-            self.play(
-                self.camera.frame.animate.set(
-                    width=axes.width + 0.001, height=axes.height + 0.001
-                ).move_to(axes),
-                Write(Text(activation_func_name, color=ORANGE).next_to(axes, UP)),
-            )
+            # self.play(
+            #     self.camera.frame.animate.set(
+            #         width=axes.width + 0.001, height=axes.height + 0.001
+            #     ).move_to(axes),
+            #     # Write(Text(activation_func_name, color=ORANGE).next_to(axes, UP).scale(0.005)),
+            # )
 
             use_smoothing = True
-            if isinstance(activation_func, ContinuousFuzzySet):
-                lambda_func: callable = lambda x: activation_func(torch.Tensor([x])).degrees.item()
-            else:
-                lambda_func: callable = lambda x: activation_func(torch.Tensor([x])).item()
-                if idx == 0:
-                    use_smoothing = False  # disable smoothing for heaviside step function
+            center_value, width_value = ValueTracker(0.0), ValueTracker(1.0)
+
             step_val: float = (
-                                      x_axis_config.max_value - x_axis_config.min_value
-                              ) / 1000  # the default is 1.0
+                x_axis_config.max_value - x_axis_config.min_value
+            ) / 1000  # the default is 1.0
+            if isinstance(activation_func, ContinuousFuzzySet):
+                # lambda_func: callable = lambda x: activation_func(
+                #     torch.Tensor([x])
+                # ).degrees.item()
+                lambda_func: callable = (
+                    lambda x: activation_func.internal_calculate_membership(
+                        observations=torch.Tensor([x]),
+                        centers=torch.Tensor([center_value.get_value()]),
+                        widths=torch.Tensor([width_value.get_value()]),
+                        # width_multiplier=1.0,
+                    ).item()
+                )
+            else:
+                lambda_func: callable = lambda x: activation_func(
+                    torch.Tensor([x])
+                ).item()
+                if idx == 0:
+                    use_smoothing = (
+                        False  # disable smoothing for heaviside step function
+                    )
 
             activation_plot_func = axes.plot(
                 lambda_func,
@@ -612,36 +646,71 @@ class MyGraph(MovingCameraScene):
                 use_smoothing=use_smoothing,
                 # color=ORANGE
             )
-
-            func_label = axes.get_graph_label(
-                activation_plot_func,
-                Text(activation_func_name),
-                color=ORANGE,
-                direction=UP,
+            activation_plot_func.add_updater(
+                lambda m: m.become(
+                    axes.plot(
+                        lambda_func,
+                        x_range=(
+                            x_axis_config.min_value,
+                            x_axis_config.max_value,
+                            step_val,
+                        ),
+                        stroke_color=ORANGE,
+                        stroke_width=0.02,
+                        use_smoothing=use_smoothing,
+                    )
+                )
             )
+
+            # func_label = axes.get_graph_label(
+            #     activation_plot_func,
+            #     # Text(activation_func_name, font_size=8, color=ORANGE),
+            #     Text(activation_func_name, color=ORANGE).next_to(axes, UP).scale(0.005),
+            #     color=ORANGE,
+            #     direction=UP,
+            # )
+            # func_label.move_to(axes.c2p(0.0, 1.1))
 
             # plot or transform the activation function to the new function
             if prev_activation_plot_func is None:
                 self.play(
                     AnimationGroup(
                         Create(activation_plot_func),
-                        FadeIn(func_label),
+                        # FadeIn(func_label),
                     )
                 )
             else:
                 self.play(
                     AnimationGroup(
-                        TransformMatchingShapes(
+                        Transform(
                             mobject=prev_activation_plot_func,
                             target_mobject=activation_plot_func,
                             replace_mobject_with_target_in_scene=True,
                         ),
-                        FadeIn(func_label),
+                        # FadeIn(func_label),
                     )
                 )
+            if isinstance(activation_func, ContinuousFuzzySet):
+                # update the 'a' value for the function
+                self.play(
+                    center_value.animate.set_value(x_axis_config.max_value), run_time=6
+                )
+                self.play(width_value.animate.set_value(0.5), run_time=3)
+                self.play(
+                    center_value.animate.set_value(x_axis_config.min_value), run_time=6
+                )
+                self.play(width_value.animate.set_value(2), run_time=3)
+                self.play(
+                    center_value.animate.set_value(0),
+                    width_value.animate.set_value(1),
+                    run_time=6,
+                )
+                self.wait(5)
             prev_axes = axes
+            prev_title = title
+            prev_axis_labels = axis_labels
             self.wait(5)
-            self.play(FadeOut(func_label))
+            # self.play(FadeOut(func_label))
             prev_activation_plot_func = activation_plot_func
         # get the bounding box of the DiGraph
         if next_graph is not None:
@@ -651,7 +720,8 @@ class MyGraph(MovingCameraScene):
             self.play(
                 self.camera.frame.animate.move_to(next_graph.digraph.get_center()).set(
                     height=framebox.height * 1.5
-                )
+                ),
+                run_time=3,
             )
             self.wait(5)
 

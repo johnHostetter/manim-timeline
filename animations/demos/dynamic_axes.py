@@ -40,7 +40,9 @@ class DynamicAxes(MovingCameraScene):
         self.wait(5)
 
         self.play(
-            TransformMatchingShapes(axes_1, axes_2, replace_mobject_with_target_in_scene=True),
+            TransformMatchingShapes(
+                axes_1, axes_2, replace_mobject_with_target_in_scene=True
+            ),
             self.camera.frame.animate.set(
                 width=axes_2.width + 1, height=axes_2.height + 1
             ).move_to(axes_2),
