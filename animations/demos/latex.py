@@ -1,5 +1,7 @@
 from manim import *
 
+from animations.common import MANIM_BLUE
+
 config.background_color = WHITE
 
 
@@ -45,26 +47,26 @@ class MovingFrameBox(Scene):
         )
         # attach text to above the framebox
         text1.next_to(upper_text, UP)
-        text2 = Text("Standard Bellman Error", font_size=24)
+        text2 = Text("Standard Bellman Error", font_size=24, color=BLACK)
         # attach text to below the framebox
         text2.next_to(lower_text, DOWN)
-        framebox1 = SurroundingRectangle(upper_text, buff=0.2, corner_radius=0.1)
-        framebox2 = SurroundingRectangle(lower_text, buff=0.2, corner_radius=0.1)
+        framebox1 = SurroundingRectangle(
+            upper_text, buff=0.2, corner_radius=0.1, color=MANIM_BLUE
+        )
+        framebox2 = SurroundingRectangle(
+            lower_text, buff=0.2, corner_radius=0.1, color=MANIM_BLUE
+        )
         self.play(
             Create(framebox1),
             Write(text1, run_time=2),
         )
-        self.wait()
-        self.play(
-            AnimationGroup(
-                ReplacementTransform(framebox1, framebox2),
-                Write(text2, run_time=2),
-                Unwrite(text1),
-            )
-        )
-        self.wait()
+        self.wait(5)
+        self.play(Unwrite(text1))
+        self.play(ReplacementTransform(framebox1, framebox2), Write(text2, run_time=2))
+        self.wait(5)
 
         self.play(AnimationGroup(FadeOut(framebox2), Unwrite(text2)))
+        self.wait(5)
         move_formula = Group(upper_text, lower_text).animate.shift(UP * 0.5)
         self.play(move_formula)
         # MoveAlongPath(upper_text, Line(ORIGIN, UP * 2))
@@ -133,7 +135,7 @@ class MovingFrameBox(Scene):
         for eqn in eqns:
             self.play(Write(eqn))
         # self.play(FadeIn(Group(*eqns)))
-        self.wait()
+        self.wait(60)
 
 
 if __name__ == "__main__":

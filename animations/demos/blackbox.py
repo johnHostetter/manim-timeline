@@ -39,11 +39,9 @@ class BlackBox(ThreeDScene):
         self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
         self.play(
             LaggedStart(
-                FadeOut(intro_prefix),
-                Write(blackbox),
-                FadeOut(black_box_txt),
-                lag_ratio=0.8,
+                FadeOut(intro_prefix), FadeOut(black_box_txt), lag_ratio=0.8, run_time=5
             ),
+            Write(blackbox, run_time=10),
             run_time=5,
         )
 
@@ -87,7 +85,7 @@ class BlackBox(ThreeDScene):
         self.simulate_input_output(whitebox)
         self.wait(3)
 
-        self.play(FadeOut(question), Uncreate(whitebox), run_time=2)
+        self.play(FadeOut(question, run_time=2), Uncreate(whitebox, run_time=10))
         self.wait(3)
 
     def simulate_input_output(self, box: Cube):

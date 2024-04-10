@@ -3,13 +3,11 @@ from itertools import groupby
 from dataclasses import dataclass
 from typing import Tuple, Set, Dict as DictType, List as ListType, Union as UnionType
 
-import math
 import torch
 from manim import *
 import igraph as ig
-from igraph import Layout
 
-from animations.common import make_axes, add_labels_to_axes, AxisConfig
+from animations.common import make_axes, AxisConfig, MANIM_BLUE
 from soft.datasets import SupervisedDataset
 from soft.computing.organize import SelfOrganize
 from soft.computing.knowledge import KnowledgeBase
@@ -20,9 +18,9 @@ from soft.fuzzy.logic.controller import (
     Mapping,
     SpaceConfiguration,
 )
+from soft.fuzzy.logic.controller.impl import ZeroOrderTSK
 from soft.fuzzy.sets.continuous.impl import Gaussian, Lorentzian
 from soft.fuzzy.sets.continuous.abstract import ContinuousFuzzySet
-from soft.fuzzy.logic.controller.impl import ZeroOrderTSK
 from soft.utilities.reproducibility import load_configuration
 
 config.background_color = WHITE
@@ -33,7 +31,7 @@ light_theme_style = {
 
 
 # https://stackoverflow.com/questions/76175939/manim-add-labels-near-vertices
-def get_self_organize() -> SelfOrganize:
+def get_self_organize(input_size: int = 4, output_size: int = 1) -> SelfOrganize:
     soft_config = load_configuration()
     with soft_config.unfreeze():
         soft_config.clustering.distance_threshold = 0.2
@@ -41,7 +39,7 @@ def get_self_organize() -> SelfOrganize:
         algorithms=["clip", "ecm", "wang_mendel"], config=soft_config
     ).build(
         training_data=SupervisedDataset(
-            inputs=torch.rand((250, 4)), targets=torch.rand((250, 1))
+            inputs=torch.rand((250, input_size)), targets=torch.rand((250, output_size))
         )
     )
 
@@ -66,9 +64,6 @@ class MyGraph(MovingCameraScene):
     def plot_graph(
         self, graph: ig.Graph, layer_types: ListType[str], direction
     ) -> GraphPair:
-        # get a layout for this graph
-        # layout: Layout = graph.layout_auto()
-        # lt = {v: [layout[v][0], layout[v][1], 0] for v in range(len(layout))}
         if (direction == RIGHT).all():
             opposite_direction = LEFT
         else:
@@ -107,16 +102,7 @@ class MyGraph(MovingCameraScene):
                 my_layout[v.index] = [v["layer"], y_pos, 0]
                 label_dict[v.index] = v["name"]
                 grouped_vertices[layer_order].append(v.index)
-        # try:
-        #     labels = [
-        #         func if isinstance(func, str) else func.__name__.replace("_", " ")
-        #         for func in graph.vs["function"]
-        #     ]
-        # except KeyError:
-        #     labels = [str(v) for v in graph.vs.indices]
-        # label_dict = {
-        #     v: label for v, label in zip(graph.vs.indices, labels)
-        # }
+
         digraph = DiGraph(
             graph.vs.indices,
             graph.get_edgelist(),
@@ -151,12 +137,12 @@ class MyGraph(MovingCameraScene):
         )
         self.wait()
 
+        # display the individual layers
+
         self.play(digraph.animate.shift(direction * 3))
 
         layer_colors = [BLUE, GREEN, RED, YELLOW, PURPLE]
-        animations = [
-            # self.camera.frame.animate.set(width=digraph.get_width() * 3.0),
-        ]
+        animations = []
         rewind_animations = []
         for layer_order, (layer_type, layer_color) in enumerate(
             zip(layer_types, layer_colors)
@@ -210,109 +196,54 @@ class MyGraph(MovingCameraScene):
 
         return GraphPair(graph, digraph=digraph)
 
-        # # get a new layout for this graph
-        # new_layout: Layout = graph.layout_sugiyama()
-        # move_vertices = [
-        #     g[v].animate.move_to(pos + [0.0])
-        #     for v, pos in zip(g.vertices, new_layout.coords)
-        # ]
-        # self.play(*move_vertices, run_time=1)
-        #
-        # # move the camera to the new graph location
-        # self.camera.frame.save_state()
-        # animation_to_move_camera = self.camera.frame.animate.scale(1.5).move_to(
-        #     g.get_center()
-        # )  # 1.5 zoom out
-        # move_vertices += [animation_to_move_camera]
-        # self.play(*move_vertices, run_time=5)
-        # self.wait()
-
-        # # label the graph's vertices
-        # tex_labels = []
-        # for v in g.vertices:
-        #     # label = MathTex(label_dict[v]).scale(0.5).next_to(g.vertices[v], UR)
-        #     label = Text(label_dict[v], color=BLACK).scale(0.25).next_to(g.vertices[v], UR)
-        #     tex_labels.append(label)
-        # self.play(Create(VGroup(*tex_labels)))
-        # self.wait()
-        # print(g.edges)
-
+    @staticmethod
     def get_vertices_and_edges_for_dnn(
-        self,
+        input_size: int = 4, hidden_size: int = 16, output_size: int = 1
     ) -> Tuple[DictType[str, int], Set[Tuple[str, str]]]:
-        model_type = Text(
-            "Dense Feed-Forward Artificial Neural Network", font_size=24, color=BLACK
-        )
-        self.play(Write(model_type, run_time=2))
-        self.wait(3)
-        self.play(Unwrite(model_type, run_time=2))
-
-        input_size: int = 4
-        hidden_size: int = 16
-        output_size: int = 1
-        neural_network_text: str = f"""
-        import torch
-        hidden_size: int = {hidden_size}
-        model = torch.nn.Sequential(
-            torch.nn.Linear({input_size}, {hidden_size}),
-            torch.nn.ReLU(),
-            torch.nn.Linear({hidden_size}, {hidden_size}),
-            torch.nn.ReLU(),
-            torch.nn.Linear({hidden_size}, {output_size})
-        )
-        """
-        code_text = Code(
-            code=neural_network_text,
-            tab_width=4,
-            background_stroke_width=1,
-            background_stroke_color=WHITE,
-            insert_line_no=False,
-            style=Code.styles_list[15],
-            background="window",
-            language="python",
-            font="consolas",
-            font_size=18,
-        )
-        self.play(Write(code_text), run_time=5)
-        self.wait(3)
-        self.play(FadeOut(code_text))
-        self.wait()
-        # render a dense neural network
         vs = {}
         all_vertices = []
-        layer_0_vertices = [f"V{i}" for i in range(0, input_size)]  # 4-inputs
-        layer_1_vertices = [f"P{i}" for i in range(0, hidden_size)]
-        layer_2_vertices = [f"R{i}" for i in range(0, hidden_size)]
-        layer_3_vertices = [f"C{i}" for i in range(0, hidden_size)]
-        layer_4_vertices = [f"O{i}" for i in range(0, output_size)]  # 1-output
 
-        all_vertices.extend(layer_0_vertices)
-        all_vertices.extend(layer_1_vertices)
-        all_vertices.extend(layer_2_vertices)
-        all_vertices.extend(layer_3_vertices)
-        all_vertices.extend(layer_4_vertices)
+        all_vertices.extend(
+            [f"V{i}" for i in range(0, input_size)]
+        )  # layer 1: 4-inputs
+        all_vertices.extend([f"P{i}" for i in range(0, hidden_size)])  # layer 2
+        all_vertices.extend([f"R{i}" for i in range(0, hidden_size)])  # layer 3
+        all_vertices.extend([f"C{i}" for i in range(0, hidden_size)])  # layer 4
+        all_vertices.extend(
+            [f"O{i}" for i in range(0, output_size)]
+        )  # layer 5: 1-output
 
         for vertex in all_vertices:
             vs[vertex] = int(vertex[1:])
 
-        edges = []
-        for i in range(4):
-            for j in range(16):
-                edges.append((f"V{i}", f"P{j}"))
-        for i in range(16):
-            for j in range(16):
-                edges.append((f"P{i}", f"R{j}"))
-        for i in range(16):
-            for j in range(16):
-                edges.append((f"R{i}", f"C{j}"))
-        for i in range(16):
-            edges.append((f"C{i}", "O0"))
+        edges = set()
+        for i in range(input_size):
+            for j in range(hidden_size):
+                edges.add((f"V{i}", f"P{j}"))
+        for i in range(hidden_size):
+            for j in range(hidden_size):
+                edges.add((f"P{i}", f"R{j}"))
+        for i in range(hidden_size):
+            for j in range(hidden_size):
+                edges.add((f"R{i}", f"C{j}"))
+        for i in range(hidden_size):
+            for j in range(output_size):
+                edges.add((f"C{i}", f"O{j}"))
         return vs, edges
 
+    @staticmethod
     def get_vertices_and_edges_for_flc(
-        self,
+        input_size: int = 4, hidden_size: int = 16, output_size: int = 1
     ) -> Tuple[DictType[str, int], Set[Tuple[str, str]]]:
-        self_organize: SelfOrganize = get_self_organize()
+        """
+        Create a set of vertices and edges for a graph of an example fuzzy logic controller.
+
+        Returns:
+            A tuple containing the vertices and edges of the graph.
+        """
+        self_organize: SelfOrganize = get_self_organize(
+            input_size=input_size, output_size=output_size
+        )
         # self.plot_graph(self_organize.graph)
         # use the SelfOrganize plan and plot the resulting fuzzy logic controller
         knowledge_base: KnowledgeBase = self_organize.start()
@@ -326,10 +257,14 @@ class MyGraph(MovingCameraScene):
                     ignore_missing=False,
                 ),
                 mapping=Mapping(
-                    input=SpaceConfiguration(dim=4, max_terms=3, expandable=True),
-                    output=SpaceConfiguration(dim=1, max_terms=3, expandable=True),
+                    input=SpaceConfiguration(
+                        dim=input_size, max_terms=3, expandable=True
+                    ),
+                    output=SpaceConfiguration(
+                        dim=output_size, max_terms=3, expandable=True
+                    ),
                 ),
-                number_of_rules=32,
+                number_of_rules=hidden_size,
             ),
             knowledge_base=knowledge_base,
         )
@@ -384,30 +319,122 @@ class MyGraph(MovingCameraScene):
             print()
         return vs, edges
 
+    def animate_code(
+        self,
+        model_type: str,
+        input_size: int = 4,
+        hidden_size: int = 16,
+        output_size: int = 1,
+    ):
+        if model_type == "dnn":
+            texts: List[str] = [
+                f"""
+            import torch
+            
+            input_size, hidden_size, output_size = {input_size}, {hidden_size}, {output_size}
+            deep_neural_network = torch.nn.Sequential(
+                torch.nn.Linear(input_size, hidden_size),
+                torch.nn.ReLU(),
+                torch.nn.Linear(hidden_size, hidden_size),
+                torch.nn.ReLU(),
+                torch.nn.Linear(hidden_size, output_size)
+            )
+            """
+            ]
+        elif model_type == "flc":
+            texts: List[str] = [
+                f"""
+            from soft.computing.organize import SelfOrganize
+            from soft.computing.knowledge import KnowledgeBase
+            from soft.computing.blueprints.factory import SystematicDesignProcess
+
+            self_organize: SelfOrganize = SystematicDesignProcess(
+                algorithms=["clip", "ecm", "wang_mendel"], config=my_config
+            ).build(
+                training_data=LabeledDataset(
+                    inputs=torch.rand((250, {input_size})), targets=torch.rand((250, {output_size}))
+                )
+            )
+            knowledge_base: KnowledgeBase = self_organize.start()
+            """,
+                f"""
+            neuro_fuzzy_network = ZeroOrderTSK(
+                specifications=Specifications(
+                    t_norm="algebraic_product",
+                    engine=Engine(
+                        type="tsk",
+                        defuzzification="product",
+                        confidences=False,
+                        ignore_missing=False,
+                    ),
+                    mapping=Mapping(
+                        input=SpaceConfiguration(dim={input_size}, max_terms=3, expandable=False),
+                        output=SpaceConfiguration(dim={output_size}, max_terms=3, expandable=False),
+                    ),
+                    number_of_rules={hidden_size},
+                ),
+                knowledge_base=knowledge_base,
+            )
+            """,
+            ]
+        else:
+            raise ValueError(f"Unknown model type: {model_type}")
+
+        for text in texts:
+            # create the manim code object and animate it
+            code: Code = Code(
+                code=text,
+                tab_width=4,
+                background_stroke_width=1,
+                background_stroke_color=WHITE,
+                insert_line_no=False,
+                style=Code.styles_list[15],
+                background="window",
+                language="python",
+                font="consolas",
+                font_size=18,
+            )
+            self.play(
+                Write(code),
+                self.camera.frame.animate.move_to(code.get_center()),
+                run_time=5,
+            )
+            self.wait(10)
+            self.play(FadeOut(code))
+            self.wait()
+
     def construct(self):
-        # vertices = [1, 2, 3, 4, 5, 6]
-        # labels = "ABCDEF"
-        # label_dict = {i: label for i, label in zip(vertices, labels)}
-        # edges = [(1, 2), (2, 3), (3, 4), (4, 1), (1, 5), (5, 2), (2, 6), (6, 3)]
-        # lt = {
-        #     1: [0, 0, 0],
-        #     2: [2, 0, 0],
-        #     3: [2, 2, 0],
-        #     4: [0, 2, 0],
-        #     5: [1, math.sqrt(3), 0],
-        #     6: [2 + math.sqrt(3), 1, 0],
-        # }
+        # iterate over creating each type of model and plotting its graph
         model_graphs = {}
+        all_models: UnionType[None, Group] = None
         for model_type in ["dnn", "flc"]:
             if model_type == "dnn":
+                displayed_model_name = "Dense Feed-Forward Artificial Neural Network"
                 vs, edges = self.get_vertices_and_edges_for_dnn()
                 layer_types = ["input", "hidden", "hidden", "hidden", "output"]
             elif model_type == "flc":
+                displayed_model_name = "Neuro-Fuzzy Network"
                 vs, edges = self.get_vertices_and_edges_for_flc()
                 layer_types = ["input", "premise", "rule", "consequence", "output"]
             else:
                 raise ValueError(f"Unknown model type: {model_type}")
 
+            # display the model name
+            displayed_model_text: Text = Text(
+                displayed_model_name, font_size=24, color=BLACK
+            )
+            self.play(
+                self.camera.frame.animate.move_to(displayed_model_text.get_center()),
+                Write(displayed_model_text),
+                run_time=2,
+            )
+            self.wait(5)
+            self.play(Unwrite(displayed_model_text, run_time=2))
+
+            # animate example code for the model
+            self.animate_code(model_type, input_size=4, hidden_size=16, output_size=1)
+
+            # create the igraph.Graph representation of the model
             graph = ig.Graph(directed=True)
             for vertex_id, vertex_data in vs.items():
                 vertex_type: str = "input"
@@ -434,6 +461,7 @@ class MyGraph(MovingCameraScene):
                     layer=layer_order,
                 )
 
+            # check that the edges are added correctly
             for edge in edges:
                 source_id: int = graph.vs.find(name=str(edge[0])).index
                 target_id: int = graph.vs.find(name=str(edge[1])).index
@@ -445,6 +473,7 @@ class MyGraph(MovingCameraScene):
                     target_id == added_edge.target
                 ), f"Incorrect edge target: {target_id, added_edge.target}"
 
+            # plot the graph and retain a reference to it as well as its igraph.Graph representation
             graph_pair: GraphPair = self.plot_graph(
                 graph, layer_types, LEFT if model_type == "dnn" else RIGHT
             )
@@ -457,7 +486,7 @@ class MyGraph(MovingCameraScene):
                 )
             elif model_type == "flc":
                 # bring the DNN graph back for side-by-side comparison
-                all_models: Group = Group(
+                all_models: UnionType[None, Group] = Group(
                     model_graphs["dnn"].digraph, model_graphs["flc"].digraph
                 )
                 self.play(
@@ -472,13 +501,14 @@ class MyGraph(MovingCameraScene):
                     self.camera.frame.animate.move_to(all_models.get_center()),
                 )
 
+        # focus on the Deep Neural Network
         self.wait(5)
         self.play(
             self.camera.frame.animate.move_to(model_graphs["dnn"].digraph.get_center())
         )
         self.wait(5)
 
-        # now show each graph's neuron activation
+        # now focus on a single neuron in the Deep Neural Network's hidden layer
         self.sample_neuron_and_show(
             model_graphs["dnn"],
             next_graph=model_graphs["flc"],
@@ -494,11 +524,19 @@ class MyGraph(MovingCameraScene):
                 (AxisConfig(-6.0, 6.0, step=2.0), AxisConfig(0.0, 1.1, step=0.1)),
                 (AxisConfig(-6.0, 6.0, step=2.0), AxisConfig(0.0, 1.1, step=0.1)),
                 (AxisConfig(-6.0, 6.0, step=2.0), AxisConfig(0.0, 1.1, step=0.1)),
-                (AxisConfig(-6.0, 6.0, step=2.0), AxisConfig(-1.1, 1.1, step=0.1)),
-                (AxisConfig(-6.0, 6.0, step=2.0), AxisConfig(-1.1, 1.1, step=0.1)),
+                (AxisConfig(-6.0, 6.0, step=2.0), AxisConfig(-1.1, 1.1, step=0.2)),
+                (AxisConfig(-6.0, 6.0, step=2.0), AxisConfig(-1.1, 1.1, step=0.2)),
                 (AxisConfig(-6.0, 6.0, step=2.0), AxisConfig(0.0, 6.0, step=1.0)),
             ],
         )
+        # focus on the Neuro-Fuzzy Network
+        self.wait(5)
+        self.play(
+            self.camera.frame.animate.move_to(model_graphs["flc"].digraph.get_center())
+        )
+        self.wait(5)
+
+        # then focus on a single linguistic term in the Neuro-Fuzzy Network's premise layer
         self.sample_neuron_and_show(
             model_graphs["flc"],
             next_graph=None,
@@ -512,6 +550,14 @@ class MyGraph(MovingCameraScene):
             ],
         )
         self.wait(5)
+
+        if all_models is not None:  # both models exist
+            # then show the comparison between the two models
+            self.play(all_models.animate.move_to(ORIGIN))
+            self.play(
+                self.camera.frame.animate.move_to(all_models.get_center()),
+            )
+            self.wait(5)
 
     def sample_neuron_and_show(
         self,
@@ -527,27 +573,10 @@ class MyGraph(MovingCameraScene):
             self.camera.frame.animate.move_to(example_neuron).set(width=0.075),
             run_time=3,
         )
-        # min_x: float = -6.0
-        # max_x: float = 6.0
-        # place axes at this neuron
-        # axes = make_axes(
-        #     self,
-        #     x_axis_config=AxisConfig(-6.0, 6.0, step=2.0),
-        #     y_axis_config=AxisConfig(0.0, 1.1, step=0.1),
-        #     stroke_width=0.02,
-        #     axes_color=WHITE,
-        # )
-        # x_axis_lbl, y_axis_lbl = add_labels_to_axes(
-        #     axes, x_label="Input", y_label="Degree of Activation", text_color=WHITE
-        # )
-        # activation_plot_group = (
-        #     VGroup(axes, x_axis_lbl, y_axis_lbl).move_to(example_neuron).scale(0.005)
-        # )
-        # self.play(
-        #     Create(activation_plot_group),
-        # )
+
         prev_axes = None
         prev_title = None
+        prev_func_label = None
         prev_axis_labels = None
         prev_activation_plot_func = None
         for idx, (axis_config_pair, activation_func_pair) in enumerate(
@@ -563,17 +592,11 @@ class MyGraph(MovingCameraScene):
                 stroke_width=0.02,
                 axes_color=WHITE,
             )
-            # x_axis_lbl, y_axis_lbl = add_labels_to_axes(
-            #     axes, x_label="Input", y_label="Degree of Activation", text_color=WHITE
-            # )
 
-            # axes.move_to(example_neuron).scale(0.005)
-            # the result is the labels (VGroup of length 2 with two axis labels as Tex objects)
-
-            axis_labels = axes.get_axis_labels(x_label="Input", y_label="Response")
-            # activation_plot_group = (
-            #     VGroup(axes, x_axis_lbl, y_axis_lbl).move_to(example_neuron).scale(0.005)
-            # )
+            # result is the labels (VGroup of length 2 with two axis labels as Tex objects)
+            axis_labels: VGroup = axes.get_axis_labels(
+                x_label="Input", y_label="Response"
+            )
             title = Text(activation_func_name, color=WHITE).next_to(axes, UP)
             axis_labels[0].shift(1 * DOWN)
             axis_labels[1].rotate(PI / 2).shift(3 * LEFT)
@@ -581,27 +604,23 @@ class MyGraph(MovingCameraScene):
                 example_neuron
             ).scale(0.0025)
 
+            plotting_animations = []
             # create or update the plot axes
             if prev_axes is None:
-                self.play(
-                    Create(axes),
-                    Create(axis_labels),
-                    Create(title),
-                )
+                plotting_animations.append(Create(VGroup(axes, axis_labels, title)))
             else:
-                print(f"prev: {prev_axes}, curr: {axes}")
-                self.play(
-                    Transform(
-                        mobject=prev_axes,
-                        target_mobject=axes,
-                        replace_mobject_with_target_in_scene=True,
-                    ),
-                )
-                self.play(
-                    Uncreate(prev_axis_labels),
-                    Uncreate(prev_title),
-                    Create(axis_labels),
-                    Create(title),
+                plotting_animations.append(
+                    Succession(
+                        Uncreate(VGroup(prev_axis_labels, prev_title)),
+                        AnimationGroup(
+                            Transform(
+                                mobject=prev_axes,
+                                target_mobject=axes,
+                                replace_mobject_with_target_in_scene=True,
+                            ),
+                            Create(VGroup(axis_labels, title)),
+                        ),
+                    )
                 )
 
             # self.play(
@@ -626,7 +645,6 @@ class MyGraph(MovingCameraScene):
                         observations=torch.Tensor([x]),
                         centers=torch.Tensor([center_value.get_value()]),
                         widths=torch.Tensor([width_value.get_value()]),
-                        # width_multiplier=1.0,
                     ).item()
                 )
             else:
@@ -641,11 +659,64 @@ class MyGraph(MovingCameraScene):
             activation_plot_func = axes.plot(
                 lambda_func,
                 x_range=(x_axis_config.min_value, x_axis_config.max_value, step_val),
-                stroke_color=ORANGE,
+                stroke_color=MANIM_BLUE,
                 stroke_width=0.02,
                 use_smoothing=use_smoothing,
                 # color=ORANGE
             )
+
+            # display the membership function formula
+            # membership_formula: Text = Text(
+            #     f"μ(x) = {activation_func.latex_formula()}",
+            #     color=WHITE
+            # ).scale(0.0025).next_to(axes, 0.0025 * DOWN)
+
+            if isinstance(activation_func, ContinuousFuzzySet):
+                myTemplate = TexTemplate()
+                myTemplate.add_to_preamble(r"\usepackage{mathrsfs}")
+                func_label = axes.get_graph_label(
+                    activation_plot_func,
+                    # Text(activation_func_name, font_size=8, color=ORANGE),
+                    r"\mu(x) = " + activation_func.latex_formula(),
+                    # Text(activation_func_name, color=ORANGE).next_to(axes, UP).scale(0.005),
+                    color=MANIM_BLUE,
+                    direction=UP,
+                )
+                func_label.scale(0.0025 * 2.5).move_to(axes.c2p(9, 1.1))
+            else:
+                func_label = None
+
+            # plot or transform the activation function to the new function
+            if prev_activation_plot_func is None:
+                plotting_animations.append(Create(activation_plot_func))
+                if (
+                    isinstance(activation_func, ContinuousFuzzySet)
+                    and func_label is not None
+                ):
+                    plotting_animations.append(Create(func_label))
+            else:
+                transform_animations = [
+                    TransformMatchingShapes(
+                        mobject=prev_activation_plot_func,
+                        target_mobject=activation_plot_func,
+                        replace_mobject_with_target_in_scene=True,
+                    )
+                ]
+
+                if (
+                    isinstance(activation_func, ContinuousFuzzySet)
+                    and func_label is not None
+                ):
+                    transform_animations.append(
+                        Succession(
+                            Uncreate(prev_func_label),
+                            Create(func_label),
+                        )
+                    )
+
+                plotting_animations.append(AnimationGroup(*transform_animations))
+
+            # add an updater to the plotted function in order to update it
             activation_plot_func.add_updater(
                 lambda m: m.become(
                     axes.plot(
@@ -655,75 +726,164 @@ class MyGraph(MovingCameraScene):
                             x_axis_config.max_value,
                             step_val,
                         ),
-                        stroke_color=ORANGE,
+                        stroke_color=MANIM_BLUE,
                         stroke_width=0.02,
                         use_smoothing=use_smoothing,
                     )
                 )
             )
 
-            # func_label = axes.get_graph_label(
-            #     activation_plot_func,
-            #     # Text(activation_func_name, font_size=8, color=ORANGE),
-            #     Text(activation_func_name, color=ORANGE).next_to(axes, UP).scale(0.005),
-            #     color=ORANGE,
-            #     direction=UP,
-            # )
-            # func_label.move_to(axes.c2p(0.0, 1.1))
+            # draw axes and the activation function
+            self.play(Succession(*plotting_animations))
 
-            # plot or transform the activation function to the new function
-            if prev_activation_plot_func is None:
-                self.play(
-                    AnimationGroup(
-                        Create(activation_plot_func),
-                        # FadeIn(func_label),
-                    )
-                )
-            else:
-                self.play(
-                    AnimationGroup(
-                        Transform(
-                            mobject=prev_activation_plot_func,
-                            target_mobject=activation_plot_func,
-                            replace_mobject_with_target_in_scene=True,
-                        ),
-                        # FadeIn(func_label),
-                    )
-                )
             if isinstance(activation_func, ContinuousFuzzySet):
-                # update the 'a' value for the function
-                self.play(
-                    center_value.animate.set_value(x_axis_config.max_value), run_time=6
+                # demonstrate how ContinuousFuzzySet is essentially a tunable activation function
+                # display the current parameters
+                param_header_text: Text = (
+                    Text("Tunable Parameters:", color=WHITE)
+                    .scale(0.0025)
+                    .next_to(axes, 0.0025 * DOWN)
                 )
-                self.play(width_value.animate.set_value(0.5), run_time=3)
-                self.play(
-                    center_value.animate.set_value(x_axis_config.min_value), run_time=6
+                center_decimal_number: DecimalNumber = (
+                    DecimalNumber(
+                        center_value.get_value(), num_decimal_places=2, color=WHITE
+                    )
+                    .scale(0.0025)
+                    .next_to(param_header_text, 0.0025 * DOWN)
                 )
-                self.play(width_value.animate.set_value(2), run_time=3)
+                center_decimal_number.add_updater(
+                    lambda m_object: m_object.set_value(center_value.get_value())
+                )
+                center_param_text: Text = (
+                    Text("Center: ", color=WHITE)
+                    .scale(0.0025)
+                    .next_to(center_decimal_number, 0.0025 * LEFT)
+                )
+                width_decimal_number: DecimalNumber = (
+                    DecimalNumber(
+                        width_value.get_value(), num_decimal_places=2, color=WHITE
+                    )
+                    .scale(0.0025)
+                    .next_to(center_decimal_number, 0.0025 * DOWN)
+                )
+                width_decimal_number.add_updater(
+                    lambda m_object: m_object.set_value(width_value.get_value())
+                )
+                width_param_text: Text = (
+                    Text("Width: ", color=WHITE)
+                    .scale(0.0025)
+                    .next_to(width_decimal_number, 0.0025 * LEFT)
+                )
+
+                # draw the center and width parameters
                 self.play(
+                    LaggedStart(
+                        Create(param_header_text),
+                        Create(center_param_text),
+                        Create(center_decimal_number),
+                        Create(width_param_text),
+                        Create(width_decimal_number),
+                    )
+                )
+
+                # show that the fuzzy set being tuned well within domain
+
+                return_to_default_setting: AnimationGroup = AnimationGroup(
+                    center_param_text.animate.set_color(YELLOW),
+                    width_param_text.animate.set_color(YELLOW),
                     center_value.animate.set_value(0),
                     width_value.animate.set_value(1),
-                    run_time=6,
                 )
-                self.wait(5)
+
+                reset_param_text_color: AnimationGroup = AnimationGroup(
+                    center_param_text.animate.set_color(WHITE),
+                    width_param_text.animate.set_color(WHITE),
+                )
+
+                first_succession: Succession = Succession(
+                    AnimationGroup(
+                        center_param_text.animate.set_color(YELLOW),
+                        width_param_text.animate.set_color(YELLOW),
+                        center_value.animate.set_value(x_axis_config.max_value / 2),
+                        width_value.animate.set_value(4),
+                    ),
+                    reset_param_text_color,
+                    AnimationGroup(
+                        center_param_text.animate.set_color(YELLOW),
+                        width_param_text.animate.set_color(YELLOW),
+                        center_value.animate.set_value(x_axis_config.min_value / 2),
+                        width_value.animate.set_value(3),
+                    ),
+                    reset_param_text_color,
+                    AnimationGroup(
+                        width_param_text.animate.set_color(YELLOW),
+                        width_value.animate.set_value(0.5),
+                    ),
+                    reset_param_text_color,
+                    AnimationGroup(
+                        width_param_text.animate.set_color(YELLOW),
+                        width_value.animate.set_value(2),
+                    ),
+                    return_to_default_setting,
+                    reset_param_text_color,
+                )
+                # show the fuzzy set being tuned toward the extreme of a domain
+                second_succession: Succession = Succession(
+                    AnimationGroup(
+                        center_param_text.animate.set_color(YELLOW),
+                        center_value.animate.set_value(x_axis_config.max_value),
+                    ),
+                    reset_param_text_color,
+                    AnimationGroup(
+                        width_param_text.animate.set_color(YELLOW),
+                        width_value.animate.set_value(0.5),
+                    ),
+                    reset_param_text_color,
+                    AnimationGroup(
+                        center_param_text.animate.set_color(YELLOW),
+                        center_value.animate.set_value(x_axis_config.min_value),
+                    ),
+                    reset_param_text_color,
+                    AnimationGroup(
+                        width_param_text.animate.set_color(YELLOW),
+                        width_value.animate.set_value(x_axis_config.max_value),
+                    ),
+                    reset_param_text_color,
+                    return_to_default_setting,
+                    reset_param_text_color,
+                )  # this is more to highlight the shortcomings of fuzzy sets
+
+                for succession in [first_succession, second_succession]:
+                    self.play(succession, run_time=20)
+                    self.wait(5)
             prev_axes = axes
             prev_title = title
+            prev_func_label = func_label
             prev_axis_labels = axis_labels
             self.wait(5)
             # self.play(FadeOut(func_label))
             prev_activation_plot_func = activation_plot_func
         # get the bounding box of the DiGraph
         if next_graph is not None:
-            framebox = SurroundingRectangle(
+            frame_box = SurroundingRectangle(
                 next_graph.digraph, buff=0.2, corner_radius=0.1
             )
             self.play(
                 self.camera.frame.animate.move_to(next_graph.digraph.get_center()).set(
-                    height=framebox.height * 1.5
+                    height=frame_box.height * 1.5
                 ),
                 run_time=3,
             )
-            self.wait(5)
+        else:
+            frame_box = SurroundingRectangle(
+                focused_graph.digraph, buff=0.2, corner_radius=0.1
+            )
+            self.play(
+                self.camera.frame.animate.move_to(
+                    focused_graph.digraph.get_center()
+                ).set(height=frame_box.height * 1.5),
+                run_time=3,
+            )
 
 
 if __name__ == "__main__":

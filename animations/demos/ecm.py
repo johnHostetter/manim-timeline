@@ -15,9 +15,10 @@ from soft.fuzzy.unsupervised.cluster.online.ecm import (
 from animations.common import (
     ItemColor,
     make_axes,
-    add_labels_to_axes,
     display_cart_pole,
     get_data_and_env,
+    AxisConfig,
+    MANIM_BLUE,
 )
 
 set_rng(2)
@@ -133,7 +134,7 @@ def run_ecm(scene, axes, tsne_X, X, visited_X, env):
             config.clustering.distance_threshold = 0.4
         labeled_clusters: LabeledClusters = ECM(
             SupervisedDataset(inputs=torch.tensor(tsne_X[: iter + 1]), targets=None),
-            config=load_configuration(),
+            config=config,
         )
         new_clusters_supports = np.array(labeled_clusters.supports)
         dot = scene.data_dots[iter]
@@ -148,10 +149,10 @@ def run_ecm(scene, axes, tsne_X, X, visited_X, env):
         animations.append(previous_spot_dot.animate.set_opacity(0.25))
         center = labeled_clusters.clusters.centers[cluster_idx].detach().numpy()
         circle = Circle(radius=config.clustering.distance_threshold)
-        circle.set_stroke(str(ItemColor.ACTIVE_2), 3)
+        circle.set_stroke(str(ItemColor.ACTIVE_1), 3)
         circle.move_to(axes.c2p(center[0], center[1]))
         animations.append(dot.animate.move_to(axes.c2p(center[0], center[1])))
-        animations.append(Create(circle))
+        animations.append(GrowFromCenter(circle))
 
         # display the exemplar
         print(iter)
@@ -163,14 +164,14 @@ def run_ecm(scene, axes, tsne_X, X, visited_X, env):
                 successions.append(
                     Succession(
                         FadeIn(cart_pole_img),
-                        ScaleInPlace(cart_pole_img, 50),
-                        Wait(run_time=1),
-                        ScaleInPlace(cart_pole_img, 1e-2),
+                        ScaleInPlace(cart_pole_img, 75),
+                        Wait(run_time=5),
+                        ScaleInPlace(cart_pole_img, 1e-3),
                         FadeOut(cart_pole_img),
                     )
                 )
                 visited_X.add(tuple(state))
-                break  # exit for loop
+                # break  # exit for loop
 
         visited_clusters.add(tuple(center))
 
@@ -189,29 +190,39 @@ class ECMDemo(Scene):
         self.add(background)
 
     def construct(self):
-        method = Text("Evolving Clustering Method", color=str(ItemColor.BACKGROUND))
-        self.play(AddTextLetterByLetter(method, run_time=1))
-        self.wait(1)
+        method = Text("Evolving Clustering Method", color=BLACK)
+        self.play(Write(method, run_time=1))
+        self.wait(3)
         self.fuzzy_sets, self.data_dots = [], []
-        X, env = get_data_and_env()
-        X = X[:1000]
-        tsne = TSNE(n_iter=300, perplexity=5, verbose=True)
+        X, env = get_data_and_env(n_samples=1000)
+        tsne = TSNE(n_iter=900, perplexity=5, verbose=True)
         tsne._EXPLORATION_N_ITER = 300
         Y_seq = extract_sequence(tsne, X)
 
         axes = make_axes(
-            self, min_x=0, max_x=1, step_x=0.1, min_y=0, max_y=1, step_y=0.1
+            self,
+            x_axis_config=AxisConfig(0, 1, step=0.1, length=8),
+            y_axis_config=AxisConfig(0, 1, step=0.1, length=5),
+            axes_color=BLACK,
         )
-        x_axis_lbl, y_axis_lbl = add_labels_to_axes(
-            axes, x_label="t-SNE 1", y_label="t-SNE 2"
-        )
+        axis_labels: VGroup = axes.get_axis_labels(
+            # axis labels are in math mode already
+            x_label=r"\textit{t-SNE}_1",
+            y_label=r"\textit{t-SNE}_2",
+        ).set_color(BLACK)
+        # rotate y label 90 degrees and move it to the left
+        axis_labels[1].rotate(PI / 2).shift(1.5 * LEFT)
+        # x_axis_lbl, y_axis_lbl = add_labels_to_axes(
+        #     axes, x_label="t-SNE 1", y_label="t-SNE 2"
+        # )
         self.play(
             RemoveTextLetterByLetter(method, run_time=1),
-            Create(VGroup(axes, x_axis_lbl, y_axis_lbl)),
+            Create(VGroup(axes, axis_labels)),
+            # Create(VGroup(axes, x_axis_lbl, y_axis_lbl)),
         )
 
         visited_X = set()
-        for tsne_iter, tsne_X in enumerate(Y_seq[10:]):
+        for tsne_iter, tsne_X in enumerate(Y_seq[600:]):
             if tsne_iter % 60 == 0:
                 animations = []
                 tsne_X = (tsne_X - tsne_X.min(0)[None, :]) / (
@@ -224,7 +235,7 @@ class ECMDemo(Scene):
                             dot.animate.move_to(axes.c2p(tsne_x[0], tsne_x[1]))
                         )
                     except IndexError:
-                        dot = Dot(color=ItemColor.ACTIVE_1)
+                        dot = Dot(color=MANIM_BLUE)
                         self.data_dots.append(dot)
                         dot.move_to(axes.c2p(tsne_x[0], tsne_x[1]))
                         animations.append(FadeIn(dot))

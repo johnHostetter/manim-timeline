@@ -1,5 +1,6 @@
 from typing import Set
 
+import numpy as np
 import torch
 
 from manim import *
@@ -15,7 +16,7 @@ from soft.fuzzy.logic.rules.creation.wang_mendel import wang_mendel_method
 from soft.fuzzy.unsupervised.granulation.online.clip import (
     apply_categorical_learning_induced_partitioning as CLIP,
 )
-from animations.common import ItemColor, get_data_and_env, display_cart_pole
+from animations.common import ItemColor, get_data_and_env, display_cart_pole, MANIM_BLUE
 
 set_rng(0)
 
@@ -27,31 +28,48 @@ class WMDemo(Scene):
         self.add(background)
 
     def make_fuzzy_set(self, ax, center, width, label=None):
-        min_x: float = ax.x_range[0].item()
-        max_x: float = ax.x_range[1].item()
+        min_x: float = ax.x_range[0]
+        max_x: float = ax.x_range[1]
         step_val: float = (max_x - min_x) / 100  # the default is 1.0
         gaussian_graph = ax.plot(
             lambda x: Gaussian(centers=center, widths=width)(x).degrees.item(),
             x_range=(min_x, max_x, step_val),
-            stroke_color=ItemColor.INACTIVE_2,
+            stroke_color=MANIM_BLUE,
         )
         return gaussian_graph
 
     def construct(self):
-        method = Text("Wang-Mendel Method", color=str(ItemColor.BACKGROUND))
-        self.play(AddTextLetterByLetter(method, run_time=1))
-        self.wait(1)
+        method = Text("Wang-Mendel Method", color=str(BLACK))
+        self.play(Write(method, run_time=1))
+        self.wait(3)
         self.play(FadeOut(method))
-        X, env = get_data_and_env()
+        _, env = get_data_and_env(n_samples=1000)
         self.env_img = (
             display_cart_pole(env, env.state, add_border=False).scale(1).shift(UP * 1.1)
         )
         self.fuzzy_sets = {}
         config = load_configuration()
         with config.unfreeze():
-            config.fuzzy.partition.kappa = 0.2
-            config.fuzzy.partition.epsilon = 0.6
-            config.clustering.distance_threshold = 0.4
+            config.fuzzy.partition.kappa = 0.1
+            config.fuzzy.partition.epsilon = 0.8
+            config.clustering.distance_threshold = 0.5
+
+        # override the dataset with artificial data for demo purposes
+        X = torch.Tensor(
+            [
+                [1.6459, -1.3602, 0.3446, 0.5199],
+                [-1.7, -1.6965, -0.0282, 0.2800],
+                [0.2469, 0.0769, 0.3380, 0.4544],
+                [0.4569, -0.8654, -0.3813, -0.9268],
+                [-0.2188, -2.4351, -0.0729, -0.0340],
+                [-0.9625, 0.3492, -0.415, -0.0562],
+                [1.1404, -0.0899, 0.391, -1.8453],
+                [-0.0250, 1.3694, 0.06, 0.9851],
+                [0.3772, 1.1012, -0.14, 0.0376],
+                [-2.0, 1.2358, 0.178, 0.5255],
+            ]
+        )
+
         linguistic_variables: LinguisticVariables = CLIP(
             SupervisedDataset(inputs=X, targets=None), config
         )
@@ -61,10 +79,12 @@ class WMDemo(Scene):
             term.centers = torch.nn.Parameter(result.values)
             term.widths = torch.nn.Parameter(term.widths[result.indices])
 
-        labeled_clusters: LabeledClusters = ECM(
-            SupervisedDataset(inputs=X, targets=None), config
-        )
-        exemplars = labeled_clusters.clusters.centers.detach().numpy()
+        # labeled_clusters: LabeledClusters = ECM(
+        #     SupervisedDataset(inputs=X, targets=None), config
+        # )
+        # exemplars = labeled_clusters.clusters.centers.detach().numpy()
+
+        exemplars = X
 
         attributes = [
             "Cart Position",
@@ -91,6 +111,10 @@ class WMDemo(Scene):
                     linguistic_terms.append(["Low", "Moderate", "High"])
                 elif term.centers.shape[0] == 4:
                     linguistic_terms.append(["Very Low", "Low", "Moderate", "High"])
+                elif term.centers.shape[0] == 5:
+                    linguistic_terms.append(
+                        ["Very Low", "Low", "Moderate", "High", "Very High"]
+                    )
             elif idx == 2:  # pole angle
                 if term.centers.shape[0] == 2:
                     linguistic_terms.append(
@@ -103,8 +127,8 @@ class WMDemo(Scene):
                 elif term.centers.shape[0] == 4:
                     linguistic_terms.append(
                         [
-                            "Slightly Left of the Vertical",
                             "Left of the Vertical",
+                            "Slightly Left of the Vertical",
                             "Slightly Right of the Vertical",
                             "Right of the Vertical",
                         ]
@@ -113,14 +137,14 @@ class WMDemo(Scene):
         axes = []
         old_axes = None
         for var_idx, variable in enumerate(terms):
-            x_min, x_max = X[:, var_idx].min(), X[:, var_idx].max()
+            x_min, x_max = X[:, var_idx].min().item(), X[:, var_idx].max().item()
             ax = Axes(
                 (x_min, x_max),
                 (0, 1),
                 x_length=3,
                 y_length=2,
                 axis_config=dict(
-                    stroke_color=ItemColor.BACKGROUND,
+                    stroke_color=BLACK,
                     stroke_width=3,
                     numbers_to_exclude=[0],
                 ),
@@ -130,9 +154,7 @@ class WMDemo(Scene):
                 ax.to_corner(DL)
             else:
                 ax.next_to(old_axes)
-            attribute_title = Text(
-                attributes[var_idx], font_size=20, color=str(ItemColor.BACKGROUND)
-            )
+            attribute_title = Text(attributes[var_idx], font_size=20, color=str(BLACK))
             attribute_title.next_to(ax, UP)
             # self.play(Create(VGroup(ax, attribute_title)))
 
@@ -160,7 +182,7 @@ class WMDemo(Scene):
                 linguistic_variables=linguistic_variables,
             )
             diff_rules: List[Rule] = [
-                rule for rule in new_rules if rule not in old_rules
+                rule for rule in new_rules if rule.premise not in old_rules
             ]
             if len(diff_rules) == 0:
                 continue  # no new rule, skip
@@ -172,7 +194,7 @@ class WMDemo(Scene):
             for idx, var_term in enumerate(new_rule):
                 var_idx = var_term[0]
                 term_idx = var_term[1]
-                animated_rule.append((var_term[0], term_idx))
+                animated_rule.append((var_idx, term_idx))
 
             old_rules.add(frozenset(new_rule))
             animated_rules.append(animated_rule)
@@ -197,27 +219,33 @@ class WMDemo(Scene):
                 # self.play(fuzzy_set.animate.set_fill('#FFA500', 0.7))
                 # calculate area under the curve
                 ax = axes[var_idx]
-                x_min, x_max = X[:, var_idx].min(), X[:, var_idx].max()
+                print(var_idx)
+                x_min, x_max = X[:, var_idx].min().item(), X[:, var_idx].max().item()
                 area = ax.get_area(
                     fuzzy_set,
                     x_range=(x_min, x_max),
                     color=str(ItemColor.ACTIVE_2),
                     opacity=0.4,
-                ).round_corners(radius=0.1, components_per_rounded_corner=3)
+                )  # .round_corners(radius=0.1, components_per_rounded_corner=3)
                 areas.append(area)
                 animations.append(FadeIn(area))
 
-            # debug_txt = Text(str(tuple(debug_txt)), color=BACKGROUND_ITEM)
+            # debug_txt = Text(str(tuple(debug_txt)) + f" ({exemplar})", color=ItemColor.BACKGROUND)
             # self.add(debug_txt)
 
-            new_state = np.array(new_state)
+            # new_state = np.array(new_state)
+            new_state = exemplar
             stacked_state = np.stack(
                 [env.state, new_state]
             )  # current state is top row, new state is bottom row
             intermediate_states = []
             for col_idx in range(stacked_state.shape[1]):
+                # generate num intermediate states
+                n_frames = 30
                 attr_transitions = np.linspace(
-                    stacked_state[:, col_idx][0], stacked_state[:, col_idx][1], num=10
+                    stacked_state[:, col_idx][0],
+                    stacked_state[:, col_idx][1],
+                    num=n_frames,
                 )
                 intermediate_states.append(attr_transitions)
             intermediate_states = np.array(intermediate_states).T
@@ -238,11 +266,11 @@ class WMDemo(Scene):
             self.env_img.become(new_env_img)
             self.wait(1e-1)
 
-            text_rule = Text(rule, font_size=24, color=str(ItemColor.BACKGROUND))
+            text_rule = Text(rule, font_size=24, color=str(BLACK))
             text_rule.to_edge(UP)
-            animations.append(AddTextLetterByLetter(text_rule, run_time=1))
+            animations.append(Write(text_rule, run_time=3))
             self.play(*animations)
-            self.wait(2)
+            self.wait(5)
             animations = []
             for var_idx, term_idx in animated_rule:
                 animations.append(
