@@ -69,57 +69,7 @@ class MyGraph(MovingCameraScene):
         else:
             opposite_direction = RIGHT
 
-        my_layout = {}
-        max_consequence_term_y_pos: float = 0.0
-        grouped_vertices = {}
-        label_dict = {}
-        for layer_order in range(len(layer_types)):
-            # vertices: ig.VertexSeq = graph.vs.select(type_eq=vertex_type)
-            vertices: ig.VertexSeq = graph.vs.select(layer_eq=layer_order)
-            vertex_indices: ListType[int] = [int(v["name"][1:]) for v in vertices]
-            num_of_min_vertices: int = min(vertex_indices)
-            num_of_max_vertices: int = max(vertex_indices) + 1
-
-            grouped_vertices[layer_order] = []
-            for v in vertices:
-                print(v)
-                y_pos: float = (int(v["name"][1:]) - num_of_min_vertices) / (
-                    num_of_max_vertices - num_of_min_vertices
-                )
-                y_pos *= 3.0
-                if v["type"] == "consequence":
-                    # get the maximum y position of the consequence vertices
-                    # so the output node can be centered with respect to them
-                    max_consequence_term_y_pos = max(max_consequence_term_y_pos, y_pos)
-                if v["type"] == "output":
-                    # place the output vertex in the center of the graph
-                    idx: int = v["data"]
-                    if len(vertices) == 1:
-                        idx = 1
-                    y_pos: float = (idx / len(vertices)) * (
-                        max_consequence_term_y_pos / 2
-                    )
-                my_layout[v.index] = [v["layer"], y_pos, 0]
-                label_dict[v.index] = v["name"]
-                grouped_vertices[layer_order].append(v.index)
-
-        digraph = DiGraph(
-            graph.vs.indices,
-            graph.get_edgelist(),
-            label_fill_color=BLACK,
-            layout=my_layout,
-            vertex_config={
-                "fill_color": BLACK,
-                "stroke_color": BLACK,
-                "stroke_width": 2,
-                "radius": 0.025,
-            },
-            edge_config={
-                "stroke_color": "BLACK",
-                "stroke_width": 1,
-                "tip_config": {"tip_length": 0.035, "tip_width": 0.035},
-            },
-        )
+        digraph, grouped_vertices = self.create_manim_digraph(graph, layer_types)
         digraph.shift(DOWN, opposite_direction)
         digraph.scale(1.35)
         digraph.rotate(PI / 2)
@@ -195,6 +145,60 @@ class MyGraph(MovingCameraScene):
             self.wait()
 
         return GraphPair(graph, digraph=digraph)
+
+    @staticmethod
+    def create_manim_digraph(graph: ig.Graph, layer_types: ListType[str]):
+        my_layout = {}
+        max_consequence_term_y_pos: float = 0.0
+        grouped_vertices = {}
+        label_dict = {}
+        for layer_order in range(len(layer_types)):
+            # vertices: ig.VertexSeq = graph.vs.select(type_eq=vertex_type)
+            vertices: ig.VertexSeq = graph.vs.select(layer_eq=layer_order)
+            vertex_indices: ListType[int] = [int(v["name"][1:]) for v in vertices]
+            num_of_min_vertices: int = min(vertex_indices)
+            num_of_max_vertices: int = max(vertex_indices) + 1
+
+            grouped_vertices[layer_order] = []
+            for v in vertices:
+                print(v)
+                y_pos: float = (int(v["name"][1:]) - num_of_min_vertices) / (
+                        num_of_max_vertices - num_of_min_vertices
+                )
+                y_pos *= 3.0
+                if v["type"] == "consequence":
+                    # get the maximum y position of the consequence vertices
+                    # so the output node can be centered with respect to them
+                    max_consequence_term_y_pos = max(max_consequence_term_y_pos, y_pos)
+                if v["type"] == "output":
+                    # place the output vertex in the center of the graph
+                    idx: int = v["data"]
+                    if len(vertices) == 1:
+                        idx = 1
+                    y_pos: float = (idx / len(vertices)) * (
+                            max_consequence_term_y_pos / 2
+                    )
+                my_layout[v.index] = [v["layer"], y_pos, 0]
+                label_dict[v.index] = v["name"]
+                grouped_vertices[layer_order].append(v.index)
+        digraph = DiGraph(
+            graph.vs.indices,
+            graph.get_edgelist(),
+            label_fill_color=BLACK,
+            layout=my_layout,
+            vertex_config={
+                "fill_color": BLACK,
+                "stroke_color": BLACK,
+                "stroke_width": 2,
+                "radius": 0.025,
+            },
+            edge_config={
+                "stroke_color": "BLACK",
+                "stroke_width": 1,
+                "tip_config": {"tip_length": 0.035, "tip_width": 0.035},
+            },
+        )
+        return digraph, grouped_vertices
 
     @staticmethod
     def get_vertices_and_edges_for_dnn(
@@ -435,43 +439,7 @@ class MyGraph(MovingCameraScene):
             self.animate_code(model_type, input_size=4, hidden_size=16, output_size=1)
 
             # create the igraph.Graph representation of the model
-            graph = ig.Graph(directed=True)
-            for vertex_id, vertex_data in vs.items():
-                vertex_type: str = "input"
-                layer_order: int = -1
-                if vertex_id[0] == "V":
-                    vertex_type = "input"
-                    layer_order = 0
-                elif "P" in vertex_id:
-                    vertex_type = "premise"
-                    layer_order = 1
-                elif "R" in vertex_id:
-                    vertex_type = "rule"
-                    layer_order = 2
-                elif "C" in vertex_id:
-                    vertex_type = "consequence"
-                    layer_order = 3
-                elif "O" in vertex_id:
-                    vertex_type = "output"
-                    layer_order = 4
-                graph.add_vertex(
-                    str(vertex_id),
-                    type=vertex_type,
-                    data=vertex_data,
-                    layer=layer_order,
-                )
-
-            # check that the edges are added correctly
-            for edge in edges:
-                source_id: int = graph.vs.find(name=str(edge[0])).index
-                target_id: int = graph.vs.find(name=str(edge[1])).index
-                added_edge: ig.Edge = graph.add_edge(source=source_id, target=target_id)
-                assert (
-                    source_id == added_edge.source
-                ), f"Incorrect edge source: {source_id, added_edge.source}"
-                assert (
-                    target_id == added_edge.target
-                ), f"Incorrect edge target: {target_id, added_edge.target}"
+            graph: ig.Graph = self.create_igraph_digraph(edges, vs)
 
             # plot the graph and retain a reference to it as well as its igraph.Graph representation
             graph_pair: GraphPair = self.plot_graph(
@@ -558,6 +526,46 @@ class MyGraph(MovingCameraScene):
                 self.camera.frame.animate.move_to(all_models.get_center()),
             )
             self.wait(5)
+
+    @staticmethod
+    def create_igraph_digraph(edges, vs):
+        graph = ig.Graph(directed=True)
+        for vertex_id, vertex_data in vs.items():
+            vertex_type: str = "input"
+            layer_order: int = -1
+            if vertex_id[0] == "V":
+                vertex_type = "input"
+                layer_order = 0
+            elif "P" in vertex_id:
+                vertex_type = "premise"
+                layer_order = 1
+            elif "R" in vertex_id:
+                vertex_type = "rule"
+                layer_order = 2
+            elif "C" in vertex_id:
+                vertex_type = "consequence"
+                layer_order = 3
+            elif "O" in vertex_id:
+                vertex_type = "output"
+                layer_order = 4
+            graph.add_vertex(
+                str(vertex_id),
+                type=vertex_type,
+                data=vertex_data,
+                layer=layer_order,
+            )
+        # check that the edges are added correctly
+        for edge in edges:
+            source_id: int = graph.vs.find(name=str(edge[0])).index
+            target_id: int = graph.vs.find(name=str(edge[1])).index
+            added_edge: ig.Edge = graph.add_edge(source=source_id, target=target_id)
+            assert (
+                    source_id == added_edge.source
+            ), f"Incorrect edge source: {source_id, added_edge.source}"
+            assert (
+                    target_id == added_edge.target
+            ), f"Incorrect edge target: {target_id, added_edge.target}"
+        return graph
 
     def sample_neuron_and_show(
         self,
