@@ -47,7 +47,9 @@ class TestScene(Scene):
 
     @staticmethod
     def draw(scene, origin, scale):
-        scene.play(Write(Text("Hello, World!", color=BLACK).move_to(origin).scale(scale)))
+        scene.play(
+            Write(Text("Hello, World!", color=BLACK).move_to(origin).scale(scale))
+        )
         scene.wait(2)
 
 
@@ -67,8 +69,9 @@ def get_noteworthy_events() -> ListType:
             era="Ancient Greece",
             era_notation="BCE",
             event="Socrates",
-            animation=Socrates
+            animation=Socrates,
         ),
+        TestScene(),
         TestScene(),
         TimelineEvent(
             start_year=427,
@@ -76,7 +79,7 @@ def get_noteworthy_events() -> ListType:
             era="Ancient Greece",
             era_notation="BCE",
             event="Plato",
-            animation=PlatoTheoryOfForms
+            animation=PlatoTheoryOfForms,
         ),
         # TimelineEvent(
         #     start_year=384,
@@ -121,7 +124,7 @@ class Timeline(Slide, MovingCameraScene):
         #     "Please wait; the presentation will begin shortly.", font="TeX Gyre Termes",
         #     color=BLACK
         # )
-        # self.greeting()
+        self.greeting()
 
         timeline_igraph: ig.Graph = ig.Graph(directed=True)
 
@@ -187,7 +190,9 @@ class Timeline(Slide, MovingCameraScene):
         self.play(Create(source_vertex.set_opacity(0.0)))
         self.play(self.camera.frame.animate.move_to(source_vertex).set(width=10))
 
-        running_offset: float = 0  # offset for the timeline events to account for thought slides
+        running_offset: float = (
+            0  # offset for the timeline events to account for thought slides
+        )
         for idx, edge in enumerate(edges):
             slide = timeline_events[idx]
             source_vertex_idx, target_vertex_idx = edge[0], edge[1]
@@ -218,31 +223,42 @@ class Timeline(Slide, MovingCameraScene):
 
                 self.play(
                     Create(pin),
-                    self.camera.frame.animate.move_to(vertex_coords + direction).set(width=10)
+                    self.camera.frame.animate.move_to(vertex_coords + direction).set(
+                        width=10
+                    ),
                 )
-                boundary = Rectangle(color=BLACK).move_to(vertex_coords + (2 * direction))
+                boundary = Rectangle(color=BLACK).move_to(
+                    vertex_coords + (2 * direction)
+                )
                 self.play(Create(boundary))
                 timestamp = Text(
                     f"{slide.start_year} - {slide.end_year} {slide.era_notation}",
-                    font="TeX Gyre Termes", color=BLACK
+                    font="TeX Gyre Termes",
+                    color=BLACK,
                 ).next_to(boundary, direction)
                 self.play(Create(timestamp))
             else:
                 direction = RIGHT
                 # we assume that the slide is more of a thought experiment/bubble
-                boundary = Rectangle(color=BLACK).move_to(vertex_coords + (2 * direction))
+                boundary = Rectangle(color=BLACK).move_to(
+                    vertex_coords + (2 * direction)
+                )
                 running_offset += boundary.width
                 self.play(
                     GrowFromPoint(boundary, vertex_coords),
-                    self.camera.frame.animate.move_to(vertex_coords).set(width=10)
+                    self.camera.frame.animate.move_to(vertex_coords).set(width=10),
                 )
+                # dot = Dot(vertex_coords + (boundary.width * RIGHT), color=BLACK)
+                # self.play(Create(dot, run_time=0.1))
 
             self.wait(2)
             self.next_slide()
 
             # now zoom in on the event
             self.play(
-                self.camera.frame.animate.move_to(boundary.get_center()).set(width=boundary.width)
+                self.camera.frame.animate.move_to(boundary.get_center()).set(
+                    width=boundary.width
+                )
             )
 
             # show the event
@@ -255,9 +271,9 @@ class Timeline(Slide, MovingCameraScene):
             self.next_slide()
             # move to the next location
             self.play(
-                self.camera.frame.animate.move_to(
-                    target_vertex.get_center()
-                ).set(width=timeline.digraph.width)
+                self.camera.frame.animate.move_to(target_vertex.get_center()).set(
+                    width=timeline.digraph.width
+                )
             )
 
         self.play(Restore(self.camera.frame))
@@ -268,19 +284,32 @@ class Timeline(Slide, MovingCameraScene):
         standby_text = [
             Text(
                 "Morphetic Epsilon-Delayed\nNeuro-Fuzzy Networks",
-                font="TeX Gyre Termes", color=BLACK
+                font="TeX Gyre Termes",
+                color=BLACK,
             ),
             Text(
                 "A General Architecture for Transparent\nRule-Based Decision-Making",
-                font="TeX Gyre Termes", color=BLACK
+                font="TeX Gyre Termes",
+                color=BLACK,
             ),
             Text("Timeline of Noteworthy Events", font="TeX Gyre Termes", color=BLACK),
-            Text("Presented by John Wesley Hostetter", font="TeX Gyre Termes", color=BLACK),
-            Text("The presentation will begin shortly.", font="TeX Gyre Termes", color=BLACK),
+            Text(
+                "Presented by John Wesley Hostetter",
+                font="TeX Gyre Termes",
+                color=BLACK,
+            ),
+            Text(
+                "The presentation will begin shortly.",
+                font="TeX Gyre Termes",
+                color=BLACK,
+            ),
         ]
         indications = [
             Circumscribe,  # (title, color=BLACK),
             ShowPassingFlash,  # (Underline(title)),
+            Circumscribe,  # (title, color=BLACK),
+            ShowPassingFlash,  # (Underline(title)),
+            Circumscribe,  # (title, color=BLACK),
         ]
         self.play(Write(standby_text[0]))
         # self.wait(10)
@@ -298,7 +327,7 @@ class Timeline(Slide, MovingCameraScene):
             self.play(
                 AnimationGroup(
                     FadeOut(message, shift=UP * 1.5),
-                    FadeIn(standby_text[last_idx], shift=UP * 1.5)
+                    FadeIn(standby_text[last_idx], shift=UP * 1.5),
                 )
             )
         self.next_slide()

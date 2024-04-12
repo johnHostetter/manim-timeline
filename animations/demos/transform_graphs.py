@@ -54,7 +54,7 @@ class GraphPair:
 
 class TransformGraphs(MovingCameraScene):
     def plot_graph(
-            self, graph: ig.Graph, layer_types: ListType[str], direction
+        self, graph: ig.Graph, layer_types: ListType[str], direction
     ) -> GraphPair:
         if (direction == RIGHT).all():
             opposite_direction = LEFT
@@ -87,7 +87,7 @@ class TransformGraphs(MovingCameraScene):
         animations = []
         rewind_animations = []
         for layer_order, (layer_type, layer_color) in enumerate(
-                zip(layer_types, layer_colors)
+            zip(layer_types, layer_colors)
         ):
             layer_vertices = [
                 digraph.vertices[v] for v in grouped_vertices[layer_order]
@@ -139,11 +139,11 @@ class TransformGraphs(MovingCameraScene):
         return GraphPair(graph, digraph=digraph)
 
     def animate_code(
-            self,
-            model_type: str,
-            input_size: int = 4,
-            hidden_size: int = 16,
-            output_size: int = 1,
+        self,
+        model_type: str,
+        input_size: int = 4,
+        hidden_size: int = 16,
+        output_size: int = 1,
     ):
         if model_type == "dnn":
             texts: List[str] = [

@@ -163,7 +163,7 @@ class MyGraph(MovingCameraScene):
             for v in vertices:
                 print(v)
                 y_pos: float = (int(v["name"][1:]) - num_of_min_vertices) / (
-                        num_of_max_vertices - num_of_min_vertices
+                    num_of_max_vertices - num_of_min_vertices
                 )
                 y_pos *= 3.0
                 if v["type"] == "consequence":
@@ -176,7 +176,7 @@ class MyGraph(MovingCameraScene):
                     if len(vertices) == 1:
                         idx = 1
                     y_pos: float = (idx / len(vertices)) * (
-                            max_consequence_term_y_pos / 2
+                        max_consequence_term_y_pos / 2
                     )
                 my_layout[v.index] = [v["layer"], y_pos, 0]
                 label_dict[v.index] = v["name"]
@@ -560,10 +560,10 @@ class MyGraph(MovingCameraScene):
             target_id: int = graph.vs.find(name=str(edge[1])).index
             added_edge: ig.Edge = graph.add_edge(source=source_id, target=target_id)
             assert (
-                    source_id == added_edge.source
+                source_id == added_edge.source
             ), f"Incorrect edge source: {source_id, added_edge.source}"
             assert (
-                    target_id == added_edge.target
+                target_id == added_edge.target
             ), f"Incorrect edge target: {target_id, added_edge.target}"
         return graph
 

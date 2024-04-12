@@ -39,10 +39,22 @@ class WW2(MovingCameraScene):
         ]
         last_svg = None
         for svg_file_name, caption in zip(svg_file_names, captions):
-            svg = SVGMobject(
-                path_to_project_root() / "animations" / "demos" / "ww2" / f"{svg_file_name}.svg"
-            ).scale(2).move_to(origin)
-            text = Text(caption, font="TeX Gyre Termes", color=BLACK).scale(0.7).next_to(svg, DOWN)
+            svg = (
+                SVGMobject(
+                    path_to_project_root()
+                    / "animations"
+                    / "demos"
+                    / "ww2"
+                    / f"{svg_file_name}.svg"
+                )
+                .scale(2)
+                .move_to(origin)
+            )
+            text = (
+                Text(caption, font="TeX Gyre Termes", color=BLACK)
+                .scale(0.7)
+                .next_to(svg, DOWN)
+            )
 
             group = VGroup(svg, text)
             group.scale(scale_factor=scale)
@@ -50,7 +62,10 @@ class WW2(MovingCameraScene):
             if last_svg is None:
                 scene.play(Create(svg, run_time=3), Write(text, run_time=3))
             else:
-                scene.play(ReplacementTransform(last_svg, svg, run_time=3), Write(text, run_time=3))
+                scene.play(
+                    ReplacementTransform(last_svg, svg, run_time=3),
+                    Write(text, run_time=3),
+                )
             scene.play(Succession(Wait(2), FadeOut(text)))
             last_svg = svg
 

@@ -1,15 +1,16 @@
 from manim import *
 
-from animations.demos.einstein import person_with_quote
+from animations.demos.people.einstein import person_with_quote
 from soft.utilities.reproducibility import path_to_project_root
 
+config.background_color = WHITE
+light_theme_style = {
+    "fill_color": BLACK,
+    "background_stroke_color": WHITE,
+}
 
-class Socrates(Scene):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        background = ImageMobject("background.png").scale(2).set_color("#FFFFFF")
-        self.add(background)
 
+class Aristotle(Scene):
     def construct(self):
         paragraph, person, signature_group = self.draw(self, origin=ORIGIN, scale=1.0)
         self.wait(10)
@@ -21,16 +22,21 @@ class Socrates(Scene):
     @staticmethod
     def draw(scene, origin, scale):
         signature = Text(
-            "Σωκράτης (Socrates)", font="TeX Gyre Termes", color=BLACK
+            "Ἀριστοτέλης (Aristotle)", font="TeX Gyre Termes", color=BLACK
         )  # .scale(0.7)
         person_svg = SVGMobject(
-            path_to_project_root() / "animations" / "demos" / "people" / "socrates.svg"
+            path_to_project_root()
+            / "animations"
+            / "demos"
+            / "assets"
+            / "people"
+            / "aristotle-2.svg"
         ).scale(2.0)
         paragraph, person, signature_group = person_with_quote(
             scene,
             person_svg=person_svg,
             quote=(
-                '"The unexamined life is not worth living \nfor a human being.\"\n\n\n\"The beginning of wisdom is a \ndefinition of terms."'
+                "All people are mortal. \nSocrates is a person. \nTherefore, Socrates is mortal."
             ),
             signature=signature,
             origin=origin,
@@ -41,5 +47,5 @@ class Socrates(Scene):
 
 
 if __name__ == "__main__":
-    c = Socrates()
+    c = Aristotle()
     c.render()
