@@ -12,6 +12,11 @@ light_theme_style = {
 
 class WW2(MovingCameraScene):
     def construct(self):
+        self.draw(self, origin=ORIGIN, scale=1.0)
+        self.wait(3)
+
+    @staticmethod
+    def draw(scene, origin, scale):
         svg_file_names: List[str] = [
             "germans_in_poland_1939",
             "germans_after_invading_poland_sept_1_1939",
@@ -32,21 +37,22 @@ class WW2(MovingCameraScene):
             "Russians in Reichstag, Berlin, April 30, 1945",
             "Nagasaki, Aug 9, 1945",
         ]
-
         last_svg = None
         for svg_file_name, caption in zip(svg_file_names, captions):
             svg = SVGMobject(
                 path_to_project_root() / "animations" / "demos" / "ww2" / f"{svg_file_name}.svg"
-            ).scale(2)
+            ).scale(2).move_to(origin)
             text = Text(caption, font="TeX Gyre Termes", color=BLACK).scale(0.7).next_to(svg, DOWN)
 
+            group = VGroup(svg, text)
+            group.scale(scale_factor=scale)
+
             if last_svg is None:
-                self.play(Create(svg, run_time=3), Write(text, run_time=3))
+                scene.play(Create(svg, run_time=3), Write(text, run_time=3))
             else:
-                self.play(ReplacementTransform(last_svg, svg, run_time=3), Write(text, run_time=3))
-            self.play(Succession(Wait(2), FadeOut(text)))
+                scene.play(ReplacementTransform(last_svg, svg, run_time=3), Write(text, run_time=3))
+            scene.play(Succession(Wait(2), FadeOut(text)))
             last_svg = svg
-        self.wait(3)
 
 
 if __name__ == "__main__":

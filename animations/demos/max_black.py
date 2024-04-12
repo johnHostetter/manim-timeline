@@ -12,16 +12,23 @@ class MaxBlack(Scene):
 
     def construct(self):
         # load the PySoft logo as a manim SVGMobject
+        paragraph, person, signature_group = self.draw(self, origin=ORIGIN, scale=1.0)
+        self.wait(10)
+        self.play(
+            FadeOut(Group(VGroup(paragraph, person), signature_group), run_time=2)
+        )
+        self.wait(2)
+
+    @staticmethod
+    def draw(scene, origin, scale):
         signature = Text(
             "Max Black", font="TeX Gyre Termes", color=BLACK
-        )#.scale(0.7)
-
+        )  # .scale(0.7)
         person_svg = SVGMobject(
             path_to_project_root() / "animations" / "demos" / "people" / "MaxBlack.svg"
-        )
-
+        ).scale(2.0)
         paragraph, person, signature_group = person_with_quote(
-            self,
+            scene,
             person_svg=person_svg,
             quote=(
                 '"It is a paradox, whose importance \nfamiliarity fails to diminish, \nthat '
@@ -29,12 +36,11 @@ class MaxBlack(Scene):
                 'expressed in terms of \nobjects never encountered in experience."'
             ),
             signature=signature,
+            origin=origin,
+            scale=scale,
+            left_shift=1.5,
         )
-        self.wait(10)
-        self.play(
-            FadeOut(Group(VGroup(paragraph, person), signature_group), run_time=2)
-        )
-        self.wait(2)
+        return paragraph, person, signature_group
 
 
 if __name__ == "__main__":

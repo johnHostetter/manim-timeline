@@ -4,7 +4,7 @@ from animations.demos.einstein import person_with_quote
 from soft.utilities.reproducibility import path_to_project_root
 
 
-class Zadeh(Scene):
+class Aristotle(Scene):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         background = ImageMobject("background.png").scale(2).set_color("#FFFFFF")
@@ -21,26 +21,25 @@ class Zadeh(Scene):
     @staticmethod
     def draw(scene, origin, scale):
         signature = Text(
-            "Lotfi A. Zadeh", font="TeX Gyre Termes", color=BLACK
+            "Ἀριστοτέλης (Aristotle)", font="TeX Gyre Termes", color=BLACK
         )  # .scale(0.7)
         person_svg = SVGMobject(
-            path_to_project_root() / "animations" / "demos" / "people" / "Lotfi-Zadeh-in-the-year-1958-a-young-professor-of-Electrical-Engineering-in-New-York-3_W640.svg"
+            path_to_project_root() / "animations" / "demos" / "people" / "aristotle-2.svg"
         ).scale(2.0)
         paragraph, person, signature_group = person_with_quote(
             scene,
             person_svg=person_svg,
             quote=(
-                '"As complexity rises, precise statements \nlose meaning '
-                'and meaningful \nstatements lose precision."'
+                'All people are mortal. \nSocrates is a person. \nTherefore, Socrates is mortal.'
             ),
             signature=signature,
             origin=origin,
             scale=scale,
-            left_shift=1.5,
+            left_shift=1.0,
         )
         return paragraph, person, signature_group
 
 
 if __name__ == "__main__":
-    c = Zadeh()
+    c = Aristotle()
     c.render()

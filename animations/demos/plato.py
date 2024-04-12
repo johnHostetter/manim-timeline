@@ -13,24 +13,9 @@ light_theme_style = {
 
 class PlatoTheoryOfForms(MovingCameraScene):
     def construct(self):
-        signature = Text(
-            "Πλάτων (Plato)", font="TeX Gyre Termes", color=BLACK
-        )#.scale(0.7)
-
-        person_svg = SVGMobject(
-            path_to_project_root() / "animations" / "demos" / "Plato.svg"
+        bust_svg, paragraph, person, person_svg, signature_group = self.draw(
+            self, origin=ORIGIN, scale=1.0
         )
-
-        paragraph, person, signature_group = person_with_quote(
-            self,
-            person_svg=person_svg,
-            quote=(
-                "\"Reality is created by the mind, we can \n"
-                "change our reality by changing our mind.\""
-            ),
-            signature=signature,
-        )
-
         self.wait(10)
         self.play(
             FadeOut(
@@ -38,7 +23,8 @@ class PlatoTheoryOfForms(MovingCameraScene):
                     paragraph,
                     signature_group
                 ), run_time=2
-            )
+            ),
+            ReplacementTransform(person_svg, bust_svg)
         )
         self.wait(2)
 
@@ -71,25 +57,50 @@ class PlatoTheoryOfForms(MovingCameraScene):
 
         self.wait(5)
 
-        imperfect_sphere = SVGMobject(
-            path_to_project_root() / "animations" / "demos" / "Earth.svg"
-        ).scale(2.5)
-
-        perfect_sphere = Sphere(
-            radius=perfect_circle.radius, color=BLACK
-        ).next_to(perfect_circle, DOWN, buff=0.75)
-
-        # self.set_camera_orientation(phi=PI / 6, theta=PI / 6)
-
-        self.compare_imperfect_with_form(
-            VGroup(imperfect_circle, perfect_circle), imperfect_sphere, perfect_sphere
-        )
+        # imperfect_sphere = SVGMobject(
+        #     path_to_project_root() / "animations" / "demos" / "Earth.svg"
+        # ).scale(2.5)
+        #
+        # perfect_sphere = Sphere(
+        #     radius=perfect_circle.radius, color=BLACK
+        # ).next_to(perfect_circle, DOWN, buff=0.75)
+        #
+        # # self.set_camera_orientation(phi=PI / 6, theta=PI / 6)
+        #
+        # self.compare_imperfect_with_form(
+        #     VGroup(imperfect_circle, perfect_circle), imperfect_sphere, perfect_sphere
+        # )
 
         # earth = SVGMobject(
         #     path_to_project_root() / "animations" / "demos" / "Earth.svg"
         # )
 
         # self.play(Create(earth, run_time=3))
+
+    @staticmethod
+    def draw(scene, origin, scale):
+        signature = Text(
+            "Πλάτων (Plato)", font="TeX Gyre Termes", color=BLACK
+        )  # .scale(0.7)
+        person_svg = SVGMobject(
+            path_to_project_root() / "animations" / "demos" / "people" / "plato.svg"
+        ).scale(2.0)
+        bust_svg = SVGMobject(
+            path_to_project_root() / "animations" / "demos" / "Plato.svg"
+        )
+        paragraph, person, signature_group = person_with_quote(
+            scene,
+            person_svg=person_svg,
+            quote=(
+                "\"Reality is created by the mind, we can \n"
+                "change our reality by changing our mind.\""
+            ),
+            signature=signature,
+            origin=origin,
+            scale=scale,
+            left_shift=1.0
+        )
+        return bust_svg, paragraph, person, person_svg, signature_group
 
     def compare_imperfect_with_form(self, last_object, imperfect_object, perfect_object):
         # draw an imperfect circle
