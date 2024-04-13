@@ -7,19 +7,19 @@ import igraph as ig
 from manim import *
 from manim_slides import Slide
 
-from animations.demos.aristotle import Aristotle
-from animations.demos.bertrand_russel import BertrandRussellQuote
-from animations.demos.einstein import EinsteinQuote
+from animations.demos.people.aristotle import Aristotle
+from animations.demos.people.bertrand_russell import BertrandRussellQuote
+from animations.demos.people.einstein import EinsteinQuote
 from animations.demos.graph_example import GraphPair
-from animations.demos.max_black import MaxBlack
-from animations.demos.plato import PlatoTheoryOfForms
-from animations.demos.socrates import Socrates
-from animations.demos.ww2 import WW2
-from animations.demos.zadeh import Zadeh
+from animations.demos.people.max_black import MaxBlack
+from animations.demos.people.plato import PlatoTheoryOfForms
+from animations.demos.people.socrates import Socrates
+from animations.demos.ww2 import WW2, CaptionedSVG
+from animations.demos.people.zadeh import Zadeh
 from soft.datasets import SupervisedDataset
 from soft.computing.organize import SelfOrganize
 from soft.computing.blueprints.factory import SystematicDesignProcess
-from soft.utilities.reproducibility import load_configuration
+from soft.utilities.reproducibility import load_configuration, path_to_project_root
 
 config.background_color = WHITE
 light_theme_style = {
@@ -37,6 +37,7 @@ class TimelineEvent:
     event: str  # e.g. The birth of the internet
     animation: UnionType[Scene, MovingCameraScene]
     poi: int = None  # e.g. 2020,  A specific year of interest
+    skip: bool = False  # skip this event, if True, event is still drawn but not focused on
 
 
 class TestScene(Scene):
@@ -62,6 +63,28 @@ def get_noteworthy_events() -> ListType:
     #     "The dawn of quantum computing",
     #     "The age of artificial intelligence",
     # ]
+
+    ww2 = []
+    for year in range(1939, 1946):
+        TimelineEvent(
+            start_year=1939,
+            end_year=1945,
+            era="Common Era",
+            era_notation="CE",
+            event="World War II",
+            animation=CaptionedSVG(
+                path=path_to_project_root()
+                     / "animations"
+                     / "demos"
+                     / "assets"
+                     / "ww2"
+                     / f"germans_in_poland_1939.svg",
+                caption="Nazi Germany invades Poland",
+            ),
+            poi=1939,
+            skip=True
+        )
+
     return [
         TimelineEvent(
             start_year=470,
@@ -72,6 +95,24 @@ def get_noteworthy_events() -> ListType:
             animation=Socrates,
         ),
         TestScene(),
+        TimelineEvent(
+            start_year=1939,
+            end_year=1945,
+            era="Common Era",
+            era_notation="CE",
+            event="World War II",
+            animation=CaptionedSVG(
+                path=path_to_project_root()
+                     / "animations"
+                     / "demos"
+                     / "assets"
+                     / "ww2"
+                     / f"germans_in_poland_1939.svg",
+                caption="Nazi Germany invades Poland",
+            ),
+            poi=1939,
+            skip=True
+        ),
         TestScene(),
         TimelineEvent(
             start_year=427,
@@ -231,8 +272,14 @@ class Timeline(Slide, MovingCameraScene):
                     vertex_coords + (2 * direction)
                 )
                 self.play(Create(boundary))
+                if slide.poi is not None:  # point of interest takes precedence
+                    timestamp_str = f"{slide.poi} {slide.era_notation}"
+                elif slide.start_year == slide.end_year:
+                    timestamp_str = f"{slide.start_year} {slide.era_notation}"
+                else:
+                    timestamp_str = f"{slide.start_year} - {slide.end_year} {slide.era_notation}"
                 timestamp = Text(
-                    f"{slide.start_year} - {slide.end_year} {slide.era_notation}",
+                    timestamp_str,
                     font="TeX Gyre Termes",
                     color=BLACK,
                 ).next_to(boundary, direction)
@@ -254,17 +301,32 @@ class Timeline(Slide, MovingCameraScene):
             self.wait(2)
             self.next_slide()
 
-            # now zoom in on the event
-            self.play(
-                self.camera.frame.animate.move_to(boundary.get_center()).set(
-                    width=boundary.width
+            if isinstance(slide, TimelineEvent):
+                if not slide.skip:
+                    # now zoom in on the event
+                    self.play(
+                        self.camera.frame.animate.move_to(boundary.get_center()).set(
+                            width=boundary.width
+                        )
+                    )
+            else:
+                # now zoom in on the event
+                self.play(
+                    self.camera.frame.animate.move_to(boundary.get_center()).set(
+                        width=boundary.width
+                    )
                 )
-            )
 
             # show the event
             if isinstance(slide, TimelineEvent):
                 event = slide.animation
-                event.draw(self, origin=self.camera.frame.get_center(), scale=0.25)
+                origin_to_draw_at = self.camera.frame.get_center()
+                if slide.skip:
+                    origin_to_draw_at = boundary.get_center()
+                if isinstance(event, CaptionedSVG):
+                    event.draw(origin=origin_to_draw_at, scale=0.25, target_scene=self)
+                else:
+                    event.draw(self, origin=origin_to_draw_at, scale=0.25)
             else:
                 slide.draw(self, origin=self.camera.frame.get_center(), scale=0.25)
             # event.draw(self, origin=self.camera.frame.get_center(), scale=0.25)

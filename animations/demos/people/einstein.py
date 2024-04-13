@@ -36,7 +36,7 @@ def person_with_quote(
     scene.play(Write(paragraph), run_time=3)
 
     # scene.play(paragraph.animate.shift(RIGHT * 2), run_time=1)
-    scene.play(Create(person_svg, run_time=3))
+    scene.play(Create(person_svg, run_time=2))
 
     signature_dash = (
         Text("- ", font="TeX Gyre Termes")
