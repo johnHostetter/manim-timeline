@@ -19,11 +19,7 @@ class CaptionedSVG(Scene):
         self.draw(origin, scale)
 
     def draw(self, origin, scale, target_scene=None):
-        svg = (
-            SVGMobject(self.path)
-            .scale(2)
-            .move_to(origin)
-        )
+        svg = SVGMobject(self.path).scale(2).move_to(origin)
         text = (
             Text(self.caption, font="TeX Gyre Termes", color=BLACK)
             .scale(0.7)

@@ -37,7 +37,9 @@ class TimelineEvent:
     event: str  # e.g. The birth of the internet
     animation: UnionType[Scene, MovingCameraScene]
     poi: int = None  # e.g. 2020,  A specific year of interest
-    skip: bool = False  # skip this event, if True, event is still drawn but not focused on
+    skip: bool = (
+        False  # skip this event, if True, event is still drawn but not focused on
+    )
 
 
 class TestScene(Scene):
@@ -74,15 +76,15 @@ def get_noteworthy_events() -> ListType:
             event="World War II",
             animation=CaptionedSVG(
                 path=path_to_project_root()
-                     / "animations"
-                     / "demos"
-                     / "assets"
-                     / "ww2"
-                     / f"germans_in_poland_1939.svg",
+                / "animations"
+                / "demos"
+                / "assets"
+                / "ww2"
+                / f"germans_in_poland_1939.svg",
                 caption="Nazi Germany invades Poland",
             ),
             poi=1939,
-            skip=True
+            skip=True,
         )
 
     return [
@@ -103,15 +105,15 @@ def get_noteworthy_events() -> ListType:
             event="World War II",
             animation=CaptionedSVG(
                 path=path_to_project_root()
-                     / "animations"
-                     / "demos"
-                     / "assets"
-                     / "ww2"
-                     / f"germans_in_poland_1939.svg",
+                / "animations"
+                / "demos"
+                / "assets"
+                / "ww2"
+                / f"germans_in_poland_1939.svg",
                 caption="Nazi Germany invades Poland",
             ),
             poi=1939,
-            skip=True
+            skip=True,
         ),
         TestScene(),
         TimelineEvent(
@@ -277,7 +279,9 @@ class Timeline(Slide, MovingCameraScene):
                 elif slide.start_year == slide.end_year:
                     timestamp_str = f"{slide.start_year} {slide.era_notation}"
                 else:
-                    timestamp_str = f"{slide.start_year} - {slide.end_year} {slide.era_notation}"
+                    timestamp_str = (
+                        f"{slide.start_year} - {slide.end_year} {slide.era_notation}"
+                    )
                 timestamp = Text(
                     timestamp_str,
                     font="TeX Gyre Termes",

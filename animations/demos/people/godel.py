@@ -46,7 +46,7 @@ class GodelQuote(Scene):
             scene,
             person_svg=person_svg,
             quote=(
-                '\"The more I think about language,\nthe more it amazes me that people\never understand each other at all.\"'
+                '"The more I think about language,\nthe more it amazes me that people\never understand each other at all."'
                 # '"So far as the laws of mathematics refer to reality,\nthey are not certain. '
                 # 'And so far as they are certain, \nthey do not refer to reality."'
             ),

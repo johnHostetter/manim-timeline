@@ -1,9 +1,10 @@
-from abc import abstractmethod
+from typing import Union as U, Type
 
 from manim import *
+from manim_slides import Slide
 
-from animations.beamer import AlertBlock, BeamerList
-from soft.utilities.reproducibility import path_to_project_root
+from animations.beamer.blocks import AlertBlock, ExampleBlock, Block
+from animations.beamer.lists import ItemizedList, AdvantagesList, DisadvantagesList
 
 config.background_color = WHITE
 light_theme_style = {
@@ -12,59 +13,106 @@ light_theme_style = {
 }
 
 
-class BulletedList(Scene):
+class SlideWithBlocks(MovingCameraScene, Slide):
+    def __init__(self, title: str, blocks: List[Type[Block]], **kwargs):
+        super().__init__(**kwargs)
+        self.slide_title = title
+        self.blocks = blocks
+
+    def make_block_and_focus(self, block: Block, below: U[None, Text, Block]):
+        self.play(
+            block.get_animation(below=below),
+            self.camera.frame.animate.move_to(block.block_background.get_center()).set(
+                width=block.block_background.width + 3,
+                # height=block.block_background.height + 3
+            )
+        )
+
     def construct(self):
-        # Create each item in the bulleted list
-        items = [
-            "Item 1",
-            "Item 2",
-            "Item 3"
-        ]
+        slide_title = Text(
+            self.slide_title,
+            font="TeX Gyre Termes",
+            color=BLACK,
+            font_size=60,
+            weight=BOLD
+        )
+        slide_title.to_edge(UP)
+        self.wait(1)
+        self.next_slide()
+        self.play(Write(slide_title))
 
-        # Create a VGroup to contain the bulleted list items
-        list_group = VGroup(*[Text(f"• {item}", color=BLACK) for item in items])
+        slide_vgroup = VGroup(slide_title)
+        self.wait(1)
+        self.next_slide()
+        # self.make_block_and_focus(example_block, below=None)
+        m_object_to_be_below = slide_title
+        for block in self.blocks:
+            if isinstance(block, Block):
+                self.make_block_and_focus(block, below=m_object_to_be_below)
+                slide_vgroup.add(block.block_background)
+                m_object_to_be_below = block.block_background
+            else:
+                raise ValueError(
+                    "Invalid block type. Must be a 'Block' object"
+                )
+            self.wait(1)
+            self.next_slide()
+        # self.make_block_and_focus(example_block, below=slide_title)
+        # self.wait(1)
+        # self.next_slide()
 
-        # Align the items vertically
-        list_group.arrange(DOWN, aligned_edge=LEFT)
-
-        # Add the bulleted list to the scene
-        self.play(Write(list_group))
-        self.wait()
-
-
-class BeamerSlide(Scene):
-    def construct(self):
-        lst = BeamerList(items=[
-            "Item 1",
-            "Item 2",
-            BeamerList(items=[
-                "Subitem 1",
-                "Subitem 2",
-                BeamerList(items=[
-                    "Subsubitem 1",
-                    "Subsubitem 2"
-                ])
-            ])
-        ])
-        AlertBlock("PySoft", lst).add_to_scene(self)
-        self.wait(2)
+        # self.next_slide()
+        # self.make_block_and_focus(alert_block, below=example_block)
+        # slide_vgroup.add(example_block.block_background, alert_block.block_background)
+        # self.wait(1)
+        # self.next_slide()
+        self.play(
+            self.camera.frame.animate.move_to(slide_vgroup.get_center()).set(
+                height=slide_vgroup.height + 1
+            )
+        )
+        self.wait(3)
 
 
 if __name__ == "__main__":
-    # lst = BeamerList(items=[
-    #     "Item 1",
-    #     "Item 2",
-    #     BeamerList(items=[
-    #         "Subitem 1",
-    #         "Subitem 2",
-    #         BeamerList(items=[
-    #             "Subsubitem 1",
-    #             "Subsubitem 2"
-    #         ])
-    #     ])
-    # ])
-    # render_list = lst.get_list()
-    beamer_slide = BeamerSlide()
-    # lst.add_to_scene(beamer_slide, write=True)
-    # beamer_slide.add(render_list)
+    example_block = ExampleBlock(
+        title="Advantages",
+        content=AdvantagesList(
+            items=[
+                "Reliable",
+                ItemizedList(
+                    items=[
+                        "Applications to robotics, medicine, etc.",
+                    ]
+                ),
+                "Flexible",
+                ItemizedList(
+                    items=[
+                        "Network morphism (e.g., add neurons or layers)",
+                    ]
+                ),
+                "Generalizable",
+                ItemizedList(
+                    items=[
+                        "Supervised learning",
+                        "Online/offline reinforcement learning",
+                        "and more..."
+                    ]
+                ),
+            ]
+        )
+    )
+    alert_block = AlertBlock(
+        title="Disadvantages",
+        content=DisadvantagesList(
+            items=[
+                "Relies upon large quantities of data",
+                "Difficult to interpret (i.e., black-box)"
+            ]
+        )
+    )
+    beamer_slide = SlideWithBlocks(
+        title="Deep Neural Networks (DNNs)",
+        blocks=[example_block, alert_block],
+    )
     beamer_slide.render()
