@@ -7,6 +7,7 @@ import igraph as ig
 from manim import *
 from manim_slides import Slide
 
+from animations.beamer.slides import SlideWithBlocks
 from animations.demos.people.aristotle import Aristotle
 from animations.demos.people.bertrand_russell import BertrandRussellQuote
 from animations.demos.people.einstein import EinsteinQuote
@@ -15,6 +16,9 @@ from animations.demos.people.max_black import MaxBlack
 from animations.demos.people.plato import PlatoTheoryOfForms
 from animations.demos.people.socrates import Socrates
 from animations.demos.ww2 import WW2, CaptionedSVG
+from animations.beamer.presentation.introduction.nfn import (
+    pros_and_cons as nfn_pros_and_cons,
+)
 from animations.demos.people.zadeh import Zadeh
 from soft.datasets import SupervisedDataset
 from soft.computing.organize import SelfOrganize
@@ -44,16 +48,17 @@ class TimelineEvent:
 
 class TestScene(Scene):
     def construct(self):
-        self.draw(self, origin=ORIGIN, scale=1.0)
+        self.draw(origin=ORIGIN, scale=1.0)
         self.play(FadeOut(Group(*self.mobjects)))
         self.wait(2)
 
-    @staticmethod
-    def draw(scene, origin, scale):
-        scene.play(
+    def draw(self, origin, scale, target_scene=None):
+        if target_scene is None:
+            target_scene = self
+        target_scene.play(
             Write(Text("Hello, World!", color=BLACK).move_to(origin).scale(scale))
         )
-        scene.wait(2)
+        target_scene.wait(2)
 
 
 def get_noteworthy_events() -> ListType:
@@ -88,6 +93,7 @@ def get_noteworthy_events() -> ListType:
         )
 
     return [
+        nfn_pros_and_cons(),
         TimelineEvent(
             start_year=470,
             end_year=399,
@@ -115,15 +121,15 @@ def get_noteworthy_events() -> ListType:
             poi=1939,
             skip=True,
         ),
-        TestScene(),
-        TimelineEvent(
-            start_year=427,
-            end_year=348,
-            era="Ancient Greece",
-            era_notation="BCE",
-            event="Plato",
-            animation=PlatoTheoryOfForms,
-        ),
+        # TestScene(),
+        # TimelineEvent(
+        #     start_year=427,
+        #     end_year=348,
+        #     era="Ancient Greece",
+        #     era_notation="BCE",
+        #     event="Plato",
+        #     animation=PlatoTheoryOfForms,
+        # ),
         # TimelineEvent(
         #     start_year=384,
         #     end_year=322,
@@ -331,8 +337,14 @@ class Timeline(Slide, MovingCameraScene):
                     event.draw(origin=origin_to_draw_at, scale=0.25, target_scene=self)
                 else:
                     event.draw(self, origin=origin_to_draw_at, scale=0.25)
+            elif isinstance(slide, SlideWithBlocks):
+                slide.draw(
+                    origin=self.camera.frame.get_center(), scale=0.9, target_scene=self
+                )
             else:
-                slide.draw(self, origin=self.camera.frame.get_center(), scale=0.25)
+                slide.draw(
+                    origin=self.camera.frame.get_center(), scale=0.25, target_scene=self
+                )
             # event.draw(self, origin=self.camera.frame.get_center(), scale=0.25)
             self.next_slide()
             # move to the next location
@@ -359,11 +371,12 @@ class Timeline(Slide, MovingCameraScene):
                 color=BLACK,
             ),
             Text("Timeline of Noteworthy Events", font="TeX Gyre Termes", color=BLACK),
-            Text(
-                "Presented by John Wesley Hostetter",
-                font="TeX Gyre Termes",
-                color=BLACK,
-            ),
+            Text("© 2024 John Wesley Hostetter", font="TeX Gyre Termes", color=BLACK),
+            # Text(
+            #     "Presented by John Wesley Hostetter",
+            #     font="TeX Gyre Termes",
+            #     color=BLACK,
+            # ),
             Text(
                 "The presentation will begin shortly.",
                 font="TeX Gyre Termes",
