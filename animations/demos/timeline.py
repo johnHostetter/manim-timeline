@@ -16,6 +16,7 @@ from animations.demos.people.max_black import MaxBlack
 from animations.demos.people.plato import PlatoTheoryOfForms
 from animations.demos.people.socrates import Socrates
 from animations.demos.ww2 import WW2, CaptionedSVG
+from animations.beamer.presentation.introduction.dnn import pros_and_cons as dnn_pros_and_cons
 from animations.beamer.presentation.introduction.nfn import (
     pros_and_cons as nfn_pros_and_cons,
 )
@@ -93,34 +94,35 @@ def get_noteworthy_events() -> ListType:
         )
 
     return [
+        # TimelineEvent(
+        #     start_year=470,
+        #     end_year=399,
+        #     era="Ancient Greece",
+        #     era_notation="BCE",
+        #     event="Socrates",
+        #     animation=Socrates,
+        # ),
+        dnn_pros_and_cons(),
         nfn_pros_and_cons(),
-        TimelineEvent(
-            start_year=470,
-            end_year=399,
-            era="Ancient Greece",
-            era_notation="BCE",
-            event="Socrates",
-            animation=Socrates,
-        ),
         TestScene(),
-        TimelineEvent(
-            start_year=1939,
-            end_year=1945,
-            era="Common Era",
-            era_notation="CE",
-            event="World War II",
-            animation=CaptionedSVG(
-                path=path_to_project_root()
-                / "animations"
-                / "demos"
-                / "assets"
-                / "ww2"
-                / f"germans_in_poland_1939.svg",
-                caption="Nazi Germany invades Poland",
-            ),
-            poi=1939,
-            skip=True,
-        ),
+        # TimelineEvent(
+        #     start_year=1939,
+        #     end_year=1945,
+        #     era="Common Era",
+        #     era_notation="CE",
+        #     event="World War II",
+        #     animation=CaptionedSVG(
+        #         path=path_to_project_root()
+        #         / "animations"
+        #         / "demos"
+        #         / "assets"
+        #         / "ww2"
+        #         / f"germans_in_poland_1939.svg",
+        #         caption="Nazi Germany invades Poland",
+        #     ),
+        #     poi=1939,
+        #     skip=True,
+        # ),
         # TestScene(),
         # TimelineEvent(
         #     start_year=427,
@@ -169,11 +171,7 @@ def get_noteworthy_events() -> ListType:
 class Timeline(Slide, MovingCameraScene):
     def construct(self):
         # introduction to presentation
-        # title = Text(
-        #     "Please wait; the presentation will begin shortly.", font="TeX Gyre Termes",
-        #     color=BLACK
-        # )
-        self.greeting()
+        # self.greeting()
 
         timeline_igraph: ig.Graph = ig.Graph(directed=True)
 
@@ -328,9 +326,9 @@ class Timeline(Slide, MovingCameraScene):
                 )
 
             # show the event
+            origin_to_draw_at = self.camera.frame.get_center()
             if isinstance(slide, TimelineEvent):
                 event = slide.animation
-                origin_to_draw_at = self.camera.frame.get_center()
                 if slide.skip:
                     origin_to_draw_at = boundary.get_center()
                 if isinstance(event, CaptionedSVG):
@@ -339,11 +337,11 @@ class Timeline(Slide, MovingCameraScene):
                     event.draw(self, origin=origin_to_draw_at, scale=0.25)
             elif isinstance(slide, SlideWithBlocks):
                 slide.draw(
-                    origin=self.camera.frame.get_center(), scale=0.9, target_scene=self
+                    origin=boundary.get_top() - (boundary.height / 10), scale=0.2, target_scene=self
                 )
             else:
                 slide.draw(
-                    origin=self.camera.frame.get_center(), scale=0.25, target_scene=self
+                    origin=origin_to_draw_at, scale=0.25, target_scene=self
                 )
             # event.draw(self, origin=self.camera.frame.get_center(), scale=0.25)
             self.next_slide()
