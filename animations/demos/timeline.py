@@ -7,7 +7,7 @@ import igraph as ig
 from manim import *
 from manim_slides import Slide
 
-from animations.beamer.slides import SlideWithBlocks
+from animations.beamer.slides import SlideWithBlocks, PromptSlide
 from animations.demos.people.aristotle import Aristotle
 from animations.demos.people.bertrand_russell import BertrandRussellQuote
 from animations.demos.people.einstein import EinsteinQuote
@@ -47,19 +47,19 @@ class TimelineEvent:
     )
 
 
-class TestScene(Scene):
-    def construct(self):
-        self.draw(origin=ORIGIN, scale=1.0)
-        self.play(FadeOut(Group(*self.mobjects)))
-        self.wait(2)
-
-    def draw(self, origin, scale, target_scene=None):
-        if target_scene is None:
-            target_scene = self
-        target_scene.play(
-            Write(Text("Hello, World!", color=BLACK).move_to(origin).scale(scale))
-        )
-        target_scene.wait(2)
+# class TestScene(Scene):
+#     def construct(self):
+#         self.draw(origin=ORIGIN, scale=1.0)
+#         self.play(FadeOut(Group(*self.mobjects)))
+#         self.wait(2)
+#
+#     def draw(self, origin, scale, target_scene=None):
+#         if target_scene is None:
+#             target_scene = self
+#         target_scene.play(
+#             Write(Text("Hello, World!", color=BLACK).move_to(origin).scale(scale))
+#         )
+#         target_scene.wait(2)
 
 
 def get_noteworthy_events() -> ListType:
@@ -104,7 +104,7 @@ def get_noteworthy_events() -> ListType:
         # ),
         dnn_pros_and_cons(),
         nfn_pros_and_cons(),
-        TestScene(),
+        PromptSlide(prompt="Could we have done better?", skip=True),
         # TimelineEvent(
         #     start_year=1939,
         #     end_year=1945,
@@ -309,7 +309,7 @@ class Timeline(Slide, MovingCameraScene):
             self.wait(2)
             self.next_slide()
 
-            if isinstance(slide, TimelineEvent):
+            if isinstance(slide, TimelineEvent) or isinstance(slide, PromptSlide):
                 if not slide.skip:
                     # now zoom in on the event
                     self.play(
@@ -338,6 +338,12 @@ class Timeline(Slide, MovingCameraScene):
             elif isinstance(slide, SlideWithBlocks):
                 slide.draw(
                     origin=boundary.get_top() - (boundary.height / 10), scale=0.2, target_scene=self
+                )
+            elif isinstance(slide, PromptSlide):
+                if slide.skip:
+                    origin_to_draw_at = boundary.get_center()
+                slide.draw(
+                    origin=origin_to_draw_at, scale=0.2, target_scene=self
                 )
             else:
                 slide.draw(

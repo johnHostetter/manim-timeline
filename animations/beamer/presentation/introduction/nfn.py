@@ -1,8 +1,12 @@
+from typing import Union as U
+
 from manim import *
 
+from animations.beamer.presentation.bibtex import BibTexManager
 from animations.beamer.slides import SlideWithBlocks
 from animations.beamer.blocks import AlertBlock, ExampleBlock
 from animations.beamer.lists import ItemizedList, AdvantagesList, DisadvantagesList
+from soft.utilities.reproducibility import path_to_project_root
 
 config.background_color = WHITE
 light_theme_style = {
@@ -19,6 +23,7 @@ def pros_and_cons() -> SlideWithBlocks:
     Returns:
         The slide with the two blocks.
     """
+    bib = BibTexManager()
     example_block = ExampleBlock(
         title="Advantages of NFNs",
         content=AdvantagesList(
@@ -54,6 +59,11 @@ def pros_and_cons() -> SlideWithBlocks:
                 ItemizedList(
                     items=[
                         "(e.g., supervised or reinforcement learning)",
+                        (
+                            bib.convert_entry_to_citation(
+                                bib["aghaeipoor_mokblmoms_2019"]
+                            ), DARK_BLUE
+                        )
                     ]
                 ),
             ]
