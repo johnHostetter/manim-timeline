@@ -161,6 +161,10 @@ def get_noteworthy_events() -> ListType:
         bib_manager.cite_entry(bib_manager["bouchon-meunier_lotfi_2021"]),  # 2021 Zadeh recognized for XAI
         bib_manager.cite_entry(bib_manager["rayz_why_2022"]),  # 2022, why f.l. is needed for XAI
         bib_manager.cite_entry(bib_manager["noauthor_towards_nodate"]),  # 2022, toward f.l. XAI
+        # time for me
+        bib_manager.cite_entry(bib_manager["hostetter2023leveraging"]),  # 2023 APFRB
+        bib_manager.cite_entry(bib_manager["hostetter2023self"]),  # 2023 CEW
+        bib_manager.cite_entry(bib_manager["hostetter2023latent"]),  # 2023 LLM
         # TimelineEvent(
         #     start_year=427,
         #     end_year=348,
