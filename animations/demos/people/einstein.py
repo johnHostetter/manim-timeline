@@ -25,7 +25,12 @@ def person_with_quote(
         .scale(0.7)
         .next_to(signature, UP)
     )
-    person_and_quote = VGroup(paragraph, person_svg)
+    source_text = (
+        Text(source, font="TeX Gyre Termes", color=BLACK)
+        .scale(0.5)
+        .next_to(paragraph, DOWN)
+    )
+    person_and_quote = VGroup(paragraph, person_svg, source_text)
     person_and_quote.scale(scale_factor=scale)
     # person_bound = person_svg.get_bounding_box()
     # person_svg.next_to(paragraph, scale*LEFT, buff=0.0*scale)
@@ -37,11 +42,6 @@ def person_with_quote(
     # scene.play(Write(paragraph), run_time=3)
 
     # scene.play(paragraph.animate.shift(RIGHT * 2), run_time=1)
-    source_text = (
-        Text(source, font="TeX Gyre Termes", color=BLACK)
-        .scale(0.5)
-        .next_to(paragraph, DOWN)
-    )
     scene.play(
         AnimationGroup(
             Create(person_svg, run_time=2),

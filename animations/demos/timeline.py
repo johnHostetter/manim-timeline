@@ -30,9 +30,23 @@ class Timeline(Slide, MovingCameraScene):
 
         timeline_igraph.add_edges(edges)
 
+        prev_x_location: float = 0
+        prev_timeline_event = None
+        digraph_layout = {0: (prev_x_location, 0, 0)}
+        for idx, timeline_event in enumerate(timeline_events):
+            spacing = 5  # a good spacing for the timeline I found works well
+            if isinstance(prev_timeline_event, str) and isinstance(timeline_event, str):
+                # two consecutive strings do not need as much spacing
+                spacing = 1
+            # technically we never use the vertex located at index 0
+            new_x_location = prev_x_location + spacing
+            digraph_layout[idx + 1] = (new_x_location, 0, 0)
+            prev_timeline_event = timeline_event
+            prev_x_location = new_x_location
+
         # consistent spacing for the timeline
-        spacing = 5  # a good spacing for the timeline I found works well
-        digraph_layout = {idx: (idx * spacing, 0, 0) for idx in range(num_of_vertices)}
+        # spacing = 5  # a good spacing for the timeline I found works well
+        # digraph_layout = {idx: (idx * spacing, 0, 0) for idx in range(num_of_vertices)}
         # spacing relative to timeline events' start and end years
         # def get_loc_from_start_end_years(start_year, end_year):
         #     return (start_year + end_year) / 2
@@ -101,7 +115,7 @@ class Timeline(Slide, MovingCameraScene):
 
             vertex_coords = target_vertex.get_center()
 
-            if isinstance(slide, TimelineEvent):
+            if isinstance(slide, TimelineEvent) or isinstance(slide, str):
                 # draw a time-stamped event from the timeline
                 direction = UP if idx % 2 == 0 else DOWN
                 # source_vertex_idx, target_vertex_idx = edge[0], edge[1]
@@ -112,7 +126,9 @@ class Timeline(Slide, MovingCameraScene):
                 # self.play(self.camera.frame.animate.move_to(target_vertex).set(width=0.075))
 
                 # vertex_coords = target_vertex.get_center()
-                pin: Line = Line(vertex_coords, vertex_coords + direction, color=BLACK)
+                pin: Line = Line(
+                    vertex_coords, vertex_coords + direction, color=BLACK, stroke_width=2
+                )
 
                 self.play(
                     Create(pin),
@@ -120,28 +136,43 @@ class Timeline(Slide, MovingCameraScene):
                         width=10
                     ),
                 )
-                boundary = Rectangle(color=BLACK).move_to(
-                    vertex_coords + (2 * direction)
-                )
-                self.play(Create(boundary))
-                if slide.poi is not None:  # point of interest takes precedence
-                    timestamp_str = f"{slide.poi} {slide.era_notation}"
-                elif slide.start_year == slide.end_year:
-                    timestamp_str = f"{slide.start_year} {slide.era_notation}"
-                else:
-                    timestamp_str = (
-                        f"{slide.start_year} - {slide.end_year} {slide.era_notation}"
+                if isinstance(slide, TimelineEvent):
+                    boundary = Rectangle(color=BLACK, stroke_width=2).move_to(
+                        vertex_coords + (2 * direction)
                     )
-                timestamp = Text(
-                    timestamp_str,
-                    font="TeX Gyre Termes",
-                    color=BLACK,
-                ).next_to(boundary, direction)
-                self.play(Create(timestamp))
+                    self.play(Create(boundary))
+                    if slide.poi is not None:  # point of interest takes precedence
+                        timestamp_str = f"{slide.poi} {slide.era_notation}"
+                    elif slide.start_year == slide.end_year:
+                        timestamp_str = f"{slide.start_year} {slide.era_notation}"
+                    else:
+                        timestamp_str = (
+                            f"{slide.start_year} - {slide.end_year} {slide.era_notation}"
+                        )
+                    timestamp = Text(
+                        timestamp_str,
+                        font="TeX Gyre Termes",
+                        color=BLACK,
+                    ).next_to(boundary, direction)
+                    self.play(Create(timestamp))
+                else:
+                    # this is a string, treat it as a publication citation
+                    publication = Text(
+                        slide,
+                        font="TeX Gyre Termes",
+                        color=BLACK,
+                    ).rotate(PI / 3).scale(0.2).next_to(pin, direction).shift(
+                        0.5 * (RIGHT if idx % 2 == 0 else LEFT)
+                    )  # shift it to the right if UP else shift to the left if DOWN
+                    self.play(
+                        Create(publication),
+                        self.camera.frame.animate.move_to(publication.get_center())
+                    )
+                    continue  # done with this slide
             else:
                 direction = RIGHT
                 # we assume that the slide is more of a thought experiment/bubble
-                boundary = Rectangle(color=BLACK).move_to(
+                boundary = Rectangle(color=BLACK, stroke_width=2).move_to(
                     vertex_coords + (2 * direction)
                 )
                 running_offset += boundary.width
