@@ -1,4 +1,5 @@
 from manim import *
+from manim_slides import Slide
 
 from animations.demos.people.einstein import person_with_quote
 from soft.utilities.reproducibility import path_to_project_root
@@ -10,9 +11,11 @@ light_theme_style = {
 }
 
 
-class Aristotle(Scene):
+class Aristotle(Slide):
     def construct(self):
-        paragraph, person, signature_group = self.draw(self, origin=ORIGIN, scale=1.0)
+        paragraph, source, person, signature_group = self.draw(
+            self, origin=ORIGIN, scale=1.0
+        )
         self.wait(10)
         self.play(
             FadeOut(Group(VGroup(paragraph, person), signature_group), run_time=2)
@@ -32,18 +35,71 @@ class Aristotle(Scene):
             / "people"
             / "aristotle-2.svg"
         ).scale(2.0)
-        paragraph, person, signature_group = person_with_quote(
+        paragraph, source, person, signature_group = person_with_quote(
             scene,
             person_svg=person_svg,
             quote=(
-                "All people are mortal. \nSocrates is a person. \nTherefore, Socrates is mortal."
+                # "All people are mortal. \nSocrates is a person. \nTherefore, Socrates is mortal."
+                # real version of the above quote:
+                # https://dn790002.ca.archive.org/0/items/AristotleOrganon/AristotleOrganoncollectedWorks.pdf
+                "...we may say that Socrates is Socrates and a man, \nand that therefore he is the man Socrates, or that \nSocrates is a man and a biped, and that \ntherefore he is a two-footed man."
             ),
+            source="(On Interpretation [Translated by E.M. Edghill] Chapter 11, pg. 67)",
             signature=signature,
             origin=origin,
             scale=scale,
             left_shift=1.0,
         )
-        return paragraph, person, signature_group
+        quote_1 = (
+            '"A sea-fight must either take place tomorrow or not, \n'
+            "but it is not necessary that it should take place \ntomorrow, "
+            "neither is it necessary that it should not take place, \nyet"
+            'it is necessary that it either should or should \nnot take place tomorrow."'
+        )
+        quote_2 = (
+            '"One of the two propositions in such instances \n'
+            "must be true and the other false, but we cannot \n"
+            "say determinately that this or that is false, \n"
+            'but must leave the alternative undecided."'
+        )
+        paragraph_1 = (
+            Text(quote_1, font="TeX Gyre Termes", color=BLACK, slant=ITALIC)
+            .scale(0.7)
+            .scale(scale_factor=scale)
+            .move_to(paragraph.get_center())
+            .next_to(source, UP)
+        )
+        new_source = (
+            Text(
+                "(On Interpretation [Translated by E.M. Edghill] Chapter 9, pg. 59-60)",
+                font="TeX Gyre Termes",
+                color=BLACK,
+            )
+            .scale(0.5)
+            .next_to(paragraph_1, DOWN)
+        )
+        scene.next_slide()
+        scene.play(
+            Transform(
+                paragraph, paragraph_1, replace_mobject_with_target_in_scene=True
+            ),
+            Transform(source, new_source, replace_mobject_with_target_in_scene=True),
+        )
+        scene.wait(2)
+        paragraph_2 = (
+            Text(quote_2, font="TeX Gyre Termes", color=BLACK, slant=ITALIC)
+            .scale(0.7)
+            .scale(scale_factor=scale)
+            .move_to(paragraph.get_center())
+            .next_to(source, UP)
+        )
+        scene.next_slide()
+        scene.play(
+            Transform(
+                paragraph_1, paragraph_2, replace_mobject_with_target_in_scene=True
+            )
+        )
+        return paragraph, source, person, signature_group
 
 
 if __name__ == "__main__":

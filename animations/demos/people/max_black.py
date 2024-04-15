@@ -12,11 +12,14 @@ light_theme_style = {
 
 class MaxBlack(Scene):
     def construct(self):
-        # load the PySoft logo as a manim SVGMobject
-        paragraph, person, signature_group = self.draw(self, origin=ORIGIN, scale=1.0)
+        paragraph, source, person, signature_group = self.draw(
+            self, origin=ORIGIN, scale=1.0
+        )
         self.wait(10)
         self.play(
-            FadeOut(Group(VGroup(paragraph, person), signature_group), run_time=2)
+            FadeOut(
+                Group(VGroup(paragraph, source, person), signature_group), run_time=2
+            )
         )
         self.wait(2)
 
@@ -33,7 +36,7 @@ class MaxBlack(Scene):
             / "people"
             / "MaxBlack.svg"
         ).scale(2.0)
-        paragraph, person, signature_group = person_with_quote(
+        paragraph, source, person, signature_group = person_with_quote(
             scene,
             person_svg=person_svg,
             quote=(
@@ -41,12 +44,13 @@ class MaxBlack(Scene):
                 "the most highly developed \nand useful scientific theories are \nostensibly "
                 'expressed in terms of \nobjects never encountered in experience."'
             ),
+            source="(Vagueness. An Exercise in Logical Analysis, 1937)",
             signature=signature,
             origin=origin,
             scale=scale,
             left_shift=1.5,
         )
-        return paragraph, person, signature_group
+        return paragraph, source, person, signature_group
 
 
 if __name__ == "__main__":

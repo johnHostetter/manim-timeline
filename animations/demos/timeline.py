@@ -1,171 +1,17 @@
-from functools import partial
-from dataclasses import dataclass
-from typing import Tuple, List as ListType, Union as UnionType
-
-import torch
 import igraph as ig
 from manim import *
 from manim_slides import Slide
 
 from animations.beamer.slides import SlideWithBlocks, PromptSlide
-from animations.demos.people.aristotle import Aristotle
-from animations.demos.people.bertrand_russell import BertrandRussellQuote
-from animations.demos.people.einstein import EinsteinQuote
 from animations.demos.graph_example import GraphPair
-from animations.demos.people.max_black import MaxBlack
-from animations.demos.people.plato import PlatoTheoryOfForms
-from animations.demos.people.socrates import Socrates
-from animations.demos.ww2 import WW2, CaptionedSVG
-from animations.beamer.presentation.introduction.dnn import pros_and_cons as dnn_pros_and_cons
-from animations.beamer.presentation.introduction.nfn import (
-    pros_and_cons as nfn_pros_and_cons,
-)
-from animations.demos.people.zadeh import Zadeh
-from soft.datasets import SupervisedDataset
-from soft.computing.organize import SelfOrganize
-from soft.computing.blueprints.factory import SystematicDesignProcess
-from soft.utilities.reproducibility import load_configuration, path_to_project_root
+from animations.demos.timeline_helper import get_noteworthy_events, TimelineEvent
+from animations.demos.ww2 import CaptionedSVG
 
 config.background_color = WHITE
 light_theme_style = {
     "fill_color": BLACK,
     "background_stroke_color": WHITE,
 }
-
-
-@dataclass
-class TimelineEvent:
-    start_year: int  # e.g. 2015
-    end_year: int  # e.g. 2025
-    era: str  # e.g. Ancient Greece
-    era_notation: str  # e.g. BCE, CE
-    event: str  # e.g. The birth of the internet
-    animation: UnionType[Scene, MovingCameraScene]
-    poi: int = None  # e.g. 2020,  A specific year of interest
-    skip: bool = (
-        False  # skip this event, if True, event is still drawn but not focused on
-    )
-
-
-# class TestScene(Scene):
-#     def construct(self):
-#         self.draw(origin=ORIGIN, scale=1.0)
-#         self.play(FadeOut(Group(*self.mobjects)))
-#         self.wait(2)
-#
-#     def draw(self, origin, scale, target_scene=None):
-#         if target_scene is None:
-#             target_scene = self
-#         target_scene.play(
-#             Write(Text("Hello, World!", color=BLACK).move_to(origin).scale(scale))
-#         )
-#         target_scene.wait(2)
-
-
-def get_noteworthy_events() -> ListType:
-    # return [
-    #     "The birth of the internet",
-    #     "The rise of the smartphone",
-    #     "The advent of machine learning",
-    #     "The emergence of deep learning",
-    #     "The dawn of quantum computing",
-    #     "The age of artificial intelligence",
-    # ]
-
-    ww2 = []
-    for year in range(1939, 1946):
-        TimelineEvent(
-            start_year=1939,
-            end_year=1945,
-            era="Common Era",
-            era_notation="CE",
-            event="World War II",
-            animation=CaptionedSVG(
-                path=path_to_project_root()
-                / "animations"
-                / "demos"
-                / "assets"
-                / "ww2"
-                / f"germans_in_poland_1939.svg",
-                caption="Nazi Germany invades Poland",
-            ),
-            poi=1939,
-            skip=True,
-        )
-
-    return [
-        # TimelineEvent(
-        #     start_year=470,
-        #     end_year=399,
-        #     era="Ancient Greece",
-        #     era_notation="BCE",
-        #     event="Socrates",
-        #     animation=Socrates,
-        # ),
-        dnn_pros_and_cons(),
-        nfn_pros_and_cons(),
-        PromptSlide(prompt="Could we have done better?", skip=True),
-        # TimelineEvent(
-        #     start_year=1939,
-        #     end_year=1945,
-        #     era="Common Era",
-        #     era_notation="CE",
-        #     event="World War II",
-        #     animation=CaptionedSVG(
-        #         path=path_to_project_root()
-        #         / "animations"
-        #         / "demos"
-        #         / "assets"
-        #         / "ww2"
-        #         / f"germans_in_poland_1939.svg",
-        #         caption="Nazi Germany invades Poland",
-        #     ),
-        #     poi=1939,
-        #     skip=True,
-        # ),
-        # TestScene(),
-        # TimelineEvent(
-        #     start_year=427,
-        #     end_year=348,
-        #     era="Ancient Greece",
-        #     era_notation="BCE",
-        #     event="Plato",
-        #     animation=PlatoTheoryOfForms,
-        # ),
-        # TimelineEvent(
-        #     start_year=384,
-        #     end_year=322,
-        #     era="Ancient Greece",
-        #     era_notation="BCE",
-        #     event="Aristotle",
-        #     animation=Aristotle
-        # ),
-        # TimelineEvent(
-        #     start_year=1879,
-        #     end_year=1955,
-        #     era="Common Era",
-        #     era_notation="CE",
-        #     event="Albert Einstein",
-        #     animation=EinsteinQuote
-        # ),
-        # TimelineEvent(
-        #     start_year=1872,
-        #     end_year=1970,
-        #     era="Common Era",
-        #     era_notation="CE",
-        #     event="Bertrand Russell",
-        #     animation=BertrandRussellQuote
-        # ),
-        # TimelineEvent(
-        #     start_year=1909,
-        #     end_year=1988,
-        #     poi=1937,
-        #     era="Common Era",
-        #     era_notation="CE",
-        #     event="Max Black",
-        #     animation=MaxBlack
-        # )
-    ]
 
 
 class Timeline(Slide, MovingCameraScene):
@@ -337,18 +183,16 @@ class Timeline(Slide, MovingCameraScene):
                     event.draw(self, origin=origin_to_draw_at, scale=0.25)
             elif isinstance(slide, SlideWithBlocks):
                 slide.draw(
-                    origin=boundary.get_top() - (boundary.height / 10), scale=0.2, target_scene=self
+                    origin=boundary.get_top() - (boundary.height / 10),
+                    scale=0.2,
+                    target_scene=self,
                 )
             elif isinstance(slide, PromptSlide):
                 if slide.skip:
                     origin_to_draw_at = boundary.get_center()
-                slide.draw(
-                    origin=origin_to_draw_at, scale=0.2, target_scene=self
-                )
+                slide.draw(origin=origin_to_draw_at, scale=0.2, target_scene=self)
             else:
-                slide.draw(
-                    origin=origin_to_draw_at, scale=0.25, target_scene=self
-                )
+                slide.draw(origin=origin_to_draw_at, scale=0.25, target_scene=self)
             # event.draw(self, origin=self.camera.frame.get_center(), scale=0.25)
             self.next_slide()
             # move to the next location

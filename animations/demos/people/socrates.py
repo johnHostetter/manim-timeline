@@ -12,7 +12,9 @@ light_theme_style = {
 
 class Socrates(Scene):
     def construct(self):
-        paragraph, person, signature_group = self.draw(self, origin=ORIGIN, scale=1.0)
+        paragraph, source, person, signature_group = self.draw(
+            self, origin=ORIGIN, scale=1.0
+        )
         self.wait(10)
         self.play(
             FadeOut(Group(VGroup(paragraph, person), signature_group), run_time=2)
@@ -32,18 +34,19 @@ class Socrates(Scene):
             / "people"
             / "socrates.svg"
         ).scale(2.0)
-        paragraph, person, signature_group = person_with_quote(
+        paragraph, source, person, signature_group = person_with_quote(
             scene,
             person_svg=person_svg,
             quote=(
-                '"The unexamined life is not worth living \nfor a human being."\n\n\n"The beginning of wisdom is a \ndefinition of terms."'
+                '"The unexamined life is not worth living \nfor a human being."\n\n\nThe beginning of wisdom is a \ndefinition of terms.'
             ),
+            source="(Plato's Apology, 399 BCE) & (Plato's Charmides [paraphrased])",
             signature=signature,
             origin=origin,
             scale=scale,
             left_shift=1.0,
         )
-        return paragraph, person, signature_group
+        return paragraph, source, person, signature_group
 
 
 if __name__ == "__main__":

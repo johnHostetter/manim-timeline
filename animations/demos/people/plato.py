@@ -13,24 +13,40 @@ light_theme_style = {
 
 class PlatoTheoryOfForms(MovingCameraScene):
     def construct(self):
-        bust_svg, paragraph, person, person_svg, signature_group = self.draw(
-            self, origin=ORIGIN, scale=1.0
-        )
-        self.wait(10)
-        self.play(
-            FadeOut(Group(paragraph, signature_group), run_time=2),
-            ReplacementTransform(person_svg, bust_svg),
-        )
-        self.wait(2)
+        # paragraph, source, person, person_svg, signature_group = self.quote(
+        #     self, origin=ORIGIN, scale=1.0
+        # )
+        # self.wait(10)
+        # self.play(
+        #     FadeOut(Group(paragraph, signature_group), run_time=2),
+        #     ReplacementTransform(person_svg, bust_svg),
+        # )
+        # self.wait(2)
+        self.draw(self, origin=ORIGIN, scale=1.0)
+
+    @staticmethod
+    def draw(scene, origin, scale):
+        bust_svg = SVGMobject(
+            path_to_project_root()
+            / "animations"
+            / "demos"
+            / "assets"
+            / "people"
+            / "plato_bust.svg"
+        ).scale(2.5)
 
         header = Text(
-            "Plato's Theory of Forms", font="TeX Gyre Termes", color=BLACK
-        ).scale(1.0)
-        header.next_to(person, RIGHT)
-        self.wait(2)
+            "Plato's Theory of Forms", font="TeX Gyre Termes", color=BLACK, font_size=60
+        )
+        header.next_to(bust_svg, RIGHT)
+        scene.wait(2)
         subheader = Text(
-            "The Allegory of the Cave", font="TeX Gyre Termes", color=BLACK
-        ).scale(0.7)
+            "The Allegory of the Cave",
+            font="TeX Gyre Termes",
+            color=BLACK,
+            slant=ITALIC,
+            font_size=40,
+        )
 
         cave = SVGMobject(
             path_to_project_root()
@@ -41,10 +57,16 @@ class PlatoTheoryOfForms(MovingCameraScene):
         ).scale(2.5)
 
         VGroup(header, subheader.next_to(header, DOWN)).to_corner(UP, buff=0.5)
-        cave.next_to(person, RIGHT).next_to(subheader, DOWN)
+        cave.next_to(bust_svg, RIGHT).next_to(subheader, DOWN)
 
-        self.play(
-            Write(VGroup(header, subheader), run_time=3), Create(cave, run_time=5)
+        VGroup(header, subheader, bust_svg, cave).scale(scale_factor=scale).move_to(
+            origin
+        )
+
+        scene.play(
+            Write(VGroup(header, subheader), run_time=3),
+            Create(bust_svg, run_time=5),
+            Create(cave, run_time=5),
         )
 
         imperfect_circle = SVGMobject(
@@ -58,9 +80,13 @@ class PlatoTheoryOfForms(MovingCameraScene):
             radius=imperfect_circle.height / 2, color=BLACK
         ).next_to(imperfect_circle, RIGHT, buff=0.75)
 
-        self.compare_imperfect_with_form(cave, imperfect_circle, perfect_circle)
+        VGroup(imperfect_circle, perfect_circle).scale(scale_factor=scale).move_to(
+            origin
+        )
 
-        self.wait(5)
+        # scene.next_slide()
+        # scene.compare_imperfect_with_form(cave, imperfect_circle, perfect_circle)
+        # scene.wait(1)
 
         # imperfect_sphere = SVGMobject(
         #     path_to_project_root() / "animations" / "demos" / "Earth.svg"
@@ -83,7 +109,7 @@ class PlatoTheoryOfForms(MovingCameraScene):
         # self.play(Create(earth, run_time=3))
 
     @staticmethod
-    def draw(scene, origin, scale):
+    def quote(scene, origin, scale):
         signature = Text(
             "Πλάτων (Plato)", font="TeX Gyre Termes", color=BLACK
         )  # .scale(0.7)
@@ -95,27 +121,20 @@ class PlatoTheoryOfForms(MovingCameraScene):
             / "people"
             / "plato.svg"
         ).scale(2.0)
-        bust_svg = SVGMobject(
-            path_to_project_root()
-            / "animations"
-            / "demos"
-            / "assets"
-            / "people"
-            / "plato_bust.svg"
-        )
-        paragraph, person, signature_group = person_with_quote(
+        paragraph, source, person, signature_group = person_with_quote(
             scene,
             person_svg=person_svg,
             quote=(
                 '"Reality is created by the mind, we can \n'
                 'change our reality by changing our mind."'
             ),
+            source="(Attributed to Plato)",
             signature=signature,
             origin=origin,
             scale=scale,
             left_shift=1.0,
         )
-        return bust_svg, paragraph, person, person_svg, signature_group
+        return paragraph, source, person, person_svg, signature_group
 
     def compare_imperfect_with_form(
         self, last_object, imperfect_object, perfect_object
@@ -144,7 +163,7 @@ class PlatoTheoryOfForms(MovingCameraScene):
         #     radius=imperfect_circle.height / 2, color=BLACK
         # ).next_to(imperfect_circle, RIGHT, buff=0.75)
         perfect_circle_lbl = (
-            Text("Idea", font="TeX Gyre Termes", color=BLACK)
+            Text("Form", font="TeX Gyre Termes", color=BLACK)
             .scale(0.7)
             .next_to(perfect_object, DOWN)
         )

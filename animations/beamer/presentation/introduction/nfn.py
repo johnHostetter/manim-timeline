@@ -31,13 +31,15 @@ def pros_and_cons() -> SlideWithBlocks:
                 "Transparent",
                 ItemizedList(
                     items=[
-                        "Historically designed by human experts (i.e., ``expert-designed'').",
+                        'Historically designed by human experts (i.e., "expert-designed").',
+                        bib.slide_short_cite("lee_supervised_1992"),
                     ]
                 ),
                 "Sample efficient",
                 ItemizedList(
                     items=[
                         'Due to "expert design", they [typically] require less training.',
+                        bib.slide_short_cite("berenji_learning_1992"),
                     ]
                 ),
             ]
@@ -48,6 +50,7 @@ def pros_and_cons() -> SlideWithBlocks:
         content=DisadvantagesList(
             items=[
                 "Difficult & expensive to design",
+                bib.slide_short_cite("lee_flc_12"),
                 ItemizedList(
                     items=[
                         "Subconscious decision-making hard to articulate",
@@ -55,15 +58,21 @@ def pros_and_cons() -> SlideWithBlocks:
                         "Time-consuming",
                     ]
                 ),
+                "Unable to readily adapt to changes (e.g., add new knowledge)",
+                bib.slide_short_cite("klir_yuan"),
+                ItemizedList(
+                    items=[
+                        "Self-organizing NFNs may achieve this but with restrictions",
+                        bib.slide_short_cite("zhou_pseudo_1996"),
+                        bib.slide_short_cite("er_online_2004"),
+                    ]
+                ),
                 "NFN research is often specific to a certain task",
                 ItemizedList(
                     items=[
                         "(e.g., supervised or reinforcement learning)",
-                        (
-                            bib.convert_entry_to_citation(
-                                bib["aghaeipoor_mokblmoms_2019"]
-                            ), DARK_BLUE
-                        )
+                        bib.slide_short_cite("aghaeipoor_mokblmoms_2019"),
+                        bib.slide_short_cite("zhou_reinforcement_2009"),
                     ]
                 ),
             ]
@@ -71,5 +80,6 @@ def pros_and_cons() -> SlideWithBlocks:
     )
     return SlideWithBlocks(
         title="Neuro-Fuzzy Networks (NFNs)",
+        subtitle=None,
         blocks=[example_block, alert_block],
     )

@@ -50,6 +50,8 @@ class GodelQuote(Scene):
                 # '"So far as the laws of mathematics refer to reality,\nthey are not certain. '
                 # 'And so far as they are certain, \nthey do not refer to reality."'
             ),
+            # http://kevincarmody.com/math/goedel.html
+            source="(Reflections on Kurt Gödel, MIT Press, 1987, pg. 95)",
             signature=signature,
             origin=origin,
             scale=scale,

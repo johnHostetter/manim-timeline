@@ -1,5 +1,6 @@
 from manim import *
 
+from animations.beamer.presentation.bibtex import BibTexManager
 from animations.beamer.slides import SlideWithBlocks
 from animations.beamer.blocks import AlertBlock, ExampleBlock
 from animations.beamer.lists import ItemizedList, AdvantagesList, DisadvantagesList
@@ -19,6 +20,8 @@ def pros_and_cons() -> SlideWithBlocks:
     Returns:
         The slide with the two blocks.
     """
+    bib = BibTexManager()
+
     example_block = ExampleBlock(
         title="Advantages of DNNs",
         content=AdvantagesList(
@@ -26,20 +29,33 @@ def pros_and_cons() -> SlideWithBlocks:
                 "Reliable",
                 ItemizedList(
                     items=[
-                        "Applications to robotics, medicine, etc.",
+                        "Assist students in learning",
+                        bib.slide_short_cite("abdelshiheed2023leveraging"),
+                        "Predict septic shock",
+                        bib.slide_short_cite("dqn_septic_shock"),
+                        "Able to solve complex games (e.g., Go)",
+                        bib.slide_short_cite("silver2016mastering"),
                     ]
                 ),
                 "Flexible",
                 ItemizedList(
                     items=[
-                        "Network morphism (e.g., add neurons or layers)",
+                        "Network morphism - add neurons or layers (i.e., neurogenesis)",
+                        bib.slide_short_cite("draelos_neurogenesis_2016"),
+                        bib.slide_short_cite("maile_when_2022"),
                     ]
                 ),
                 "Generalizable",
                 ItemizedList(
                     items=[
                         "Supervised learning",
-                        "Online/offline reinforcement learning",
+                        bib.slide_short_cite(
+                            "bolat_interpreting_2020"
+                        ),  # nfn paper that uses dnn
+                        "Online reinforcement learning",
+                        bib.slide_short_cite("jaderberg_reinforcement_2016"),
+                        "Offline reinforcement learning",
+                        bib.slide_short_cite("levine_offline_2020"),
                         "and more...",
                     ]
                 ),
@@ -51,11 +67,14 @@ def pros_and_cons() -> SlideWithBlocks:
         content=DisadvantagesList(
             items=[
                 "Relies upon large quantities of data",
+                bib.slide_short_cite("efficient_processing_of_dnns"),
                 "Difficult to interpret (i.e., black-box)",
+                bib.slide_short_cite("wang_explaining_2021"),
             ]
         ),
     )
     return SlideWithBlocks(
         title="Deep Neural Networks (DNNs)",
+        subtitle=None,
         blocks=[example_block, alert_block],
     )

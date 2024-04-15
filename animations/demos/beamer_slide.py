@@ -7,6 +7,8 @@ from animations.beamer.presentation.introduction.nfn import (
     pros_and_cons as nfn_pros_and_cons,
 )
 
+from animations.beamer.presentation.introduction.proposal import proposal
+
 config.background_color = WHITE
 light_theme_style = {
     "fill_color": BLACK,
@@ -15,5 +17,5 @@ light_theme_style = {
 
 
 if __name__ == "__main__":
-    beamer_slide = nfn_pros_and_cons()
+    beamer_slide = proposal()
     beamer_slide.render()

@@ -14,6 +14,7 @@ def person_with_quote(
     scene: Scene,
     person_svg: SVGMobject,
     quote: str,
+    source: str,
     signature: U[SVGMobject, Text],
     origin: np.ndarray,
     scale: float,
@@ -33,10 +34,21 @@ def person_with_quote(
     )
     person_and_quote.move_to(origin)
     # person_svg.move_to(paragraph, ((4 * DOWN) + (12 * LEFT))).scale(2)
-    scene.play(Write(paragraph), run_time=3)
+    # scene.play(Write(paragraph), run_time=3)
 
     # scene.play(paragraph.animate.shift(RIGHT * 2), run_time=1)
-    scene.play(Create(person_svg, run_time=2))
+    source_text = (
+        Text(source, font="TeX Gyre Termes", color=BLACK)
+        .scale(0.5)
+        .next_to(paragraph, DOWN)
+    )
+    scene.play(
+        AnimationGroup(
+            Create(person_svg, run_time=2),
+            Write(VGroup(paragraph, source_text), run_time=2),
+            lag_ratio=0.5,
+        )
+    )
 
     signature_dash = (
         Text("- ", font="TeX Gyre Termes")
@@ -51,15 +63,20 @@ def person_with_quote(
 
     # add the signature to the scene
     scene.play(Create(signature_combo, run_time=2))
-    return paragraph, person_svg, signature_combo
+    scene.wait(1)
+    return paragraph, source_text, person_svg, signature_combo
 
 
 class EinsteinQuote(Scene):
     def construct(self):
-        paragraph, person, signature_group = self.draw(self, origin=ORIGIN, scale=1.0)
+        paragraph, source, person, signature_group = self.draw(
+            self, origin=ORIGIN, scale=1.0
+        )
         self.wait(10)
         self.play(
-            FadeOut(Group(VGroup(paragraph, person), signature_group), run_time=2)
+            FadeOut(
+                Group(VGroup(paragraph, source, person), signature_group), run_time=2
+            )
         )
         self.wait(2)
 
@@ -81,19 +98,21 @@ class EinsteinQuote(Scene):
             / "people"
             / "Einstein1.svg"
         ).scale(2.0)
-        paragraph, person, signature_group = person_with_quote(
+        paragraph, source, person, signature_group = person_with_quote(
             scene,
             person_svg=person_svg,
             quote=(
-                '"So far as the laws of mathematics refer to reality,\nthey are not certain. '
-                'And so far as they are certain, \nthey do not refer to reality."'
+                '"As far as the laws of mathematics refer to reality,\nthey are not certain; '
+                'And as far as they are certain, \nthey do not refer to reality."'
             ),
+            # originally published in 1921 as a lecture delivered by Einstein at the Prussian Academy of Sciences
+            source="(Geometry and Experience, 1921)",
             signature=signature,
             origin=origin,
             scale=scale,
             left_shift=1,
         )
-        return paragraph, person, signature_group
+        return paragraph, source, person, signature_group
 
 
 if __name__ == "__main__":
