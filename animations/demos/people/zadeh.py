@@ -38,8 +38,8 @@ class Zadeh(Scene):
             quote=(
                 # '"As complexity rises, precise statements \nlose meaning '
                 # 'and meaningful \nstatements lose precision."'
-                "Fuzzy logic is not fuzzy. Basically, fuzzy logic is a \n"
-                "precise logic of imprecision and approximate \nreasoning."
+                "\"Fuzzy logic is not fuzzy. Basically, fuzzy logic is a \n"
+                "precise logic of imprecision and approximate \nreasoning.\""
             ),
             # source="(Is there a need for fuzzy logic?, 2008)",
             source="(Zadeh, 2008)",

@@ -40,7 +40,7 @@ def pros_and_cons() -> SlideWithBlocks:
                 "Flexible",
                 ItemizedList(
                     items=[
-                        "Network morphism - add neurons or layers (i.e., neurogenesis)",
+                        "Network morphism (i.e., neurogenesis)",
                         bib.slide_short_cite("draelos_neurogenesis_2016"),
                         bib.slide_short_cite("maile_when_2022"),
                     ]

@@ -3,10 +3,12 @@ from manim import *
 from manim_slides import Slide
 
 from animations.beamer.slides import SlideWithBlocks, PromptSlide
+from animations.common import MANIM_BLUE
 from animations.demos.graph_example import GraphPair
 from animations.demos.timeline_helper import get_noteworthy_events, TimelineEvent
 from animations.demos.ww2 import CaptionedSVG
 
+config.disable_caching = True  # may need to disable caching for the timeline
 config.background_color = WHITE
 light_theme_style = {
     "fill_color": BLACK,
@@ -22,27 +24,44 @@ class Timeline(Slide, MovingCameraScene):
         timeline_igraph: ig.Graph = ig.Graph(directed=True)
 
         timeline_events = get_noteworthy_events()
-        num_of_vertices = len(timeline_events) + 1
-        timeline_igraph.add_vertices(num_of_vertices)
-        # timeline_igraph.vs["name"] = ["2010", "2015", "2020", "2025", "2030"]
 
-        edges = list(zip(range(0, num_of_vertices - 1), range(1, num_of_vertices)))
-
-        timeline_igraph.add_edges(edges)
-
+        # get the layout for the possible graph which will implement the timeline
         prev_x_location: float = 0
         prev_timeline_event = None
         digraph_layout = {0: (prev_x_location, 0, 0)}
-        for idx, timeline_event in enumerate(timeline_events):
-            spacing = 5  # a good spacing for the timeline I found works well
-            if isinstance(prev_timeline_event, str) and isinstance(timeline_event, str):
-                # two consecutive strings do not need as much spacing
-                spacing = 1
-            # technically we never use the vertex located at index 0
-            new_x_location = prev_x_location + spacing
-            digraph_layout[idx + 1] = (new_x_location, 0, 0)
-            prev_timeline_event = timeline_event
-            prev_x_location = new_x_location
+        global_idx = 0
+        for timeline_event in timeline_events:
+            if not isinstance(timeline_event, dict):
+                spacing = 5  # a good spacing for the timeline I found works well
+                if isinstance(prev_timeline_event, str) and isinstance(timeline_event, str):
+                    # two consecutive strings do not need as much spacing
+                    spacing = 1
+                # technically we never use the vertex located at index 0
+                new_x_location = prev_x_location + spacing
+                digraph_layout[max(digraph_layout.keys()) + 1] = (new_x_location, 0, 0)
+                prev_timeline_event = timeline_event
+                prev_x_location = new_x_location
+            else:
+                # this is a dictionary, which means we breeze over the timeline,
+                # but we still need to account for the spacing and timeline pins
+                for publication in list(timeline_event.values())[0]:
+                    spacing = 5  # a good spacing for the timeline I found works well
+                    if isinstance(prev_timeline_event, str) and isinstance(publication, str):
+                        # two consecutive strings do not need as much spacing
+                        spacing = 1
+                    # technically we never use the vertex located at index 0
+                    new_x_location = prev_x_location + spacing
+                    digraph_layout[max(digraph_layout.keys()) + 1] = (new_x_location, 0, 0)
+                    prev_timeline_event = publication
+                    prev_x_location = new_x_location
+
+        # now create the necessary graph components based on the above needed layout
+        # num_of_vertices = len(timeline_events) + 1
+        num_of_vertices = len(digraph_layout)
+        timeline_igraph.add_vertices(num_of_vertices)
+        # timeline_igraph.vs["name"] = ["2010", "2015", "2020", "2025", "2030"]
+        edges = list(zip(range(0, num_of_vertices - 1), range(1, num_of_vertices)))
+        timeline_igraph.add_edges(edges)
 
         # consistent spacing for the timeline
         # spacing = 5  # a good spacing for the timeline I found works well
@@ -100,140 +119,306 @@ class Timeline(Slide, MovingCameraScene):
         running_offset: float = (
             0  # offset for the timeline events to account for thought slides
         )
-        for idx, edge in enumerate(edges):
-            slide = timeline_events[idx]
-            source_vertex_idx, target_vertex_idx = edge[0], edge[1]
-            target_vertex = timeline.digraph.vertices[target_vertex_idx]
+        idx = -1
+        # for idx, edge in enumerate(edges):
+        timeline_lookup = {}  # stores the index in relation to the manim objects
+        next_brace_direction = DOWN  # alternate the direction of the braces to avoid overlap
+        for slides in timeline_events:
+            # slides = timeline_events[idx]
+            print(f"Processing slide {idx + 1} of {len(timeline_events)}: {type(slides)}")
 
-            line: Line = timeline.digraph.edges[edge[0], edge[1]]
-            # apply a slight offset to the target vertex, to account for the thought slides, if any
-            if running_offset > 0:
-                target_vertex.shift(running_offset * RIGHT)
-                line.shift(running_offset * RIGHT)
-            self.play(Create(line), self.camera.frame.animate.move_to(target_vertex))
-            self.play(Create(target_vertex))
+            if isinstance(slides, dict):
+                # then this is an era with multiple publications
+                overview_str: str = list(slides.keys())[0]  # get the high-level overview string
+                slides = list(slides.values())[0]  # get the list of publications
+                play_as_ready = False  # play the animations once all slides are ready
+                default_run_time = 0.25  # speed up the animations for publications
+                v_group_to_render = VGroup()  # the group of manim objects to render
+            else:
+                slides = [slides]  # convert to a list for consistency
+                play_as_ready = True  # play the animations as soon as the slide is ready
+                default_run_time = 1  # default speed for the animations
+                v_group_to_render = None
 
-            vertex_coords = target_vertex.get_center()
+            slide_animations = []  # the list of animations to play for these slides
 
-            if isinstance(slide, TimelineEvent) or isinstance(slide, str):
-                # draw a time-stamped event from the timeline
-                direction = UP if idx % 2 == 0 else DOWN
-                # source_vertex_idx, target_vertex_idx = edge[0], edge[1]
-                # target_vertex = timeline.digraph.vertices[target_vertex_idx]
-                # line: Line = timeline.digraph.edges[edge[0], edge[1]]
-                # self.play(Create(line), self.camera.frame.animate.move_to(target_vertex))
-                # self.play(Create(target_vertex))
-                # self.play(self.camera.frame.animate.move_to(target_vertex).set(width=0.075))
+            for slide in slides:
+                idx += 1
+                print(idx, slide, len(edges))
+                edge = edges[idx]
+                source_vertex_idx, target_vertex_idx = edge[0], edge[1]
+                target_vertex = timeline.digraph.vertices[target_vertex_idx]
 
-                # vertex_coords = target_vertex.get_center()
-                pin: Line = Line(
-                    vertex_coords, vertex_coords + direction, color=BLACK, stroke_width=2
-                )
+                line: Line = timeline.digraph.edges[edge[0], edge[1]]
+                # apply a slight offset to the target vertex, to account for thought slides, if any
+                if running_offset > 0:
+                    target_vertex.shift(running_offset * RIGHT)
+                    line.shift(running_offset * RIGHT)
 
-                self.play(
-                    Create(pin),
-                    self.camera.frame.animate.move_to(vertex_coords + direction).set(
-                        width=10
-                    ),
-                )
-                if isinstance(slide, TimelineEvent):
+                if play_as_ready and v_group_to_render is None:
+                    self.play(
+                        AnimationGroup(
+                            Create(line),
+                            self.camera.frame.animate.move_to(target_vertex),
+                            run_time=default_run_time,
+                        )
+                    )
+                    self.play(Create(target_vertex, run_time=default_run_time))
+                else:
+                    v_group_to_render.add(line)
+                    v_group_to_render.add(target_vertex)
+
+                # store the manim objects so far
+                timeline_lookup[idx] = VGroup(line, target_vertex)
+
+                vertex_coords = target_vertex.get_center()
+
+                if isinstance(slide, TimelineEvent) or isinstance(slide, str):
+                    # draw a time-stamped event from the timeline
+                    direction = UP if idx % 2 == 0 else DOWN
+                    pin: Line = Line(
+                        vertex_coords, vertex_coords + direction, color=BLACK, stroke_width=2
+                    )
+
+                    if play_as_ready:
+                        slide_animations.append(
+                            AnimationGroup(
+                                Create(pin, run_time=default_run_time),
+                                self.camera.frame.animate.move_to(vertex_coords + direction).set(
+                                    width=10
+                                ),
+                                run_time=default_run_time
+                            )
+                        )
+                    else:
+                        slide_animations.append(Create(pin, run_time=default_run_time))
+
+                    # store the pin
+                    timeline_lookup[idx].add(pin)
+
+                    if v_group_to_render is not None:
+                        v_group_to_render.add(pin)
+
+                    if isinstance(slide, TimelineEvent):
+                        boundary = Rectangle(color=BLACK, stroke_width=2).move_to(
+                            vertex_coords + (2 * direction)
+                        )
+                        if slide.poi is not None:  # point of interest takes precedence
+                            timestamp_str = f"{slide.poi} {slide.era_notation}"
+                        elif slide.start_year == slide.end_year:
+                            timestamp_str = f"{slide.start_year} {slide.era_notation}"
+                        else:
+                            timestamp_str = (
+                                f"{slide.start_year} - {slide.end_year} {slide.era_notation}"
+                            )
+                        timestamp = Text(
+                            timestamp_str,
+                            font="TeX Gyre Termes",
+                            color=BLACK,
+                        ).next_to(boundary, direction)
+
+                        # store the boundary and timestamp
+                        timeline_lookup[idx].add(boundary)
+                        timeline_lookup[idx].add(timestamp)
+
+                        if v_group_to_render is not None:
+                            v_group_to_render.add(boundary)
+                            v_group_to_render.add(timestamp)
+
+                        slide_animations.append(
+                            Create(VGroup(boundary, timestamp), run_time=default_run_time)
+                        )
+                    else:
+                        # this is a string, treat it as a publication citation
+                        amount_to_rotate: float = (PI / 4) * (1 if idx % 2 == 0 else -1)
+                        publication = Text(
+                            slide,
+                            font="TeX Gyre Termes",
+                            color=BLACK,
+                        ).rotate(amount_to_rotate).scale(
+                            0.15
+                        ).next_to(pin, direction).shift(0.5 * RIGHT)
+                        #     0.5 * (RIGHT if idx % 2 == 0 else LEFT)
+                        # )  # shift it to the right if UP else shift to the left if DOWN
+
+                        if play_as_ready:
+                            # save the state of the publication
+                            publication.save_state()
+                            old_width = publication.width
+                            old_height = publication.height
+
+                            # temporarily undo publication flip for easier reading and scale it
+                            publication.rotate(-1 * amount_to_rotate)
+                            publication.scale(0.25)
+                            publication.next_to(pin, direction)
+
+                            slide_animations.append(
+                                AnimationGroup(
+                                    Create(publication),
+                                    self.camera.frame.animate.move_to(publication.get_center()).set(
+                                        width=publication.width + 0.5,
+                                        height=publication.height + 0.5
+                                    ),
+                                    run_time=default_run_time
+                                )
+                            )
+                            self.play(Succession(*slide_animations))
+                            self.wait(1)
+                            self.next_slide()
+
+                            self.play(
+                                Restore(publication),
+                                self.camera.frame.animate.move_to(publication.get_center()).set(
+                                    width=old_width + 2, height=old_height + 2
+                                ),
+                                # rotate with respect to the publication's center
+                                # self.camera.frame.animate.rotate(
+                                #     amount_to_rotate, axis=np.array([0, 1, 0]), #about_point=publication.get_center()
+                                # ).move_to(publication.get_center()).set(
+                                #     width=old_width, height=old_height
+                                # ),
+                            )
+                        else:
+                            slide_animations.append(Create(publication))
+
+                        # store the publication
+                        timeline_lookup[idx].add(publication)
+
+                        if v_group_to_render is not None:
+                            v_group_to_render.add(publication)
+
+                        continue  # done with this slide
+                else:
+                    direction = RIGHT
+                    # we assume that the slide is more of a thought experiment/bubble
                     boundary = Rectangle(color=BLACK, stroke_width=2).move_to(
                         vertex_coords + (2 * direction)
                     )
-                    self.play(Create(boundary))
-                    if slide.poi is not None:  # point of interest takes precedence
-                        timestamp_str = f"{slide.poi} {slide.era_notation}"
-                    elif slide.start_year == slide.end_year:
-                        timestamp_str = f"{slide.start_year} {slide.era_notation}"
-                    else:
-                        timestamp_str = (
-                            f"{slide.start_year} - {slide.end_year} {slide.era_notation}"
+                    running_offset += boundary.width
+
+                    # store the boundary
+                    timeline_lookup[idx].add(boundary)
+
+                    if v_group_to_render is not None:
+                        v_group_to_render.add(boundary)
+
+                    slide_animations.append(
+                        AnimationGroup(
+                            GrowFromPoint(boundary, vertex_coords),
+                            self.camera.frame.animate.move_to(vertex_coords).set(width=10),
+                            run_time=default_run_time
                         )
-                    timestamp = Text(
-                        timestamp_str,
-                        font="TeX Gyre Termes",
-                        color=BLACK,
-                    ).next_to(boundary, direction)
-                    self.play(Create(timestamp))
-                else:
-                    # this is a string, treat it as a publication citation
-                    publication = Text(
-                        slide,
-                        font="TeX Gyre Termes",
-                        color=BLACK,
-                    ).rotate(PI / 3).scale(0.2).next_to(pin, direction).shift(
-                        0.5 * (RIGHT if idx % 2 == 0 else LEFT)
-                    )  # shift it to the right if UP else shift to the left if DOWN
-                    self.play(
-                        Create(publication),
-                        self.camera.frame.animate.move_to(publication.get_center())
                     )
-                    continue  # done with this slide
-            else:
-                direction = RIGHT
-                # we assume that the slide is more of a thought experiment/bubble
-                boundary = Rectangle(color=BLACK, stroke_width=2).move_to(
-                    vertex_coords + (2 * direction)
-                )
-                running_offset += boundary.width
-                self.play(
-                    GrowFromPoint(boundary, vertex_coords),
-                    self.camera.frame.animate.move_to(vertex_coords).set(width=10),
-                )
-                # dot = Dot(vertex_coords + (boundary.width * RIGHT), color=BLACK)
-                # self.play(Create(dot, run_time=0.1))
+                    # uncomment to show a dot at the vertex, but this causes issues
+                    # dot = Dot(vertex_coords + (boundary.width * RIGHT), color=BLACK)
+                    # self.play(Create(dot, run_time=0.1))
 
-            self.wait(2)
-            self.next_slide()
+                if play_as_ready:  # has no effect at this time
+                    self.play(Succession(*slide_animations))
 
-            if isinstance(slide, TimelineEvent) or isinstance(slide, PromptSlide):
-                if not slide.skip:
+                self.wait(1)
+                self.next_slide()
+
+                ######################################################################
+                # the rest of this code is for how to zoom in on certain events/slides
+                ######################################################################
+
+                if isinstance(slide, TimelineEvent) or isinstance(slide, PromptSlide):
+                    if not slide.skip:
+                        # now zoom in on the event
+                        self.play(
+                            self.camera.frame.animate.move_to(boundary.get_center()).set(
+                                width=boundary.width
+                            )
+                        )
+                else:
                     # now zoom in on the event
                     self.play(
                         self.camera.frame.animate.move_to(boundary.get_center()).set(
                             width=boundary.width
                         )
                     )
-            else:
-                # now zoom in on the event
+
+                # show the event
+                origin_to_draw_at = self.camera.frame.get_center()
+                if isinstance(slide, TimelineEvent):
+                    event = slide.animation
+                    if slide.skip:
+                        origin_to_draw_at = boundary.get_center()
+                    if isinstance(event, CaptionedSVG):
+                        event.draw(origin=origin_to_draw_at, scale=0.25, target_scene=self)
+                    else:
+                        event.draw(self, origin=origin_to_draw_at, scale=0.25)
+                elif isinstance(slide, SlideWithBlocks):
+                    slide.draw(
+                        origin=boundary.get_top() - (boundary.height / 10),
+                        scale=0.15,
+                        target_scene=self,
+                    )
+                elif isinstance(slide, PromptSlide):
+                    if slide.skip:
+                        origin_to_draw_at = boundary.get_center()
+                    slide.draw(origin=origin_to_draw_at, scale=0.2, target_scene=self)
+                else:
+                    slide.draw(origin=origin_to_draw_at, scale=0.25, target_scene=self)
+                # event.draw(self, origin=self.camera.frame.get_center(), scale=0.25)
+                self.wait(1)
+                self.next_slide()
+                # move to the next location
                 self.play(
-                    self.camera.frame.animate.move_to(boundary.get_center()).set(
-                        width=boundary.width
+                    self.camera.frame.animate.move_to(target_vertex.get_center()).set(
+                        height=timeline.digraph.height + 2
                     )
                 )
 
-            # show the event
-            origin_to_draw_at = self.camera.frame.get_center()
-            if isinstance(slide, TimelineEvent):
-                event = slide.animation
-                if slide.skip:
-                    origin_to_draw_at = boundary.get_center()
-                if isinstance(event, CaptionedSVG):
-                    event.draw(origin=origin_to_draw_at, scale=0.25, target_scene=self)
-                else:
-                    event.draw(self, origin=origin_to_draw_at, scale=0.25)
-            elif isinstance(slide, SlideWithBlocks):
-                slide.draw(
-                    origin=boundary.get_top() - (boundary.height / 10),
-                    scale=0.2,
-                    target_scene=self,
+            if not play_as_ready:
+                # create a brace for everything but the line (located at index 0)
+                brace = Brace(
+                    v_group_to_render[1:], direction=next_brace_direction,
+                    color=BLACK, fill_opacity=0.75
                 )
-            elif isinstance(slide, PromptSlide):
-                if slide.skip:
-                    origin_to_draw_at = boundary.get_center()
-                slide.draw(origin=origin_to_draw_at, scale=0.2, target_scene=self)
-            else:
-                slide.draw(origin=origin_to_draw_at, scale=0.25, target_scene=self)
-            # event.draw(self, origin=self.camera.frame.get_center(), scale=0.25)
-            self.next_slide()
-            # move to the next location
-            self.play(
-                self.camera.frame.animate.move_to(target_vertex.get_center()).set(
-                    width=timeline.digraph.width
-                )
-            )
+                brace_text = Text(
+                    overview_str, color=BLACK, opacity=0.75
+                ).scale(scale_factor=0.5).next_to(brace, next_brace_direction)
+                v_group_to_render.add(brace)
+                v_group_to_render.add(brace_text)
+                # alternate brace's direction to avoid overlap if another publication overview comes
+                next_brace_direction = UP if (next_brace_direction == DOWN).all() else DOWN
 
-        self.play(Restore(self.camera.frame))
+                # fade in the group of manim objects
+                self.play(
+                    FadeIn(v_group_to_render, run_time=1),
+                    self.camera.frame.animate.move_to(v_group_to_render[1:].get_center()).set(
+                        width=v_group_to_render[1:].width + 2,
+                        height=v_group_to_render[1:].height + 2
+                    ),
+                )
+                # now play everything
+                # self.play(Succession(*slide_animations))
+                self.wait(1)
+
+                # self.play(Create(brace), Create(brace_text))
+                # self.play(self.camera.frame.animate.move_to(brace.get_center()).set(width=10))
+                self.next_slide(loop=True)
+                # now highlight it
+                # self.play(
+                #     AnimationGroup(
+                #         *[ApplyMethod(obj.set_color, RED) for obj in v_group_to_render]
+                #     )
+                # )
+                self.play(
+                    # do not circumscribe:
+                    # (1) the line (v_group_to_render[0]), (2) the brace (v_group_to_render[-2])
+                    # (3) or the brace's text (v_group_to_render[-1])
+                    Circumscribe(v_group_to_render[1:-2], color=MANIM_BLUE, run_time=2)
+                )
+
+                self.wait(1)
+                self.next_slide()
+
+        self.wait(1)
+        self.next_slide()
+        self.play(Restore(self.camera.frame, run_time=30))
         # self.play(Create(timeline.digraph, run_time=1))
         self.wait(10)
 
@@ -288,6 +473,7 @@ class Timeline(Slide, MovingCameraScene):
                     FadeIn(standby_text[last_idx], shift=UP * 1.5),
                 )
             )
+        self.wait(1)
         self.next_slide()
         self.play(FadeOut(standby_text[last_idx]))
 

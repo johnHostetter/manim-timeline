@@ -78,7 +78,7 @@ class Aristotle(Slide):
                 font="TeX Gyre Termes",
                 color=BLACK,
             )
-            .scale(0.5)
+            .scale(0.5).scale(scale_factor=scale)
             .next_to(paragraph_1, DOWN)
         )
         scene.next_slide()
