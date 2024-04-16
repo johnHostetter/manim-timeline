@@ -4,8 +4,9 @@ from dataclasses import dataclass
 from typing import Tuple, Set, Dict as DictType, List as ListType, Union as UnionType
 
 import torch
-from manim import *
 import igraph as ig
+from manim import *
+from manim_slides import Slide
 
 from animations.common import make_axes, AxisConfig, MANIM_BLUE
 from soft.datasets import SupervisedDataset
@@ -60,7 +61,7 @@ class GraphPair:
         return self.igraph.vs[index], self.digraph.vertices[index]
 
 
-class MyGraph(MovingCameraScene):
+class MyGraph(Slide, MovingCameraScene):
     def plot_graph(
         self, graph: ig.Graph, layer_types: ListType[str], direction
     ) -> GraphPair:
@@ -74,7 +75,7 @@ class MyGraph(MovingCameraScene):
         digraph.scale(1.35)
         digraph.rotate(PI / 2)
 
-        self.add(digraph)
+        # self.add(digraph)
 
         # Save the state of camera
         self.camera.frame.save_state()
@@ -86,6 +87,7 @@ class MyGraph(MovingCameraScene):
             run_time=5,
         )
         self.wait()
+        self.next_slide()
 
         # display the individual layers
 
@@ -137,12 +139,11 @@ class MyGraph(MovingCameraScene):
         for animation in animations:
             self.play(animation)
             self.wait()
+            self.next_slide()
 
-        self.wait(5)
-
-        for rewind_animation in rewind_animations:
-            self.play(rewind_animation)
-            self.wait()
+        self.play(LaggedStart(*rewind_animations, lag_ratio=0.5))
+        self.wait(1)
+        self.next_slide()
 
         return GraphPair(graph, digraph=digraph)
 
@@ -401,11 +402,13 @@ class MyGraph(MovingCameraScene):
             self.play(
                 Write(code),
                 self.camera.frame.animate.move_to(code.get_center()),
-                run_time=5,
+                run_time=3,
             )
-            self.wait(10)
+            self.wait(1)
+            self.next_slide()
             self.play(FadeOut(code))
-            self.wait()
+            self.wait(1)
+            self.next_slide()
 
     def construct(self):
         # iterate over creating each type of model and plotting its graph
@@ -432,7 +435,8 @@ class MyGraph(MovingCameraScene):
                 Write(displayed_model_text),
                 run_time=2,
             )
-            self.wait(5)
+            self.wait(1)
+            self.next_slide()
             self.play(Unwrite(displayed_model_text, run_time=2))
 
             # animate example code for the model
@@ -470,11 +474,13 @@ class MyGraph(MovingCameraScene):
                 )
 
         # focus on the Deep Neural Network
-        self.wait(5)
+        self.wait(1)
+        self.next_slide()
         self.play(
             self.camera.frame.animate.move_to(model_graphs["dnn"].digraph.get_center())
         )
-        self.wait(5)
+        self.wait(1)
+        self.next_slide()
 
         # now focus on a single neuron in the Deep Neural Network's hidden layer
         self.sample_neuron_and_show(
@@ -498,11 +504,13 @@ class MyGraph(MovingCameraScene):
             ],
         )
         # focus on the Neuro-Fuzzy Network
-        self.wait(5)
+        self.wait(1)
+        self.next_slide()
         self.play(
             self.camera.frame.animate.move_to(model_graphs["flc"].digraph.get_center())
         )
-        self.wait(5)
+        self.wait(1)
+        self.next_slide()
 
         # then focus on a single linguistic term in the Neuro-Fuzzy Network's premise layer
         self.sample_neuron_and_show(
@@ -517,7 +525,8 @@ class MyGraph(MovingCameraScene):
                 (AxisConfig(-6.0, 6.0, step=2.0), AxisConfig(0.0, 1.1, step=0.1)),
             ],
         )
-        self.wait(5)
+        self.wait(1)
+        self.next_slide()
 
         if all_models is not None:  # both models exist
             # then show the comparison between the two models
@@ -525,7 +534,8 @@ class MyGraph(MovingCameraScene):
             self.play(
                 self.camera.frame.animate.move_to(all_models.get_center()),
             )
-            self.wait(5)
+            self.wait(1)
+            self.next_slide()
 
     @staticmethod
     def create_igraph_digraph(edges, vs):
@@ -742,6 +752,8 @@ class MyGraph(MovingCameraScene):
             )
 
             # draw axes and the activation function
+            self.wait(1)
+            self.next_slide()
             self.play(Succession(*plotting_animations))
 
             if isinstance(activation_func, ContinuousFuzzySet):
@@ -862,13 +874,16 @@ class MyGraph(MovingCameraScene):
                 )  # this is more to highlight the shortcomings of fuzzy sets
 
                 for succession in [first_succession, second_succession]:
+                    self.wait(1)
+                    self.next_slide(loop=True)
                     self.play(succession, run_time=20)
-                    self.wait(5)
+
             prev_axes = axes
             prev_title = title
             prev_func_label = func_label
             prev_axis_labels = axis_labels
-            self.wait(5)
+            self.wait(1)
+            self.next_slide()
             # self.play(FadeOut(func_label))
             prev_activation_plot_func = activation_plot_func
         # get the bounding box of the DiGraph

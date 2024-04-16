@@ -107,14 +107,13 @@ class Timeline(Slide, MovingCameraScene):
 
         timeline = GraphPair(timeline_igraph, digraph=timeline_manim)
         self.camera.frame.move_to(timeline.digraph.get_center()).set(width=10)
-        self.camera.frame.save_state()
 
         # start_loc = timeline.digraph.vertices[0].get_center()
         # end_loc = timeline.digraph.vertices[num_of_vertices - 1].get_center()
         source_vertex_idx = 0
         source_vertex = timeline.digraph.vertices[source_vertex_idx]
-        self.play(Create(source_vertex.set_opacity(0.0)))
         self.play(self.camera.frame.animate.move_to(source_vertex).set(width=10))
+        self.camera.frame.save_state()
 
         running_offset: float = (
             0  # offset for the timeline events to account for thought slides
@@ -200,9 +199,7 @@ class Timeline(Slide, MovingCameraScene):
                         v_group_to_render.add(pin)
 
                     if isinstance(slide, TimelineEvent):
-                        boundary = Rectangle(color=BLACK, stroke_width=2).move_to(
-                            vertex_coords + (2 * direction)
-                        )
+                        boundary = self.make_boundary_at_coords(direction, vertex_coords)
                         if slide.poi is not None:  # point of interest takes precedence
                             timestamp_str = f"{slide.poi} {slide.era_notation}"
                         elif slide.start_year == slide.end_year:
@@ -291,9 +288,7 @@ class Timeline(Slide, MovingCameraScene):
                 else:
                     direction = RIGHT
                     # we assume that the slide is more of a thought experiment/bubble
-                    boundary = Rectangle(color=BLACK, stroke_width=2).move_to(
-                        vertex_coords + (2 * direction)
-                    )
+                    boundary = self.make_boundary_at_coords(direction, vertex_coords)
                     running_offset += boundary.width
 
                     # store the boundary
@@ -418,9 +413,43 @@ class Timeline(Slide, MovingCameraScene):
 
         self.wait(1)
         self.next_slide()
-        self.play(Restore(self.camera.frame, run_time=30))
-        # self.play(Create(timeline.digraph, run_time=1))
-        self.wait(10)
+        self.play(Restore(self.camera.frame, run_time=15))
+        origin_vertex: Dot = timeline.digraph.vertices[0]
+        self.play(
+            Succession(
+                Create(origin_vertex),
+                GrowFromPoint(
+                    self.make_boundary_at_coords(
+                        direction=LEFT, vertex_coords=origin_vertex.get_center()
+                    ),
+                    origin_vertex.get_center()
+                ), run_time=2
+            )
+        )
+        self.play(
+            Write(
+                Text(
+                    "Q&A", font="TeX Gyre Termes", color=BLACK
+                ).move_to(origin_vertex.get_center() + (2 * LEFT))
+            )
+        )
+        self.wait(1)
+
+    @staticmethod
+    def make_boundary_at_coords(direction, vertex_coords) -> Rectangle:
+        """
+        A helper method to create a boundary around the vertex coordinates.
+
+        Args:
+            direction: The direction to move the boundary.
+            vertex_coords: The coordinates of the vertex to create the boundary around.
+
+        Returns:
+            A rectangle boundary around the vertex coordinates.
+        """
+        return Rectangle(color=BLACK, stroke_width=2).move_to(
+            vertex_coords + (2 * direction)
+        )
 
     def greeting(self):
         standby_text = [
