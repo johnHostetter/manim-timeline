@@ -10,6 +10,7 @@ from manim import *
 from animations.beamer.presentation.bibtex import BibTexManager
 from animations.beamer.presentation.introduction.proposal import proposal
 from animations.beamer.slides import PromptSlide
+from animations.demos.methods.clip import CLIPDemo
 from animations.demos.people.aristotle import Aristotle
 from animations.demos.people.bertrand_russell import BertrandRussellQuote
 from animations.demos.people.einstein import EinsteinQuote
@@ -64,136 +65,137 @@ def make_ww2_slide(file_name: str, poi: int, caption: str) -> TimelineEvent:
 def get_noteworthy_events() -> ListType:
     bib_manager = BibTexManager()
     return [
-        dnn_pros_and_cons(),
+        # dnn_pros_and_cons(),
         PromptSlide(prompt="Could we have done better?", skip=True),
-        nfn_pros_and_cons(),
-        proposal(),
-        PromptSlide(prompt='But before we begin - what does "fuzzy" mean?', skip=True),
-        # PromptSlide(prompt="And do we even need it?", skip=True),
+        # CLIPDemo(),
+        # nfn_pros_and_cons(),
+        # proposal(),
+        # PromptSlide(prompt='But before we begin - what does "fuzzy" mean?', skip=True),
+        # # PromptSlide(prompt="And do we even need it?", skip=True),
+        # # TimelineEvent(
+        # #     start_year=470,
+        # #     end_year=399,
+        # #     era="Ancient Greece",
+        # #     era_notation="BCE",
+        # #     event="Socrates",
+        # #     animation=Socrates,
+        # # ),
         # TimelineEvent(
-        #     start_year=470,
-        #     end_year=399,
+        #     start_year=427,
+        #     end_year=348,
         #     era="Ancient Greece",
         #     era_notation="BCE",
-        #     event="Socrates",
-        #     animation=Socrates,
+        #     event="Plato",
+        #     animation=PlatoTheoryOfForms,
         # ),
-        TimelineEvent(
-            start_year=427,
-            end_year=348,
-            era="Ancient Greece",
-            era_notation="BCE",
-            event="Plato",
-            animation=PlatoTheoryOfForms,
-        ),
-        TimelineEvent(
-            start_year=384,
-            end_year=322,
-            era="Ancient Greece",
-            era_notation="BCE",
-            event="Aristotle",
-            animation=Aristotle,
-        ),
-        TimelineEvent(
-            start_year=1879,
-            end_year=1955,
-            poi=1921,  # the year of the quote
-            era="Common Era",
-            era_notation="CE",
-            event="Albert Einstein",
-            animation=EinsteinQuote,
-        ),
-        TimelineEvent(
-            start_year=1872,
-            end_year=1970,
-            poi=1923,  # the year of the quote (Vagueness)
-            era="Common Era",
-            era_notation="CE",
-            event="Bertrand Russell",
-            animation=BertrandRussellQuote,
-        ),
-        TimelineEvent(
-            start_year=1909,
-            end_year=1988,
-            poi=1937,
-            era="Common Era",
-            era_notation="CE",
-            event="Max Black",
-            animation=MaxBlack,
-        ),
-        make_ww2_slide(
-            "germans_in_poland_1939",
-            1939,
-            caption="Nazi Germany invades Poland (September 1, 1939).",
-        ),
-        make_ww2_slide(
-            "first_mass_bombing_in_london_sept_7_1940",
-            1940,
-            caption="First mass bombing in London (September 7, 1940).",
-        ),
-        # make_ww2_slide(
-        #     "germans_attack_soviets_eastern_front_june_22_1941",
-        #     1941,
-        #     "Germans attack Soviets on the Eastern Front (June 22, 1941).",
+        # TimelineEvent(
+        #     start_year=384,
+        #     end_year=322,
+        #     era="Ancient Greece",
+        #     era_notation="BCE",
+        #     event="Aristotle",
+        #     animation=Aristotle,
+        # ),
+        # TimelineEvent(
+        #     start_year=1879,
+        #     end_year=1955,
+        #     poi=1921,  # the year of the quote
+        #     era="Common Era",
+        #     era_notation="CE",
+        #     event="Albert Einstein",
+        #     animation=EinsteinQuote,
+        # ),
+        # TimelineEvent(
+        #     start_year=1872,
+        #     end_year=1970,
+        #     poi=1923,  # the year of the quote (Vagueness)
+        #     era="Common Era",
+        #     era_notation="CE",
+        #     event="Bertrand Russell",
+        #     animation=BertrandRussellQuote,
+        # ),
+        # TimelineEvent(
+        #     start_year=1909,
+        #     end_year=1988,
+        #     poi=1937,
+        #     era="Common Era",
+        #     era_notation="CE",
+        #     event="Max Black",
+        #     animation=MaxBlack,
         # ),
         # make_ww2_slide(
-        #     "pearl_harbor_dec_7_1941",
-        #     1941,
-        #     "Pearl Harbor attacked by Japan (December 7, 1941).",
+        #     "germans_in_poland_1939",
+        #     1939,
+        #     caption="Nazi Germany invades Poland (September 1, 1939).",
         # ),
         # make_ww2_slide(
-        #     "soviet_offensive_against_germans_in_stalingrad_feb_1943",
-        #     1942,
-        #     "Battle of Stalingrad (August 23, 1942).",
+        #     "first_mass_bombing_in_london_sept_7_1940",
+        #     1940,
+        #     caption="First mass bombing in London (September 7, 1940).",
         # ),
-        make_ww2_slide(
-            "d_day_june_6_1944",
-            1944,
-            "D-Day: Allied invasion of Normandy (June 6, 1944).",
-        ),
+        # # make_ww2_slide(
+        # #     "germans_attack_soviets_eastern_front_june_22_1941",
+        # #     1941,
+        # #     "Germans attack Soviets on the Eastern Front (June 22, 1941).",
+        # # ),
+        # # make_ww2_slide(
+        # #     "pearl_harbor_dec_7_1941",
+        # #     1941,
+        # #     "Pearl Harbor attacked by Japan (December 7, 1941).",
+        # # ),
+        # # make_ww2_slide(
+        # #     "soviet_offensive_against_germans_in_stalingrad_feb_1943",
+        # #     1942,
+        # #     "Battle of Stalingrad (August 23, 1942).",
+        # # ),
         # make_ww2_slide(
-        #     "nagasaki_aug_9_1945", 1945, "Nagasaki bombed by the US (August 9, 1945)."
+        #     "d_day_june_6_1944",
+        #     1944,
+        #     "D-Day: Allied invasion of Normandy (June 6, 1944).",
         # ),
-        TimelineEvent(
-            start_year=1921,
-            end_year=2017,
-            poi=1965,
-            era="Common Era",
-            era_notation="CE",
-            event="Lotfi A. Zadeh",
-            animation=Zadeh,
-        ),
-        bib_manager.cite_entry(bib_manager["zadeh_fuzzy_sets"]),  # 1965
-        bib_manager.cite_entry(bib_manager["fuzzy_dp"]),  # 1970
-        # mamdani FLC
-        bib_manager.cite_entry(bib_manager["Mamdani1974ApplicationsOF"]),
-        # relationship to lukasiewicz logic
-        # bib_manager.cite_entry(bib_manager["giles1976lukasiewicz"]),
-        # online
-        # bib_manager.cite_entry(bib_manager["barto_neuronlike_1983"]),
-        # fuzzy logic formalized by zadeh
-        bib_manager.cite_entry(bib_manager["fuzzy_logic"]),  # 1988
-        # possibly first NFN?
-        bib_manager.cite_entry(bib_manager["lin_neural-network-based_1991"]),  # 1991
-        # online fuzzy RL
-        {
-            "Online Fuzzy\nReinforcement\nLearning": [
-                bib_manager.cite_entry(bib_manager["aric_1"]),  # 1991
-                bib_manager.cite_entry(bib_manager["berenji_learning_1992"]),  # 1991
-            ]
-        },
-        # # Q-learning
-        # bib_manager.cite_entry(bib_manager["Watkins1992"]),  # 1992
-        # Wang-Mendel Method for fuzzy logic rules
-        bib_manager.cite_entry(bib_manager["wang_generating_1992"]),  # 1992
+        # # make_ww2_slide(
+        # #     "nagasaki_aug_9_1945", 1945, "Nagasaki bombed by the US (August 9, 1945)."
+        # # ),
+        # TimelineEvent(
+        #     start_year=1921,
+        #     end_year=2017,
+        #     poi=1965,
+        #     era="Common Era",
+        #     era_notation="CE",
+        #     event="Lotfi A. Zadeh",
+        #     animation=Zadeh,
+        # ),
+        # bib_manager.cite_entry(bib_manager["zadeh_fuzzy_sets"]),  # 1965
+        # bib_manager.cite_entry(bib_manager["fuzzy_dp"]),  # 1970
+        # # mamdani FLC
+        # bib_manager.cite_entry(bib_manager["Mamdani1974ApplicationsOF"]),
+        # # relationship to lukasiewicz logic
+        # # bib_manager.cite_entry(bib_manager["giles1976lukasiewicz"]),
+        # # online
+        # # bib_manager.cite_entry(bib_manager["barto_neuronlike_1983"]),
+        # # fuzzy logic formalized by zadeh
+        # bib_manager.cite_entry(bib_manager["fuzzy_logic"]),  # 1988
+        # # possibly first NFN?
+        # bib_manager.cite_entry(bib_manager["lin_neural-network-based_1991"]),  # 1991
+        # # online fuzzy RL
+        # # {
+        # #     "Online Fuzzy\nReinforcement\nLearning": [
+        # #         bib_manager.cite_entry(bib_manager["aric_1"]),  # 1991
+        # #         bib_manager.cite_entry(bib_manager["berenji_learning_1992"]),  # 1991
+        # #     ]
+        # # },
+        # # # Q-learning
+        # # bib_manager.cite_entry(bib_manager["Watkins1992"]),  # 1992
+        # # Wang-Mendel Method for fuzzy logic rules
+        # bib_manager.cite_entry(bib_manager["wang_generating_1992"]),  # 1992
         # defend fuzzy logic
-        {
-            "FLCs are\nuniversal function\napproximators": [
-                bib_manager.cite_entry(bib_manager["wang_mendel_universal_function_approx"]),
-                # 1992
-                bib_manager.cite_entry(bib_manager["wang_universal_function_approx"]),  # 1992
-            ],
-        },
+        # {
+        #     "FLCs are\nuniversal function\napproximators": [
+        #         bib_manager.cite_entry(bib_manager["wang_mendel_universal_function_approx"]),
+        #         # 1992
+        #         bib_manager.cite_entry(bib_manager["wang_universal_function_approx"]),  # 1992
+        #     ],
+        # },
         # # ANFIS
         # bib_manager.cite_entry(bib_manager["jang_anfis_1993"]),  # 1993
         # # self-organize NFNs
@@ -202,12 +204,12 @@ def get_noteworthy_events() -> ListType:
         # bib_manager.cite_entry(bib_manager["fql_and_dynamic_fql"]),  # 1994 first FQL paper
         # bib_manager.cite_entry(bib_manager["elkan_paradoxical_1994"]),
         # 1994 (defend f.l. w/ berenji & zadeh)
-        {
-            "Additional proof\nFLCs are universal\nfunction approximators": [
-                bib_manager.cite_entry(bib_manager["kosko_1994"]),  # 1994
-                bib_manager.cite_entry(bib_manager["zeng_approximation_1995"]),  # 1995
-            ],
-        },
+        # {
+        #     "Additional proof\nFLCs are universal\nfunction approximators": [
+        #         bib_manager.cite_entry(bib_manager["kosko_1994"]),  # 1994
+        #         bib_manager.cite_entry(bib_manager["zeng_approximation_1995"]),  # 1995
+        #     ],
+        # },
         # # self-organize
         # bib_manager.cite_entry(bib_manager["zhou_popfnn_1996"]),  # 1996 first POPFNN
         # # broader applications
@@ -220,12 +222,12 @@ def get_noteworthy_events() -> ListType:
         # bib_manager.cite_entry(bib_manager["lin_granular_1999"]),  # 1999 zadeh w/ Kacprzyk, Janusz
         # bib_manager.cite_entry(bib_manager["quek_popfnn-aars_1999"]),  # 1999 POPFNN-AARS
         # equivalence to ANNs/DNNs
-        {
-            "FLCs are\nmathematically \nequivalent\nto ANNs/DNNs": [
-                bib_manager.cite_entry(bib_manager["fls_ann_equivalence"]),  # 2000
-                bib_manager.cite_entry(bib_manager["black_box_ext"]),  # 2002
-            ],
-        },
+        # {
+        #     "FLCs are\nmathematically \nequivalent\nto ANNs/DNNs": [
+        #         bib_manager.cite_entry(bib_manager["fls_ann_equivalence"]),  # 2000
+        #         bib_manager.cite_entry(bib_manager["black_box_ext"]),  # 2002
+        #     ],
+        # },
         # # DENFIS
         # bib_manager.cite_entry(bib_manager["kasabov_denfis_2002"]),  # 2002
         # # back to equivalence to ANNs/DNNs
@@ -233,23 +235,24 @@ def get_noteworthy_events() -> ListType:
         # bib_manager.cite_entry(bib_manager["ang_popfnn-cris_2003"]),  # 2003 update to POPFNN
         # bib_manager.cite_entry(bib_manager["are_ann_white_boxes"]),  # 2005
         # rough set w/ NFN
-        {
-            "Rough set theory\n with NFN": [
-                bib_manager.cite_entry(bib_manager["ang_rspop_2005"]),  # 2005
-                bib_manager.cite_entry(bib_manager["ang_stock_2006"]),  # 2006
-            ]
-        },
+        # {
+        #     "Rough set theory\n with NFN": [
+        #         bib_manager.cite_entry(bib_manager["ang_rspop_2005"]),  # 2005
+        #         bib_manager.cite_entry(bib_manager["ang_stock_2006"]),  # 2006
+        #     ]
+        # },
         # # return to CWW
         # bib_manager.cite_entry(bib_manager["mendel_computing_2007"]),  # argues CWW to be embraced
         # bib_manager.cite_entry(bib_manager["is_there_a_need_for_fuzzy_logic"]),  # 2008
         # # genetic fuzzy systems for high dimensions
         # bib_manager.cite_entry(bib_manager["gacto_handling_2009"]),  # 2009
         # bib_manager.cite_entry(bib_manager["kacprzyk_computing_2010"]),  # 2010 CWW is implementable
-        # # CLIP
-        # bib_manager.cite_entry(bib_manager["tung_safin_2011"]),  # 2011
+        # CLIP
+        bib_manager.cite_entry(bib_manager["tung_safin_2011"]),  # 2011
+        CLIPDemo(),
         # bib_manager.cite_entry(bib_manager["wiering_batch_2012"]),  # 2012, batch RL
-        # # genetic fuzzy systems for high dimensions
-        # bib_manager.cite_entry(bib_manager["marquez_efficient_2012"]),  # 2012
+        # genetic fuzzy systems for high dimensions
+        bib_manager.cite_entry(bib_manager["marquez_efficient_2012"]),  # 2012
         # # DENFIS for RL
         # bib_manager.cite_entry(bib_manager["denfis_rl"]),  # 2014
         # # update rough set w/ NFN
@@ -278,13 +281,13 @@ def get_noteworthy_events() -> ListType:
         # # },
         # bib_manager.cite_entry(bib_manager["cql"]),  # 2020 CQL
         # 2021 Zadeh recognized for XAI
-        {
-            "Zadeh further \nrecognized for \nhis XAI efforts": [
-                bib_manager.cite_entry(bib_manager["bouchon-meunier_lotfi_2021"]),
-                bib_manager.cite_entry(bib_manager["rayz_why_2022"]), # 2022, why f.l. is needed for XAI
-                bib_manager.cite_entry(bib_manager["noauthor_towards_nodate"]),  # 2022, toward f.l. XAI
-            ],
-        },
+        # {
+        #     "Zadeh further \nrecognized for \nhis XAI efforts": [
+        #         bib_manager.cite_entry(bib_manager["bouchon-meunier_lotfi_2021"]),
+        #         bib_manager.cite_entry(bib_manager["rayz_why_2022"]), # 2022, why f.l. is needed for XAI
+        #         bib_manager.cite_entry(bib_manager["noauthor_towards_nodate"]),  # 2022, toward f.l. XAI
+        #     ],
+        # },
         # # time for me
         # bib_manager.cite_entry(bib_manager["hostetter2023leveraging"]),  # 2023 APFRB
         # bib_manager.cite_entry(bib_manager["hostetter2023self"]),  # 2023 CEW

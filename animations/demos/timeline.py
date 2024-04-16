@@ -5,6 +5,7 @@ from manim_slides import Slide
 from animations.beamer.slides import SlideWithBlocks, PromptSlide
 from animations.common import MANIM_BLUE
 from animations.demos.graph_example import GraphPair
+from animations.demos.methods.clip import CLIPDemo
 from animations.demos.timeline_helper import get_noteworthy_events, TimelineEvent
 from animations.demos.ww2 import CaptionedSVG
 
@@ -354,8 +355,12 @@ class Timeline(Slide, MovingCameraScene):
                     if slide.skip:
                         origin_to_draw_at = boundary.get_center()
                     slide.draw(origin=origin_to_draw_at, scale=0.2, target_scene=self)
-                else:
+                else:  # e.g., CLIPDemo
+                    # try:
                     slide.draw(origin=origin_to_draw_at, scale=0.25, target_scene=self)
+                    # except TypeError:
+                    #     print(type(slide), slide)
+                    #     raise TypeError("The slide is not a recognized type.")
                 # event.draw(self, origin=self.camera.frame.get_center(), scale=0.25)
                 self.wait(1)
                 self.next_slide()
