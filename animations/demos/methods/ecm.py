@@ -1,6 +1,7 @@
 import torch
 
 from manim import *
+from manim_slides import Slide
 from time import time
 from copy import deepcopy
 from sklearn import manifold
@@ -120,79 +121,92 @@ def extract_sequence(tsne, X):
     return np.array(Y_seq)
 
 
-def run_ecm(scene, axes, tsne_X, X, visited_X, env):
-    animations, successions, rewind_animations = [], [], []
-    visited_clusters = set()
-    old_clusters_supports = np.array([0.0])
-    for iter, tsne_x in enumerate(tsne_X):  # get the last tsne X
-        tsne_X = (tsne_X - tsne_X.min(0)[None, :]) / (
-            tsne_X.max(0)[None, :] - tsne_X.min(0)[None, :]
-        )
-
-        config = load_configuration()
-        with config.unfreeze():
-            config.clustering.distance_threshold = 0.4
-        labeled_clusters: LabeledClusters = ECM(
-            SupervisedDataset(inputs=torch.tensor(tsne_X[: iter + 1]), targets=None),
-            config=config,
-        )
-        new_clusters_supports = np.array(labeled_clusters.supports)
-        dot = scene.data_dots[iter]
-        if len(new_clusters_supports) > len(
-            old_clusters_supports
-        ):  # a new cluster identified with x
-            cluster_idx = len(new_clusters_supports) - 1
-        else:
-            cluster_idx = np.argmax(new_clusters_supports - old_clusters_supports)
-        previous_spot_dot = deepcopy(dot)
-        scene.add(previous_spot_dot)
-        animations.append(previous_spot_dot.animate.set_opacity(0.25))
-        center = labeled_clusters.clusters.centers[cluster_idx].detach().numpy()
-        circle = Circle(radius=config.clustering.distance_threshold)
-        circle.set_stroke(str(ItemColor.ACTIVE_1), 3)
-        circle.move_to(axes.c2p(center[0], center[1]))
-        animations.append(dot.animate.move_to(axes.c2p(center[0], center[1])))
-        animations.append(GrowFromCenter(circle))
-
-        # display the exemplar
-        print(iter)
-        if tuple(center) not in visited_clusters:
-            state = X[iter].detach().numpy()
-            if tuple(state) not in visited_X:
-                cart_pole_img = display_cart_pole(env, state).scale(1e-2)
-                cart_pole_img.move_to(axes.c2p(center[0], center[1]))
-                successions.append(
-                    Succession(
-                        FadeIn(cart_pole_img),
-                        ScaleInPlace(cart_pole_img, 75),
-                        Wait(run_time=5),
-                        ScaleInPlace(cart_pole_img, 1e-3),
-                        FadeOut(cart_pole_img),
-                    )
-                )
-                visited_X.add(tuple(state))
-                # break  # exit for loop
-
-        visited_clusters.add(tuple(center))
-
-        rewind_animations.append(Uncreate(circle))
-        old_clusters_supports = new_clusters_supports
-    scene.play(*animations)
-    for succession in successions:
-        scene.play(succession)
-    return rewind_animations
-
-
-class ECMDemo(Scene):
+class ECMDemo(Slide, MovingCameraScene):
     def __init__(self, **kwargs):
         super().__init__()
-        background = ImageMobject("background.png").scale(2).set_color("#FFFFFF")
-        self.add(background)
+        self.default_scale_multiplier: float = 5.0
+        # background = ImageMobject("background.png").scale(2).set_color("#FFFFFF")
+        # self.add(background)
+
+    def run_ecm(self, scene, axes, tsne_X, X, visited_X, env, scale):
+        animations, successions, rewind_animations = [], [], []
+        visited_clusters = set()
+        old_clusters_supports = np.array([0.0])
+        for iter, tsne_x in enumerate(tsne_X):  # get the last tsne X
+            tsne_X = (tsne_X - tsne_X.min(0)[None, :]) / (
+                    tsne_X.max(0)[None, :] - tsne_X.min(0)[None, :]
+            )
+
+            config = load_configuration()
+            with config.unfreeze():
+                config.clustering.distance_threshold = 0.4
+            labeled_clusters: LabeledClusters = ECM(
+                SupervisedDataset(inputs=torch.tensor(tsne_X[: iter + 1]), targets=None),
+                config=config,
+            )
+            new_clusters_supports = np.array(labeled_clusters.supports)
+            dot = self.data_dots[iter]
+            if len(new_clusters_supports) > len(
+                    old_clusters_supports
+            ):  # a new cluster identified with x
+                cluster_idx = len(new_clusters_supports) - 1
+            else:
+                cluster_idx = np.argmax(new_clusters_supports - old_clusters_supports)
+            previous_spot_dot = deepcopy(dot)
+            scene.add(previous_spot_dot)
+            animations.append(previous_spot_dot.animate.set_opacity(0.25))
+            center = labeled_clusters.clusters.centers[cluster_idx].detach().numpy()
+            circle = Circle(
+                radius=config.clustering.distance_threshold,
+                stroke_width=self.default_scale_multiplier * scale,
+            )
+            # reset stroke width too
+            circle.set_stroke(str(ItemColor.ACTIVE_1), self.default_scale_multiplier * scale)
+            circle.move_to(axes.c2p(center[0], center[1]))
+            animations.append(dot.animate.move_to(axes.c2p(center[0], center[1])))
+            animations.append(GrowFromCenter(circle))
+
+            # display the exemplar
+            print(iter)
+            if tuple(center) not in visited_clusters:
+                state = X[iter].detach().numpy()
+                if tuple(state) not in visited_X:
+                    cart_pole_img = display_cart_pole(env, state, scale).scale(
+                        scale_factor=(1e-2 * scale))
+                    cart_pole_img.move_to(axes.c2p(center[0], center[1]))
+                    successions.append(
+                        Succession(
+                            FadeIn(cart_pole_img),
+                            ScaleInPlace(cart_pole_img, 100),# * min((scale * 2), 1.0))),
+                            Wait(run_time=5),
+                            ScaleInPlace(cart_pole_img, (1e-3 * scale)),
+                            FadeOut(cart_pole_img),
+                        )
+                    )
+                    visited_X.add(tuple(state))
+                    # break  # exit for loop
+
+            visited_clusters.add(tuple(center))
+
+            rewind_animations.append(Uncreate(circle))
+            old_clusters_supports = new_clusters_supports
+        scene.play(*animations)
+        for succession in successions:
+            scene.play(succession)
+        return rewind_animations
 
     def construct(self):
-        method = Text("Evolving Clustering Method", color=BLACK)
-        self.play(Write(method, run_time=1))
-        self.wait(3)
+        self.draw(origin=ORIGIN, scale=1.0, target_scene=self)
+
+    def draw(self, origin, scale, target_scene=None):
+        if target_scene is None:
+            target_scene = self
+        method = Text(
+            "Evolving Clustering Method", color=BLACK
+        ).scale(scale_factor=scale).move_to(origin)
+        target_scene.play(Write(method, run_time=1))
+        target_scene.wait(3)
+        target_scene.next_slide()
         self.fuzzy_sets, self.data_dots = [], []
         X, env = get_data_and_env(n_samples=1000)
         tsne = TSNE(n_iter=900, perplexity=5, verbose=True)
@@ -200,9 +214,10 @@ class ECMDemo(Scene):
         Y_seq = extract_sequence(tsne, X)
 
         axes = make_axes(
-            self,
+            target_scene,
             x_axis_config=AxisConfig(0, 1, step=0.1, length=8),
             y_axis_config=AxisConfig(0, 1, step=0.1, length=5),
+            stroke_width=1 * scale,
             axes_color=BLACK,
         )
         axis_labels: VGroup = axes.get_axis_labels(
@@ -210,14 +225,24 @@ class ECMDemo(Scene):
             x_label=r"\textit{t-SNE}_1",
             y_label=r"\textit{t-SNE}_2",
         ).set_color(BLACK)
+        axis_labels[0].scale(scale_factor=(self.default_scale_multiplier * scale))
         # rotate y label 90 degrees and move it to the left
-        axis_labels[1].rotate(PI / 2).shift(1.5 * LEFT)
+        axis_labels[1].rotate(PI / 2).shift(1.5 * LEFT).scale(
+            scale_factor=(self.default_scale_multiplier * scale)
+        )
         # x_axis_lbl, y_axis_lbl = add_labels_to_axes(
         #     axes, x_label="t-SNE 1", y_label="t-SNE 2"
         # )
-        self.play(
-            RemoveTextLetterByLetter(method, run_time=1),
-            Create(VGroup(axes, axis_labels)),
+        axis_group = VGroup(axes, axis_labels).scale(scale_factor=scale).move_to(origin)
+        target_scene.play(
+            Succession(
+                FadeOut(method),
+                Create(axis_group),
+                target_scene.camera.frame.animate.move_to(axis_group.get_center()).set(
+                    width=axis_group.width + 1
+                ),
+                run_time=2,
+            )
             # Create(VGroup(axes, x_axis_lbl, y_axis_lbl)),
         )
 
@@ -235,17 +260,20 @@ class ECMDemo(Scene):
                             dot.animate.move_to(axes.c2p(tsne_x[0], tsne_x[1]))
                         )
                     except IndexError:
-                        dot = Dot(color=MANIM_BLUE)
+                        dot = Dot(color=MANIM_BLUE).scale(
+                            scale_factor=((self.default_scale_multiplier / 3) * scale)
+                        )
                         self.data_dots.append(dot)
                         dot.move_to(axes.c2p(tsne_x[0], tsne_x[1]))
                         animations.append(FadeIn(dot))
-                self.wait(3)
-                self.play(*animations)
+                target_scene.wait(3)
+                target_scene.play(*animations)
 
-                rewind = run_ecm(self, axes, tsne_X, X, visited_X, env)
-                self.wait(3)
+                rewind = self.run_ecm(target_scene, axes, tsne_X, X, visited_X, env, scale=scale)
+                target_scene.wait(3)
+                target_scene.next_slide()
                 if len(rewind) > 0:
-                    self.play(*rewind)  # undo the animations from ECM
+                    target_scene.play(*rewind)  # undo the animations from ECM
                 break
 
 

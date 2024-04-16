@@ -19,17 +19,40 @@ class CaptionedSVG(Scene):
         self.draw(origin, scale)
 
     def draw(self, origin, scale, target_scene=None):
-        svg = SVGMobject(self.path).scale(2).move_to(origin)
+        svg = SVGMobject(self.path).scale(2)
         text = (
             Text(self.caption, font="TeX Gyre Termes", color=BLACK)
             .scale(0.7)
             .next_to(svg, DOWN)
         )
         group = VGroup(svg, text)
-        group.scale(scale_factor=scale)
+        group.scale(scale_factor=scale).move_to(origin)
         if target_scene is None:
             target_scene = self
         target_scene.play(Create(svg, run_time=3), Write(text, run_time=3))
+
+
+class CaptionedJPG(Scene):
+    def __init__(self, path, caption, **kwargs):
+        self.path = path
+        self.caption = caption
+        super().__init__(**kwargs)
+
+    def construct(self, origin=ORIGIN, scale=1.0):
+        self.draw(origin, scale)
+
+    def draw(self, origin, scale, target_scene=None):
+        jpg = ImageMobject(self.path).scale(0.25)
+        text = (
+            Text(self.caption, font="TeX Gyre Termes", color=BLACK)
+            .scale(0.7)
+            .next_to(jpg, DOWN)
+        )
+        group = Group(jpg, text)
+        group.scale(scale_factor=scale).move_to(origin)
+        if target_scene is None:
+            target_scene = self
+        target_scene.play(FadeIn(Group(jpg, text), run_time=3))
 
 
 class WW2(MovingCameraScene):

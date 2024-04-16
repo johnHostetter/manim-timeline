@@ -174,8 +174,8 @@ class CLIPDemo(Slide, MovingCameraScene):
             # x_label=r"\textit{Cart Position}",
             # y_label=r"\textit{Membership Degree}",
         ).set_color(BLACK)
-        # rotate y label 90 degrees and move it to the left
         axis_labels[0].scale(scale_factor=(self.default_scale_multiplier * scale))
+        # rotate y label 90 degrees and move it to the left
         axis_labels[1].rotate(PI / 2).shift(1.5 * LEFT * scale).scale(
             scale_factor=(self.default_scale_multiplier * scale)
         )

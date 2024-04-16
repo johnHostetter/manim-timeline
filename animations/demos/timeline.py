@@ -7,7 +7,7 @@ from animations.common import MANIM_BLUE
 from animations.demos.graph_example import GraphPair
 from animations.demos.methods.clip import CLIPDemo
 from animations.demos.timeline_helper import get_noteworthy_events, TimelineEvent
-from animations.demos.ww2 import CaptionedSVG
+from animations.demos.ww2 import CaptionedSVG, CaptionedJPG
 
 config.disable_caching = True  # may need to disable caching for the timeline
 config.background_color = WHITE
@@ -341,7 +341,7 @@ class Timeline(Slide, MovingCameraScene):
                     event = slide.animation
                     if slide.skip:
                         origin_to_draw_at = boundary.get_center()
-                    if isinstance(event, CaptionedSVG):
+                    if isinstance(event, CaptionedSVG) or isinstance(event, CaptionedJPG):
                         event.draw(origin=origin_to_draw_at, scale=0.25, target_scene=self)
                     else:
                         event.draw(self, origin=origin_to_draw_at, scale=0.25)
@@ -418,6 +418,7 @@ class Timeline(Slide, MovingCameraScene):
 
         self.wait(1)
         self.next_slide()
+        self.play(self.camera.frame.animate.set(height=timeline.digraph.height + 2))
         self.play(Restore(self.camera.frame, run_time=15))
         origin_vertex: Dot = timeline.digraph.vertices[0]
         self.play(

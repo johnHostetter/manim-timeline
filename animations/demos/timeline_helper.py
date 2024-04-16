@@ -11,13 +11,14 @@ from animations.beamer.presentation.bibtex import BibTexManager
 from animations.beamer.presentation.introduction.proposal import proposal
 from animations.beamer.slides import PromptSlide
 from animations.demos.methods.clip import CLIPDemo
+from animations.demos.methods.ecm import ECMDemo
 from animations.demos.people.aristotle import Aristotle
 from animations.demos.people.bertrand_russell import BertrandRussellQuote
 from animations.demos.people.einstein import EinsteinQuote
 from animations.demos.people.max_black import MaxBlack
 from animations.demos.people.plato import PlatoTheoryOfForms
 from animations.demos.people.zadeh import Zadeh
-from animations.demos.ww2 import CaptionedSVG
+from animations.demos.ww2 import CaptionedSVG, CaptionedJPG
 from animations.beamer.presentation.introduction.dnn import (
     pros_and_cons as dnn_pros_and_cons,
 )
@@ -228,8 +229,9 @@ def get_noteworthy_events() -> ListType:
         #         bib_manager.cite_entry(bib_manager["black_box_ext"]),  # 2002
         #     ],
         # },
-        # # DENFIS
-        # bib_manager.cite_entry(bib_manager["kasabov_denfis_2002"]),  # 2002
+        # DENFIS
+        bib_manager.cite_entry(bib_manager["kasabov_denfis_2002"]),  # 2002
+        ECMDemo(),
         # # back to equivalence to ANNs/DNNs
         # bib_manager.cite_entry(bib_manager["equivalence_implications"]),  # 2003
         # bib_manager.cite_entry(bib_manager["ang_popfnn-cris_2003"]),  # 2003 update to POPFNN
@@ -281,15 +283,25 @@ def get_noteworthy_events() -> ListType:
         # # },
         # bib_manager.cite_entry(bib_manager["cql"]),  # 2020 CQL
         # 2021 Zadeh recognized for XAI
-        # {
-        #     "Zadeh further \nrecognized for \nhis XAI efforts": [
-        #         bib_manager.cite_entry(bib_manager["bouchon-meunier_lotfi_2021"]),
-        #         bib_manager.cite_entry(bib_manager["rayz_why_2022"]), # 2022, why f.l. is needed for XAI
-        #         bib_manager.cite_entry(bib_manager["noauthor_towards_nodate"]),  # 2022, toward f.l. XAI
-        #     ],
-        # },
+        {
+            "Zadeh further \nrecognized for \nhis XAI efforts": [
+                bib_manager.cite_entry(bib_manager["bouchon-meunier_lotfi_2021"]),
+                bib_manager.cite_entry(bib_manager["rayz_why_2022"]), # 2022, why f.l. is needed for XAI
+                bib_manager.cite_entry(bib_manager["noauthor_towards_nodate"]),  # 2022, toward f.l. XAI
+            ],
+        },
         # # time for me
         # bib_manager.cite_entry(bib_manager["hostetter2023leveraging"]),  # 2023 APFRB
         # bib_manager.cite_entry(bib_manager["hostetter2023self"]),  # 2023 CEW
         # bib_manager.cite_entry(bib_manager["hostetter2023latent"]),  # 2023 LLM
+        CaptionedJPG(
+            path=path_to_project_root()
+            / "animations"
+            / "demos"
+            / "assets"
+            / "people"
+            / "pictures"
+            / "evelyn_prenatal_picture.jpg",
+            caption="Evelyn is due to be born (June 29, 2024).",
+        ),
     ]
