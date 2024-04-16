@@ -15,6 +15,7 @@ from animations.demos.people.bertrand_russell import BertrandRussellQuote
 from animations.demos.people.einstein import EinsteinQuote
 from animations.demos.people.max_black import MaxBlack
 from animations.demos.people.plato import PlatoTheoryOfForms
+from animations.demos.people.zadeh import Zadeh
 from animations.demos.ww2 import CaptionedSVG
 from animations.beamer.presentation.introduction.dnn import (
     pros_and_cons as dnn_pros_and_cons,
@@ -65,9 +66,9 @@ def get_noteworthy_events() -> ListType:
     return [
         dnn_pros_and_cons(),
         PromptSlide(prompt="Could we have done better?", skip=True),
-        # nfn_pros_and_cons(),
-        # proposal(),
-        # PromptSlide(prompt='But before we begin - what does "fuzzy" mean?', skip=True),
+        nfn_pros_and_cons(),
+        proposal(),
+        PromptSlide(prompt='But before we begin - what does "fuzzy" mean?', skip=True),
         # PromptSlide(prompt="And do we even need it?", skip=True),
         # TimelineEvent(
         #     start_year=470,
@@ -77,6 +78,91 @@ def get_noteworthy_events() -> ListType:
         #     event="Socrates",
         #     animation=Socrates,
         # ),
+        TimelineEvent(
+            start_year=427,
+            end_year=348,
+            era="Ancient Greece",
+            era_notation="BCE",
+            event="Plato",
+            animation=PlatoTheoryOfForms,
+        ),
+        TimelineEvent(
+            start_year=384,
+            end_year=322,
+            era="Ancient Greece",
+            era_notation="BCE",
+            event="Aristotle",
+            animation=Aristotle,
+        ),
+        TimelineEvent(
+            start_year=1879,
+            end_year=1955,
+            poi=1921,  # the year of the quote
+            era="Common Era",
+            era_notation="CE",
+            event="Albert Einstein",
+            animation=EinsteinQuote,
+        ),
+        TimelineEvent(
+            start_year=1872,
+            end_year=1970,
+            poi=1923,  # the year of the quote (Vagueness)
+            era="Common Era",
+            era_notation="CE",
+            event="Bertrand Russell",
+            animation=BertrandRussellQuote,
+        ),
+        TimelineEvent(
+            start_year=1909,
+            end_year=1988,
+            poi=1937,
+            era="Common Era",
+            era_notation="CE",
+            event="Max Black",
+            animation=MaxBlack,
+        ),
+        make_ww2_slide(
+            "germans_in_poland_1939",
+            1939,
+            caption="Nazi Germany invades Poland (September 1, 1939).",
+        ),
+        make_ww2_slide(
+            "first_mass_bombing_in_london_sept_7_1940",
+            1940,
+            caption="First mass bombing in London (September 7, 1940).",
+        ),
+        make_ww2_slide(
+            "germans_attack_soviets_eastern_front_june_22_1941",
+            1941,
+            "Germans attack Soviets on the Eastern Front (June 22, 1941).",
+        ),
+        make_ww2_slide(
+            "pearl_harbor_dec_7_1941",
+            1941,
+            "Pearl Harbor attacked by Japan (December 7, 1941).",
+        ),
+        make_ww2_slide(
+            "soviet_offensive_against_germans_in_stalingrad_feb_1943",
+            1942,
+            "Battle of Stalingrad (August 23, 1942).",
+        ),
+        make_ww2_slide(
+            "d_day_june_6_1944",
+            1944,
+            "D-Day: Allied invasion of Normandy (June 6, 1944).",
+        ),
+        make_ww2_slide(
+            "nagasaki_aug_9_1945", 1945, "Nagasaki bombed by the US (August 9, 1945)."
+        ),
+        TimelineEvent(
+            start_year=1921,
+            end_year=2017,
+            poi=1965,
+            era="Common Era",
+            era_notation="CE",
+            event="Lotfi A. Zadeh",
+            animation=Zadeh,
+        ),
         bib_manager.cite_entry(bib_manager["zadeh_fuzzy_sets"]),  # 1965
         bib_manager.cite_entry(bib_manager["fuzzy_dp"]),  # 1970
         # mamdani FLC
@@ -105,7 +191,8 @@ def get_noteworthy_events() -> ListType:
         bib_manager.cite_entry(bib_manager["chen_self-organizing_1993"]),  # 1993
         bib_manager.cite_entry(bib_manager["lin_reinforcement_1994"]),  # 1994 Lin does RL
         bib_manager.cite_entry(bib_manager["fql_and_dynamic_fql"]),  # 1994 first FQL paper
-        bib_manager.cite_entry(bib_manager["elkan_paradoxical_1994"]),  # 1994 (defend f.l. w/ berenji & zadeh)
+        bib_manager.cite_entry(bib_manager["elkan_paradoxical_1994"]),
+        # 1994 (defend f.l. w/ berenji & zadeh)
         bib_manager.cite_entry(bib_manager["kosko_universal_function_approx"]),  # 1994
         bib_manager.cite_entry(bib_manager["kosko_1994"]),  # 1994
         bib_manager.cite_entry(bib_manager["zeng_approximation_1995"]),  # 1995
@@ -154,91 +241,17 @@ def get_noteworthy_events() -> ListType:
         bib_manager.cite_entry(bib_manager["pierrard_learning_2018"]),  # 2018, f.l. for XAI
         bib_manager.cite_entry(bib_manager["mencar_paving_2019"]),
         bib_manager.cite_entry(bib_manager["aghaeipoor_mokblmoms_2019"]),
-        bib_manager.cite_entry(bib_manager["arrieta_explainable_2019"]),  # 2019 growing shift to XAI
+        bib_manager.cite_entry(bib_manager["arrieta_explainable_2019"]),
+        # 2019 growing shift to XAI
         # offline RL focus
         bib_manager.cite_entry(bib_manager["fujimoto_off-policy_2019"]),
         bib_manager.cite_entry(bib_manager["levine_offline_2020"]),  # 2020 offline RL paper
-        bib_manager.cite_entry(bib_manager["bouchon-meunier_lotfi_2021"]),  # 2021 Zadeh recognized for XAI
+        # 2021 Zadeh recognized for XAI
+        bib_manager.cite_entry(bib_manager["bouchon-meunier_lotfi_2021"]),
         bib_manager.cite_entry(bib_manager["rayz_why_2022"]),  # 2022, why f.l. is needed for XAI
         bib_manager.cite_entry(bib_manager["noauthor_towards_nodate"]),  # 2022, toward f.l. XAI
         # time for me
         bib_manager.cite_entry(bib_manager["hostetter2023leveraging"]),  # 2023 APFRB
         bib_manager.cite_entry(bib_manager["hostetter2023self"]),  # 2023 CEW
         bib_manager.cite_entry(bib_manager["hostetter2023latent"]),  # 2023 LLM
-        # TimelineEvent(
-        #     start_year=427,
-        #     end_year=348,
-        #     era="Ancient Greece",
-        #     era_notation="BCE",
-        #     event="Plato",
-        #     animation=PlatoTheoryOfForms,
-        # ),
-        # TimelineEvent(
-        #     start_year=384,
-        #     end_year=322,
-        #     era="Ancient Greece",
-        #     era_notation="BCE",
-        #     event="Aristotle",
-        #     animation=Aristotle,
-        # ),
-        TimelineEvent(
-            start_year=1879,
-            end_year=1955,
-            poi=1921,  # the year of the quote
-            era="Common Era",
-            era_notation="CE",
-            event="Albert Einstein",
-            animation=EinsteinQuote,
-        ),
-        # TimelineEvent(
-        #     start_year=1872,
-        #     end_year=1970,
-        #     poi=1923,  # the year of the quote (Vagueness)
-        #     era="Common Era",
-        #     era_notation="CE",
-        #     event="Bertrand Russell",
-        #     animation=BertrandRussellQuote,
-        # ),
-        # TimelineEvent(
-        #     start_year=1909,
-        #     end_year=1988,
-        #     poi=1937,
-        #     era="Common Era",
-        #     era_notation="CE",
-        #     event="Max Black",
-        #     animation=MaxBlack,
-        # ),
-        # make_ww2_slide(
-        #     "germans_in_poland_1939",
-        #     1939,
-        #     caption="Nazi Germany invades Poland (September 1, 1939).",
-        # ),
-        # make_ww2_slide(
-        #     "first_mass_bombing_in_london_sept_7_1940",
-        #     1940,
-        #     caption="First mass bombing in London (September 7, 1940).",
-        # ),
-        # make_ww2_slide(
-        #     "germans_attack_soviets_eastern_front_june_22_1941",
-        #     1941,
-        #     "Germans attack Soviets on the Eastern Front (June 22, 1941).",
-        # ),
-        # make_ww2_slide(
-        #     "pearl_harbor_dec_7_1941",
-        #     1941,
-        #     "Pearl Harbor attacked by Japan (December 7, 1941).",
-        # ),
-        # make_ww2_slide(
-        #     "soviet_offensive_against_germans_in_stalingrad_feb_1943",
-        #     1942,
-        #     "Battle of Stalingrad (August 23, 1942).",
-        # ),
-        # make_ww2_slide(
-        #     "d_day_june_6_1944",
-        #     1944,
-        #     "D-Day: Allied invasion of Normandy (June 6, 1944).",
-        # ),
-        # make_ww2_slide(
-        #     "nagasaki_aug_9_1945", 1945, "Nagasaki bombed by the US (August 9, 1945)."
-        # ),
     ]

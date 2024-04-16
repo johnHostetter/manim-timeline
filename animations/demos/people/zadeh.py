@@ -12,10 +12,10 @@ light_theme_style = {
 
 class Zadeh(Scene):
     def construct(self):
-        paragraph, person, signature_group = self.draw(self, origin=ORIGIN, scale=1.0)
+        paragraph, source, person, signature_group = self.draw(self, origin=ORIGIN, scale=1.0)
         self.wait(10)
         self.play(
-            FadeOut(Group(VGroup(paragraph, person), signature_group), run_time=2)
+            FadeOut(Group(VGroup(paragraph, source, person), signature_group), run_time=2)
         )
         self.wait(2)
 
@@ -32,19 +32,23 @@ class Zadeh(Scene):
             / "people"
             / "Lotfi-Zadeh-in-the-year-1958-a-young-professor-of-Electrical-Engineering-in-New-York-3_W640.svg"
         ).scale(2.0)
-        paragraph, person, signature_group = person_with_quote(
+        paragraph, source, person, signature_group = person_with_quote(
             scene,
             person_svg=person_svg,
             quote=(
-                '"As complexity rises, precise statements \nlose meaning '
-                'and meaningful \nstatements lose precision."'
+                # '"As complexity rises, precise statements \nlose meaning '
+                # 'and meaningful \nstatements lose precision."'
+                "Fuzzy logic is not fuzzy. Basically, fuzzy logic is a \n"
+                "precise logic of imprecision and approximate \nreasoning."
             ),
+            # source="(Is there a need for fuzzy logic?, 2008)",
+            source="(Zadeh, 2008)",
             signature=signature,
             origin=origin,
             scale=scale,
-            left_shift=1.5,
+            left_shift=1.25,
         )
-        return paragraph, person, signature_group
+        return paragraph, source, person, signature_group
 
 
 if __name__ == "__main__":
