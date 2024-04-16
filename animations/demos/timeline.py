@@ -2,7 +2,7 @@ import igraph as ig
 from manim import *
 from manim_slides import Slide
 
-from animations.beamer.slides import SlideWithBlocks, PromptSlide
+from animations.beamer.slides import SlideWithBlocks, PromptSlide, SlideWithList
 from animations.common import MANIM_BLUE
 from animations.demos.graph_example import GraphPair
 from animations.demos.methods.clip import CLIPDemo
@@ -345,7 +345,7 @@ class Timeline(Slide, MovingCameraScene):
                         event.draw(origin=origin_to_draw_at, scale=0.25, target_scene=self)
                     else:
                         event.draw(self, origin=origin_to_draw_at, scale=0.25)
-                elif isinstance(slide, SlideWithBlocks):
+                elif isinstance(slide, SlideWithBlocks) or isinstance(slide, SlideWithList):
                     slide.draw(
                         origin=boundary.get_top() - (boundary.height / 10),
                         scale=0.15,

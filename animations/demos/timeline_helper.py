@@ -8,6 +8,8 @@ from typing import List as ListType, Union as UnionType
 from manim import *
 
 from animations.beamer.presentation.bibtex import BibTexManager
+from animations.beamer.presentation.conclusion.existing_issues import curr_limitations
+from animations.beamer.presentation.conclusion.plan import proposed_plan
 from animations.beamer.presentation.introduction.proposal import proposal
 from animations.beamer.slides import PromptSlide
 from animations.demos.methods.clip import CLIPDemo
@@ -67,7 +69,7 @@ def get_noteworthy_events() -> ListType:
     bib_manager = BibTexManager()
     return [
         # dnn_pros_and_cons(),
-        PromptSlide(prompt="Could we have done better?", skip=True),
+        # PromptSlide(prompt="Could we have done better?", skip=True),
         # CLIPDemo(),
         # nfn_pros_and_cons(),
         # proposal(),
@@ -230,8 +232,8 @@ def get_noteworthy_events() -> ListType:
         #     ],
         # },
         # DENFIS
-        bib_manager.cite_entry(bib_manager["kasabov_denfis_2002"]),  # 2002
-        ECMDemo(),
+        # bib_manager.cite_entry(bib_manager["kasabov_denfis_2002"]),  # 2002
+        # ECMDemo(),
         # # back to equivalence to ANNs/DNNs
         # bib_manager.cite_entry(bib_manager["equivalence_implications"]),  # 2003
         # bib_manager.cite_entry(bib_manager["ang_popfnn-cris_2003"]),  # 2003 update to POPFNN
@@ -250,11 +252,11 @@ def get_noteworthy_events() -> ListType:
         # bib_manager.cite_entry(bib_manager["gacto_handling_2009"]),  # 2009
         # bib_manager.cite_entry(bib_manager["kacprzyk_computing_2010"]),  # 2010 CWW is implementable
         # CLIP
-        bib_manager.cite_entry(bib_manager["tung_safin_2011"]),  # 2011
-        CLIPDemo(),
+        # bib_manager.cite_entry(bib_manager["tung_safin_2011"]),  # 2011
+        # CLIPDemo(),
         # bib_manager.cite_entry(bib_manager["wiering_batch_2012"]),  # 2012, batch RL
         # genetic fuzzy systems for high dimensions
-        bib_manager.cite_entry(bib_manager["marquez_efficient_2012"]),  # 2012
+        # bib_manager.cite_entry(bib_manager["marquez_efficient_2012"]),  # 2012
         # # DENFIS for RL
         # bib_manager.cite_entry(bib_manager["denfis_rl"]),  # 2014
         # # update rough set w/ NFN
@@ -283,25 +285,28 @@ def get_noteworthy_events() -> ListType:
         # # },
         # bib_manager.cite_entry(bib_manager["cql"]),  # 2020 CQL
         # 2021 Zadeh recognized for XAI
-        {
-            "Zadeh further \nrecognized for \nhis XAI efforts": [
-                bib_manager.cite_entry(bib_manager["bouchon-meunier_lotfi_2021"]),
-                bib_manager.cite_entry(bib_manager["rayz_why_2022"]), # 2022, why f.l. is needed for XAI
-                bib_manager.cite_entry(bib_manager["noauthor_towards_nodate"]),  # 2022, toward f.l. XAI
-            ],
-        },
+        # {
+        #     "Zadeh further \nrecognized for \nhis XAI efforts": [
+        #         bib_manager.cite_entry(bib_manager["bouchon-meunier_lotfi_2021"]),
+        #         bib_manager.cite_entry(bib_manager["rayz_why_2022"]), # 2022, why f.l. is needed for XAI
+        #         bib_manager.cite_entry(bib_manager["noauthor_towards_nodate"]),  # 2022, toward f.l. XAI
+        #     ],
+        # },
         # # time for me
         # bib_manager.cite_entry(bib_manager["hostetter2023leveraging"]),  # 2023 APFRB
         # bib_manager.cite_entry(bib_manager["hostetter2023self"]),  # 2023 CEW
         # bib_manager.cite_entry(bib_manager["hostetter2023latent"]),  # 2023 LLM
-        CaptionedJPG(
-            path=path_to_project_root()
-            / "animations"
-            / "demos"
-            / "assets"
-            / "people"
-            / "pictures"
-            / "evelyn_prenatal_picture.jpg",
-            caption="Evelyn is due to be born (June 29, 2024).",
-        ),
+        curr_limitations(),
+        PromptSlide(prompt="Expected Timeline", skip=True),
+        # CaptionedJPG(
+        #     path=path_to_project_root()
+        #     / "animations"
+        #     / "demos"
+        #     / "assets"
+        #     / "people"
+        #     / "pictures"
+        #     / "evelyn_prenatal_picture.jpg",
+        #     caption="Evelyn is due to be born (June 29, 2024).",
+        # ),
+        proposed_plan()
     ]
