@@ -13,6 +13,7 @@ from animations.beamer.presentation.conclusion.plan import proposed_plan
 from animations.beamer.presentation.introduction.proposal import proposal
 from animations.beamer.slides import PromptSlide
 from animations.demos.methods.clip import CLIPDemo
+from animations.demos.methods.cql import CQLDemo
 from animations.demos.methods.ecm import ECMDemo
 from animations.demos.people.aristotle import Aristotle
 from animations.demos.people.bertrand_russell import BertrandRussellQuote
@@ -283,7 +284,8 @@ def get_noteworthy_events() -> ListType:
         # #         bib_manager.cite_entry(bib_manager["REM"]),  # 2020 REM
         # #     ],
         # # },
-        # bib_manager.cite_entry(bib_manager["cql"]),  # 2020 CQL
+        bib_manager.cite_entry(bib_manager["cql"]),  # 2020 CQL
+        CQLDemo(),
         # 2021 Zadeh recognized for XAI
         # {
         #     "Zadeh further \nrecognized for \nhis XAI efforts": [
@@ -296,17 +298,17 @@ def get_noteworthy_events() -> ListType:
         # bib_manager.cite_entry(bib_manager["hostetter2023leveraging"]),  # 2023 APFRB
         # bib_manager.cite_entry(bib_manager["hostetter2023self"]),  # 2023 CEW
         # bib_manager.cite_entry(bib_manager["hostetter2023latent"]),  # 2023 LLM
-        curr_limitations(),
-        PromptSlide(prompt="Expected Timeline", skip=True),
-        # CaptionedJPG(
-        #     path=path_to_project_root()
-        #     / "animations"
-        #     / "demos"
-        #     / "assets"
-        #     / "people"
-        #     / "pictures"
-        #     / "evelyn_prenatal_picture.jpg",
-        #     caption="Evelyn is due to be born (June 29, 2024).",
-        # ),
-        proposed_plan()
+        # curr_limitations(),
+        # PromptSlide(prompt="Expected Timeline", skip=True),
+        # # CaptionedJPG(
+        # #     path=path_to_project_root()
+        # #     / "animations"
+        # #     / "demos"
+        # #     / "assets"
+        # #     / "people"
+        # #     / "pictures"
+        # #     / "evelyn_prenatal_picture.jpg",
+        # #     caption="Evelyn is due to be born (June 29, 2024).",
+        # # ),
+        # proposed_plan()
     ]
