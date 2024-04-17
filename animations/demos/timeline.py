@@ -366,8 +366,8 @@ class Timeline(Slide, MovingCameraScene):
                 self.next_slide()
                 # move to the next location
                 self.play(
-                    self.camera.frame.animate.move_to(target_vertex.get_center()).set(
-                        height=timeline.digraph.height + 2
+                    self.camera.frame.animate.move_to(origin_to_draw_at).set(
+                        width=10
                     )
                 )
 
@@ -418,7 +418,7 @@ class Timeline(Slide, MovingCameraScene):
 
         self.wait(1)
         self.next_slide()
-        self.play(self.camera.frame.animate.set(height=timeline.digraph.height + 2))
+        self.play(self.camera.frame.animate.set(width=10))
         self.play(Restore(self.camera.frame, run_time=15))
         origin_vertex: Dot = timeline.digraph.vertices[0]
         self.play(

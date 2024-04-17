@@ -47,11 +47,13 @@ class CQLDemo(Slide):
             color=BLACK,
         ).next_to(upper_text, DOWN)  # .move_to((0.0, -1.0, 0.0))
 
-        cql_formula = VGroup(upper_text, lower_text).move_to(origin)
+        cql_formula = VGroup(upper_text, lower_text).move_to(origin).scale(
+            scale_factor=scale
+        )
 
         target_scene.wait(3)
         target_scene.next_slide()
-        target_scene.play(cql_header.animate.next_to(cql_formula, 5 * UP))
+        target_scene.play(cql_header.animate.next_to(cql_formula, 5 * UP * scale))
         target_scene.play(Write(cql_formula, run_time=2))
 
         cql_lbl = Text(
@@ -66,15 +68,15 @@ class CQLDemo(Slide):
         # attach text to below the framebox
         # std_bellman_error_lbl.next_to(lower_text, DOWN)
         cql_frame = SurroundingRectangle(
-            upper_text, buff=0.2, corner_radius=0.1, color=MANIM_BLUE
+            upper_text, buff=0.2 * scale, corner_radius=0.1, color=MANIM_BLUE, stroke_width=5*scale
         )
         bellman_frame = SurroundingRectangle(
-            lower_text, buff=0.2, corner_radius=0.1, color=MANIM_BLUE
+            lower_text, buff=0.2 * scale, corner_radius=0.1, color=MANIM_BLUE, stroke_width=5*scale
         )
 
         # format the labels for the frame boxes
-        cql_lbl.next_to(cql_frame, UP)
-        std_bellman_error_lbl.next_to(bellman_frame, DOWN)
+        cql_lbl.next_to(cql_frame, UP * scale)
+        std_bellman_error_lbl.next_to(bellman_frame, DOWN * scale)
 
         target_scene.wait(1)
         target_scene.next_slide()
@@ -100,14 +102,14 @@ class CQLDemo(Slide):
 
         target_scene.play(
             AnimationGroup(
-                FadeOut(bellman_frame),
-                Unwrite(std_bellman_error_lbl),
+                Uncreate(bellman_frame),
+                FadeOut(std_bellman_error_lbl),
                 run_time=2
             ),
         )
         target_scene.wait(5)
         target_scene.next_slide()
-        move_formula = Group(upper_text, lower_text).animate.shift(UP * 0.5)
+        move_formula = Group(upper_text, lower_text).animate.shift(UP * 0.5 * scale)
         target_scene.play(move_formula)
 
         ###############################################
@@ -117,7 +119,7 @@ class CQLDemo(Slide):
         # param_fragments = MathTex(r"2x - 3 & = -7 \\ 2x & = -4 \\ x & = -2")
         param_fragments = [
             Text("where ", font_size=24, color=BLACK),
-            MathTex(r"\alpha \gparameter_paragraph 0", font_size=36, color=BLACK),
+            MathTex(r"\alpha \geq 0", font_size=36, color=BLACK),
             Text(
                 "is a trade-off factor determining the magnitude of the adjustment. ",
                 font_size=24,
@@ -172,9 +174,10 @@ class CQLDemo(Slide):
         parameter_sentence_3 = VGroup(*param_fragments[9:15])
         parameter_paragraph.add(parameter_sentence_3)
 
+        # left align the paragraph
         parameter_paragraph.arrange(
-            DOWN, aligned_edge=cql_formula.get_left(), buff=0.5
-        ).move_to(origin).next_to(cql_formula, DOWN)
+            DOWN * scale, aligned_edge=cql_formula.get_left(), buff=0.5
+        ).scale(scale_factor=scale).move_to(origin).next_to(cql_formula, DOWN)
 
         target_scene.play(Write(parameter_paragraph, run_time=3))
         target_scene.wait(10)
