@@ -31,8 +31,8 @@ def lers_summary() -> SlideWithList:
                     items=[
                         "Construct & train a model using CEW & FCQL",
                         bibtex_manager.slide_short_cite("hostetter2023self"),
-                        "Simplify the NFN\'s rules using LERS from rough set theory",
-                        bibtex_manager.slide_short_cite("new_lers")
+                        "Simplify the NFN's rules using LERS from rough set theory",
+                        bibtex_manager.slide_short_cite("new_lers"),
                     ]
                 ),
                 "Summary",
@@ -56,11 +56,11 @@ def lers_summary() -> SlideWithList:
                     items=[
                         "Computationally expensive",
                         "Evaluated only on our ITS",
-                        "Computer vision"
+                        "Computer vision",
                     ]
                 ),
             ]
-        )
+        ),
     )
 
 

@@ -42,10 +42,10 @@ class Aristotle(Slide):
                 # "All people are mortal. \nSocrates is a person. \nTherefore, Socrates is mortal."
                 # real version of the above quote:
                 # https://dn790002.ca.archive.org/0/items/AristotleOrganon/AristotleOrganoncollectedWorks.pdf
-                "\"...we may say that Socrates is Socrates and a man, \n"
+                '"...we may say that Socrates is Socrates and a man, \n'
                 "and that therefore he is the man Socrates, or that \n"
                 "Socrates is a man and a biped, and that \n"
-                "therefore he is a two-footed man.\""
+                'therefore he is a two-footed man."'
             ),
             source="(On Interpretation [Translated by E.M. Edghill] Chapter 11, pg. 67)",
             signature=signature,
@@ -54,10 +54,10 @@ class Aristotle(Slide):
             left_shift=1.0,
         )
         quote_1 = (
-            '\"A sea-fight must either take place tomorrow or not, \n'
+            '"A sea-fight must either take place tomorrow or not, \n'
             "but it is not necessary that it should take place \ntomorrow, "
             "neither is it necessary that it should not \ntake place, yet "
-            'it is necessary that it either \nshould or should not take place tomorrow.\"'
+            'it is necessary that it either \nshould or should not take place tomorrow."'
         )
         quote_2 = (
             '"One of the two propositions in such instances \n'
@@ -78,7 +78,8 @@ class Aristotle(Slide):
                 font="TeX Gyre Termes",
                 color=BLACK,
             )
-            .scale(0.5).scale(scale_factor=scale)
+            .scale(0.5)
+            .scale(scale_factor=scale)
             .next_to(paragraph_1, DOWN)
         )
         scene.next_slide()

@@ -53,7 +53,7 @@ def apfrb_summary() -> SlideWithList:
                     ]
                 ),
             ]
-        )
+        ),
     )
 
 

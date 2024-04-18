@@ -267,8 +267,12 @@ def get_noteworthy_events() -> ListType:
         # people begin noticing f.l. can help w/ XAI
         {
             "Zadeh begins to \nbe recognized for \nhis XAI efforts": [
-                bib_manager.cite_entry(bib_manager["hagras_towards_nodate"]),  # 2018, f.l. for XAI
-                bib_manager.cite_entry(bib_manager["pierrard_learning_2018"]),  # 2018, f.l. for XAI
+                bib_manager.cite_entry(
+                    bib_manager["hagras_towards_nodate"]
+                ),  # 2018, f.l. for XAI
+                bib_manager.cite_entry(
+                    bib_manager["pierrard_learning_2018"]
+                ),  # 2018, f.l. for XAI
                 bib_manager.cite_entry(bib_manager["mencar_paving_2019"]),
                 bib_manager.cite_entry(bib_manager["arrieta_explainable_2019"]),
             ],

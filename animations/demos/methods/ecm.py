@@ -134,20 +134,22 @@ class ECMDemo(Slide, MovingCameraScene):
         old_clusters_supports = np.array([0.0])
         for iter, tsne_x in enumerate(tsne_X):  # get the last tsne X
             tsne_X = (tsne_X - tsne_X.min(0)[None, :]) / (
-                    tsne_X.max(0)[None, :] - tsne_X.min(0)[None, :]
+                tsne_X.max(0)[None, :] - tsne_X.min(0)[None, :]
             )
 
             config = load_configuration()
             with config.unfreeze():
                 config.clustering.distance_threshold = 0.4
             labeled_clusters: LabeledClusters = ECM(
-                SupervisedDataset(inputs=torch.tensor(tsne_X[: iter + 1]), targets=None),
+                SupervisedDataset(
+                    inputs=torch.tensor(tsne_X[: iter + 1]), targets=None
+                ),
                 config=config,
             )
             new_clusters_supports = np.array(labeled_clusters.supports)
             dot = self.data_dots[iter]
             if len(new_clusters_supports) > len(
-                    old_clusters_supports
+                old_clusters_supports
             ):  # a new cluster identified with x
                 cluster_idx = len(new_clusters_supports) - 1
             else:
@@ -161,7 +163,9 @@ class ECMDemo(Slide, MovingCameraScene):
                 stroke_width=self.default_scale_multiplier * scale,
             )
             # reset stroke width too
-            circle.set_stroke(str(ItemColor.ACTIVE_1), self.default_scale_multiplier * scale)
+            circle.set_stroke(
+                str(ItemColor.ACTIVE_1), self.default_scale_multiplier * scale
+            )
             circle.move_to(axes.c2p(center[0], center[1]))
             animations.append(dot.animate.move_to(axes.c2p(center[0], center[1])))
             animations.append(GrowFromCenter(circle))
@@ -172,12 +176,15 @@ class ECMDemo(Slide, MovingCameraScene):
                 state = X[iter].detach().numpy()
                 if tuple(state) not in visited_X:
                     cart_pole_img = display_cart_pole(env, state, scale).scale(
-                        scale_factor=(1e-2 * scale))
+                        scale_factor=(1e-2 * scale)
+                    )
                     cart_pole_img.move_to(axes.c2p(center[0], center[1]))
                     successions.append(
                         Succession(
                             FadeIn(cart_pole_img),
-                            ScaleInPlace(cart_pole_img, 100),# * min((scale * 2), 1.0))),
+                            ScaleInPlace(
+                                cart_pole_img, 100
+                            ),  # * min((scale * 2), 1.0))),
                             Wait(run_time=5),
                             ScaleInPlace(cart_pole_img, (1e-3 * scale)),
                             FadeOut(cart_pole_img),
@@ -201,9 +208,11 @@ class ECMDemo(Slide, MovingCameraScene):
     def draw(self, origin, scale, target_scene=None):
         if target_scene is None:
             target_scene = self
-        method = Text(
-            "Evolving Clustering Method", color=BLACK
-        ).scale(scale_factor=scale).move_to(origin)
+        method = (
+            Text("Evolving Clustering Method", color=BLACK)
+            .scale(scale_factor=scale)
+            .move_to(origin)
+        )
         target_scene.play(Write(method, run_time=1))
         target_scene.wait(3)
         target_scene.next_slide()
@@ -269,7 +278,9 @@ class ECMDemo(Slide, MovingCameraScene):
                 target_scene.wait(3)
                 target_scene.play(*animations)
 
-                rewind = self.run_ecm(target_scene, axes, tsne_X, X, visited_X, env, scale=scale)
+                rewind = self.run_ecm(
+                    target_scene, axes, tsne_X, X, visited_X, env, scale=scale
+                )
                 target_scene.wait(3)
                 target_scene.next_slide()
                 if len(rewind) > 0:

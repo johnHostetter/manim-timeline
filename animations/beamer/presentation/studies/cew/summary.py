@@ -31,7 +31,7 @@ def cew_summary() -> SlideWithList:
                         "CLIP may construct fuzzy sets",
                         "ECM can identify exemplars",
                         "Wang-Mendel algorithm can construct fuzzy rules from exemplars",
-                        "Modify Fuzzy Q-Learning w/ CQL augmentation and train the NFN offline"
+                        "Modify Fuzzy Q-Learning w/ CQL augmentation and train the NFN offline",
                     ]
                 ),
                 "Summary",
@@ -43,7 +43,7 @@ def cew_summary() -> SlideWithList:
                             items=[
                                 "Limited data is available",
                                 "Possible human expert knowledge",
-                                "Need interpretation & accuracy"
+                                "Need interpretation & accuracy",
                             ]
                         ),
                     ]
@@ -60,11 +60,11 @@ def cew_summary() -> SlideWithList:
                     items=[
                         "The premises of fuzzy logic rule grows linear with the number of inputs",
                         "Evaluated only on Cart Pole and our ITS",
-                        "Computer vision"
+                        "Computer vision",
                     ]
                 ),
             ]
-        )
+        ),
     )
 
 

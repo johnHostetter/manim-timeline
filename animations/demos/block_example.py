@@ -12,7 +12,7 @@ light_theme_style = {
 class BlockScene(Scene):
     def construct(self):
         block = ExampleBlock(title="Example Block", content="This is an example block")
-        self.play(block.get_animation(scale=1.0, below=None))
+        self.play(block.get_animation(scale_factor=1.0, below=None, animate=False))
         self.wait(3)
 
 

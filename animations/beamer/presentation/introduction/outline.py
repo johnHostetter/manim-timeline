@@ -41,7 +41,7 @@ def get_outline() -> SlideWithList:
                 ),
                 "Expected Timeline",
             ]
-        )
+        ),
     )
 
 

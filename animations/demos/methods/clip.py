@@ -90,7 +90,7 @@ class CLIPDemo(Slide, MovingCameraScene):
                 gaussian_graph = axes.plot(
                     lambda x: new_terms(x).degrees[idx].detach().numpy().item(),
                     stroke_color=ItemColor.INACTIVE_2,
-                    stroke_width=(self.default_scale_multiplier * scale)
+                    stroke_width=(self.default_scale_multiplier * scale),
                     # use_smoothing=True,
                     # color=GREEN
                 )
@@ -122,9 +122,11 @@ class CLIPDemo(Slide, MovingCameraScene):
     def draw(self, origin=ORIGIN, scale=1.0, target_scene=None):
         if target_scene is None:
             target_scene = self
-        method = Text("Categorical Learning-Induced Partitioning", color=BLACK).scale(
-            scale_factor=scale
-        ).move_to(origin)
+        method = (
+            Text("Categorical Learning-Induced Partitioning", color=BLACK)
+            .scale(scale_factor=scale)
+            .move_to(origin)
+        )
         # target_scene.camera.frame.move_to(method.get_center()).set(width=method.width + 1)
         target_scene.play(Write(method, run_time=1))
         target_scene.wait(3)
@@ -223,15 +225,18 @@ class CLIPDemo(Slide, MovingCameraScene):
                 target_scene.next_slide(loop=True)
                 target_scene.play(
                     Circumscribe(
-                        dot, color=ItemColor.ACTIVE_2,
-                        stroke_width=(self.default_scale_multiplier * scale), run_time=2
+                        dot,
+                        color=ItemColor.ACTIVE_2,
+                        stroke_width=(self.default_scale_multiplier * scale),
+                        run_time=2,
                     )
                 )
                 target_scene.wait()
                 target_scene.next_slide()
                 line_graph = axes.plot(
                     lambda x: config.fuzzy.partition.epsilon,
-                    stroke_color=RED, stroke_width=(self.default_scale_multiplier * scale)
+                    stroke_color=RED,
+                    stroke_width=(self.default_scale_multiplier * scale),
                 )
                 dashed_line_graph = DashedVMobject(line_graph)
                 target_scene.wait()
@@ -242,8 +247,10 @@ class CLIPDemo(Slide, MovingCameraScene):
                 if degree >= config.fuzzy.partition.epsilon:
                     message_str = "Satisfied"
                 dashed_line_label = axes.get_graph_label(
-                    line_graph, Text(message_str).scale(scale_factor=scale),
-                    color=RED, direction=UP * scale
+                    line_graph,
+                    Text(message_str).scale(scale_factor=scale),
+                    color=RED,
+                    direction=UP * scale,
                 )
                 target_scene.play(FadeIn(dashed_line_label))
                 target_scene.wait()
@@ -261,7 +268,9 @@ class CLIPDemo(Slide, MovingCameraScene):
                 config=config,
             )
             new_terms = linguistic_variables.inputs[0]
-            self.revise_fuzzy_sets(axes, new_terms, X, scale=scale, target_scene=target_scene)
+            self.revise_fuzzy_sets(
+                axes, new_terms, X, scale=scale, target_scene=target_scene
+            )
 
             if (
                 old_terms is None
@@ -278,8 +287,15 @@ class CLIPDemo(Slide, MovingCameraScene):
                     )
 
                 self.add_fuzzy_set(
-                    axes, center, width, x, dot, new_terms,
-                    x_axis_config=x_axis_config, scale=scale, target_scene=target_scene
+                    axes,
+                    center,
+                    width,
+                    x,
+                    dot,
+                    new_terms,
+                    x_axis_config=x_axis_config,
+                    scale=scale,
+                    target_scene=target_scene,
                 )
 
             else:

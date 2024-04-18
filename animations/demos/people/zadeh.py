@@ -12,10 +12,14 @@ light_theme_style = {
 
 class Zadeh(Scene):
     def construct(self):
-        paragraph, source, person, signature_group = self.draw(self, origin=ORIGIN, scale=1.0)
+        paragraph, source, person, signature_group = self.draw(
+            self, origin=ORIGIN, scale=1.0
+        )
         self.wait(10)
         self.play(
-            FadeOut(Group(VGroup(paragraph, source, person), signature_group), run_time=2)
+            FadeOut(
+                Group(VGroup(paragraph, source, person), signature_group), run_time=2
+            )
         )
         self.wait(2)
 
@@ -38,8 +42,8 @@ class Zadeh(Scene):
             quote=(
                 # '"As complexity rises, precise statements \nlose meaning '
                 # 'and meaningful \nstatements lose precision."'
-                "\"Fuzzy logic is not fuzzy. Basically, fuzzy logic is a \n"
-                "precise logic of imprecision and approximate \nreasoning.\""
+                '"Fuzzy logic is not fuzzy. Basically, fuzzy logic is a \n'
+                'precise logic of imprecision and approximate \nreasoning."'
             ),
             # source="(Is there a need for fuzzy logic?, 2008)",
             source="(Zadeh, 2008)",

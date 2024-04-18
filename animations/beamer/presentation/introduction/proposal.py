@@ -74,9 +74,12 @@ def proposal() -> SlideWithBlocks:
 
     # gather all the blocks together
     blocks: List[Type[Block]] = [
-        alert_block_1, example_block_1,
-        alert_block_2, example_block_2,
-        alert_block_3, example_block_3
+        alert_block_1,
+        example_block_1,
+        alert_block_2,
+        example_block_2,
+        alert_block_3,
+        example_block_3,
     ]
 
     return SlideWithBlocks(

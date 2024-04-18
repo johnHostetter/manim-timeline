@@ -56,7 +56,7 @@ def llm_summary() -> SlideWithList:
                     ]
                 ),
             ]
-        )
+        ),
     )
 
 

@@ -13,9 +13,11 @@ class CQLDemo(Slide):
     def draw(self, origin, scale, target_scene=None):
         if target_scene is None:
             target_scene = self
-        cql_header = Text(
-            "Conservative Q-Learning", color=BLACK
-        ).move_to(origin).scale(scale_factor=scale)
+        cql_header = (
+            Text("Conservative Q-Learning", color=BLACK)
+            .move_to(origin)
+            .scale(scale_factor=scale)
+        )
         target_scene.play(Write(cql_header))
         target_scene.wait()
         myTemplate = TexTemplate()
@@ -31,7 +33,9 @@ class CQLDemo(Slide):
             # "+ \\frac{1}{2} \mathbb{E}_{\mathbf{s}, a^{\dag}, \mathbf{s}' \sim \mathcal{D}} "
             # "\Bigg [ \Big(Q(\mathbf{s}, a^{\dag}) - \\big( \mathscr{R}(\mathbf{s}, a^{\dag}) + "
             # "\gamma [\max_{a \in \mathscr{A}} Q(\mathbf{s}', a)] \\big ) \Big)^{2} \Bigg ]"
-        ).move_to(origin)  # .move_to((0.0, 1.0, 0.0))
+        ).move_to(
+            origin
+        )  # .move_to((0.0, 1.0, 0.0))
         lower_text = MathTex(
             "+ \\frac{1}{2} "
             "\mathbb{E}_{\mathbf{s}, a^{\dag}, \mathbf{s}' \sim \mathcal{D}}",
@@ -45,10 +49,12 @@ class CQLDemo(Slide):
             "\Big)^{2} "
             "\Bigg ]",
             color=BLACK,
-        ).next_to(upper_text, DOWN)  # .move_to((0.0, -1.0, 0.0))
+        ).next_to(
+            upper_text, DOWN
+        )  # .move_to((0.0, -1.0, 0.0))
 
-        cql_formula = VGroup(upper_text, lower_text).move_to(origin).scale(
-            scale_factor=scale
+        cql_formula = (
+            VGroup(upper_text, lower_text).move_to(origin).scale(scale_factor=scale)
         )
 
         target_scene.wait(3)
@@ -57,7 +63,10 @@ class CQLDemo(Slide):
         target_scene.play(Write(cql_formula, run_time=2))
 
         cql_lbl = Text(
-            "Augmentation by Conservative Q-Learning", font_size=24, color=BLACK, slant=ITALIC
+            "Augmentation by Conservative Q-Learning",
+            font_size=24,
+            color=BLACK,
+            slant=ITALIC,
         ).scale(scale_factor=scale)
 
         # attach text to above the framebox
@@ -68,10 +77,18 @@ class CQLDemo(Slide):
         # attach text to below the framebox
         # std_bellman_error_lbl.next_to(lower_text, DOWN)
         cql_frame = SurroundingRectangle(
-            upper_text, buff=0.2 * scale, corner_radius=0.1, color=MANIM_BLUE, stroke_width=5*scale
+            upper_text,
+            buff=0.2 * scale,
+            corner_radius=0.1,
+            color=MANIM_BLUE,
+            stroke_width=5 * scale,
         )
         bellman_frame = SurroundingRectangle(
-            lower_text, buff=0.2 * scale, corner_radius=0.1, color=MANIM_BLUE, stroke_width=5*scale
+            lower_text,
+            buff=0.2 * scale,
+            corner_radius=0.1,
+            color=MANIM_BLUE,
+            stroke_width=5 * scale,
         )
 
         # format the labels for the frame boxes
@@ -81,11 +98,7 @@ class CQLDemo(Slide):
         target_scene.wait(1)
         target_scene.next_slide()
         target_scene.play(
-            AnimationGroup(
-                Create(cql_frame),
-                FadeIn(cql_lbl),
-                run_time=2
-            )
+            AnimationGroup(Create(cql_frame), FadeIn(cql_lbl), run_time=2)
         )
         target_scene.wait(5)
         target_scene.next_slide()
@@ -94,7 +107,7 @@ class CQLDemo(Slide):
                 FadeOut(cql_lbl),
                 ReplacementTransform(cql_frame, bellman_frame),
                 FadeIn(std_bellman_error_lbl),
-                run_time=2
+                run_time=2,
             )
         )
         target_scene.wait(5)
@@ -102,9 +115,7 @@ class CQLDemo(Slide):
 
         target_scene.play(
             AnimationGroup(
-                Uncreate(bellman_frame),
-                FadeOut(std_bellman_error_lbl),
-                run_time=2
+                Uncreate(bellman_frame), FadeOut(std_bellman_error_lbl), run_time=2
             ),
         )
         target_scene.wait(5)

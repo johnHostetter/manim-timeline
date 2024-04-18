@@ -67,7 +67,7 @@ def proposed_plan() -> SlideWithList:
                     ]
                 ),
             ]
-        )
+        ),
     )
 
 

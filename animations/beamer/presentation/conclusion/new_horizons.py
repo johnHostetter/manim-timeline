@@ -26,7 +26,7 @@ def proposed_studies() -> SlideWithList:
                 ItemizedList(
                     items=[
                         "If time permits, inspect graph invariants",
-                        "Explore if the training boundary is fractal"
+                        "Explore if the training boundary is fractal",
                     ]
                 ),
                 "Expand the experiments",
@@ -56,7 +56,7 @@ def proposed_studies() -> SlideWithList:
                     ]
                 ),
             ]
-        )
+        ),
     )
 
 
