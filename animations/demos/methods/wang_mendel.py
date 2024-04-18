@@ -4,6 +4,7 @@ import numpy as np
 import torch
 
 from manim import *
+from manim_slides import Slide
 from soft.datasets import SupervisedDataset
 from soft.fuzzy.logic.rules import LinguisticVariables, Rule
 from soft.utilities.reproducibility import set_rng, load_configuration
@@ -19,13 +20,19 @@ from soft.fuzzy.unsupervised.granulation.online.clip import (
 from animations.common import ItemColor, get_data_and_env, display_cart_pole, MANIM_BLUE
 
 set_rng(0)
+config.disable_caching = True  # may need to disable caching for the timeline
+config.background_color = WHITE
+light_theme_style = {
+    "fill_color": BLACK,
+    "background_stroke_color": WHITE,
+}
 
 
-class WMDemo(Scene):
+class WMDemo(Slide):
     def __init__(self, **kwargs):
         super().__init__()
-        background = ImageMobject("background.png").scale(2).set_color("#FFFFFF")
-        self.add(background)
+        # background = ImageMobject("background.png").scale(2).set_color("#FFFFFF")
+        # self.add(background)
 
     def make_fuzzy_set(self, ax, center, width, label=None):
         min_x: float = ax.x_range[0]
@@ -39,20 +46,35 @@ class WMDemo(Scene):
         return gaussian_graph
 
     def construct(self):
-        method = Text("Wang-Mendel Method", color=str(BLACK))
+        self.draw(origin=ORIGIN, scale=1.0)
+
+    def draw(self, origin, scale, target_scene=None, animate=True):
+        if target_scene is None:
+            target_scene = self
+        method = Text(
+            "Wang-Mendel Method", color=str(BLACK)
+        ).scale(scale_factor=scale).move_to(origin)
+
+        if not animate:
+            target_scene.add(method)
+            return
+
         self.play(Write(method, run_time=1))
         self.wait(3)
+        self.next_slide()
         self.play(FadeOut(method))
         _, env = get_data_and_env(n_samples=1000)
         self.env_img = (
-            display_cart_pole(env, env.state, add_border=False).scale(1).shift(UP * 1.1)
+            display_cart_pole(
+                env, env.state, scale=scale, add_border=False
+            ).scale(1).shift(UP * 1.1)
         )
         self.fuzzy_sets = {}
-        config = load_configuration()
-        with config.unfreeze():
-            config.fuzzy.partition.kappa = 0.1
-            config.fuzzy.partition.epsilon = 0.8
-            config.clustering.distance_threshold = 0.5
+        my_config = load_configuration()
+        with my_config.unfreeze():
+            my_config.fuzzy.partition.kappa = 0.1
+            my_config.fuzzy.partition.epsilon = 0.8
+            my_config.clustering.distance_threshold = 0.5
 
         # override the dataset with artificial data for demo purposes
         X = torch.Tensor(
@@ -71,7 +93,7 @@ class WMDemo(Scene):
         )
 
         linguistic_variables: LinguisticVariables = CLIP(
-            SupervisedDataset(inputs=X, targets=None), config
+            SupervisedDataset(inputs=X, targets=None), my_config
         )
         terms: List[Gaussian] = linguistic_variables.inputs
         for term in terms:
@@ -80,7 +102,7 @@ class WMDemo(Scene):
             term.widths = torch.nn.Parameter(term.widths[result.indices])
 
         # labeled_clusters: LabeledClusters = ECM(
-        #     SupervisedDataset(inputs=X, targets=None), config
+        #     SupervisedDataset(inputs=X, targets=None), my_config
         # )
         # exemplars = labeled_clusters.clusters.centers.detach().numpy()
 
@@ -251,7 +273,7 @@ class WMDemo(Scene):
             intermediate_states = np.array(intermediate_states).T
             for intermediate_state in intermediate_states:
                 new_env_img = (
-                    display_cart_pole(env, intermediate_state, add_border=False)
+                    display_cart_pole(env, intermediate_state, scale=scale, add_border=False)
                     .scale(1)
                     .shift(UP * 1.1)
                 )
@@ -259,7 +281,7 @@ class WMDemo(Scene):
                 self.wait(1e-1)
 
             new_env_img = (
-                display_cart_pole(env, new_state, add_border=False)
+                display_cart_pole(env, new_state, scale=scale, add_border=False)
                 .scale(1)
                 .shift(UP * 1.1)
             )
@@ -271,6 +293,7 @@ class WMDemo(Scene):
             animations.append(Write(text_rule, run_time=3))
             self.play(*animations)
             self.wait(5)
+            self.next_slide()
             animations = []
             for var_idx, term_idx in animated_rule:
                 animations.append(

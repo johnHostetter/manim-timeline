@@ -334,8 +334,8 @@ def get_noteworthy_events() -> ListType:
         bib_manager.cite_entry(bib_manager["hostetter2023latent"]),  # 2023 LLM
         PromptSlide(prompt="Part III: Morphism", skip=True),
         "The Morphetic ϵ-Delayed Neuro-Fuzzy Network:\n"
-        "A General Architecture for Transparent Rule-Based Decision-Making"
-        " (Hostetter, John Wesley 2025)",
+        "A General Architecture for Transparent Rule-Based Decision-Making\n"
+        "(Hostetter, John Wesley 2025)",
         # curr_limitations(),
         # PromptSlide(prompt="Expected Timeline", skip=True),
         # # CaptionedJPG(
