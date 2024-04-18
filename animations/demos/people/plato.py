@@ -25,7 +25,7 @@ class PlatoTheoryOfForms(MovingCameraScene):
         self.draw(self, origin=ORIGIN, scale=1.0)
 
     @staticmethod
-    def draw(scene, origin, scale):
+    def draw(scene, origin, scale, animate: bool = True):
         bust_svg = SVGMobject(
             path_to_project_root()
             / "animations"
@@ -37,10 +37,9 @@ class PlatoTheoryOfForms(MovingCameraScene):
 
         header = Text(
             "Plato's Theory of Forms", font="TeX Gyre Termes", color=BLACK, font_size=60
-        )
-        header.next_to(bust_svg, RIGHT)
-        scene.wait(2)
-        subheader = Text(
+        ).next_to(bust_svg, RIGHT)
+
+        sub_header = Text(
             "The Allegory of the Cave",
             font="TeX Gyre Termes",
             color=BLACK,
@@ -56,33 +55,36 @@ class PlatoTheoryOfForms(MovingCameraScene):
             / "plato_cave_colored.svg"
         ).scale(2.5)
 
-        VGroup(header, subheader.next_to(header, DOWN)).to_corner(UP, buff=0.5)
-        cave.next_to(bust_svg, RIGHT).next_to(subheader, DOWN)
+        VGroup(header, sub_header.next_to(header, DOWN)).to_corner(UP, buff=0.5)
+        cave.next_to(bust_svg, RIGHT).next_to(sub_header, DOWN)
 
-        VGroup(header, subheader, bust_svg, cave).scale(scale_factor=scale).move_to(
-            origin
-        )
+        all_content = VGroup(header, sub_header, bust_svg, cave).scale(
+            scale_factor=scale
+        ).move_to(origin)
 
-        scene.play(
-            Write(VGroup(header, subheader), run_time=3),
-            Create(bust_svg, run_time=5),
-            Create(cave, run_time=5),
-        )
+        if animate:
+            scene.play(
+                Write(VGroup(header, sub_header), run_time=3),
+                Create(bust_svg, run_time=5),
+                Create(cave, run_time=5),
+            )
+        else:
+            scene.add(all_content)
 
-        imperfect_circle = SVGMobject(
-            path_to_project_root()
-            / "animations"
-            / "demos"
-            / "assets"
-            / "imperfect_circle.svg"
-        ).scale(2.5)
-        perfect_circle = Circle(
-            radius=imperfect_circle.height / 2, color=BLACK
-        ).next_to(imperfect_circle, RIGHT, buff=0.75)
-
-        VGroup(imperfect_circle, perfect_circle).scale(scale_factor=scale).move_to(
-            origin
-        )
+        # imperfect_circle = SVGMobject(
+        #     path_to_project_root()
+        #     / "animations"
+        #     / "demos"
+        #     / "assets"
+        #     / "imperfect_circle.svg"
+        # ).scale(2.5)
+        # perfect_circle = Circle(
+        #     radius=imperfect_circle.height / 2, color=BLACK
+        # ).next_to(imperfect_circle, RIGHT, buff=0.75)
+        #
+        # VGroup(imperfect_circle, perfect_circle).scale(scale_factor=scale).move_to(
+        #     origin
+        # )
 
         # scene.next_slide()
         # scene.compare_imperfect_with_form(cave, imperfect_circle, perfect_circle)

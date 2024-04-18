@@ -79,11 +79,6 @@ class BertrandRussellQuote(Slide):
             .move_to(paragraph.get_center())
             .next_to(source, UP)
         )
-        scene.next_slide()
-        scene.play(
-            Transform(paragraph, paragraph_1, replace_mobject_with_target_in_scene=True)
-        )
-        scene.wait(2)
         paragraph_2 = (
             Text(quote_2, font="TeX Gyre Termes", color=BLACK, slant=ITALIC)
             .scale(0.7)
@@ -91,12 +86,20 @@ class BertrandRussellQuote(Slide):
             .move_to(paragraph.get_center())
             .next_to(source, UP)
         )
-        scene.next_slide()
-        scene.play(
-            Transform(
-                paragraph_1, paragraph_2, replace_mobject_with_target_in_scene=True
+        if animate:
+            # cycle through some other quotes
+            scene.wait(1)
+            scene.next_slide()
+            scene.play(
+                Transform(paragraph, paragraph_1, replace_mobject_with_target_in_scene=True)
             )
-        )
+            scene.wait(2)
+            scene.next_slide()
+            scene.play(
+                Transform(
+                    paragraph_1, paragraph_2, replace_mobject_with_target_in_scene=True
+                )
+            )
         return paragraph, source, person, signature_group
 
 
