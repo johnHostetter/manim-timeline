@@ -15,16 +15,15 @@ light_theme_style = {
 }
 
 
-def proposed_plan() -> SlideWithBlocks:
+def proposed_plan() -> SlideWithList:
     """
-    Create a slide with two blocks: one for the advantages and one for the disadvantages of
-    deep neural networks (DNNs).
+    Create a slide with my proposed timeline for the completion of my dissertation.
 
     Returns:
-        The slide with the two blocks.
+        The slide with a list of expected milestones.
     """
     return SlideWithList(
-        title="Expected Timeline",
+        title="Expected Milestones",
         subtitle="I expect this work to take one year.",
         beamer_list=BL(
             items=[
@@ -70,3 +69,8 @@ def proposed_plan() -> SlideWithBlocks:
             ]
         )
     )
+
+
+if __name__ == "__main__":
+    beamer_slide = proposed_plan()
+    beamer_slide.render()

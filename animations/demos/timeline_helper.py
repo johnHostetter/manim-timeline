@@ -9,6 +9,7 @@ from manim import *
 
 from animations.beamer.presentation.bibtex import BibTexManager
 from animations.beamer.presentation.conclusion.existing_issues import curr_limitations
+from animations.beamer.presentation.conclusion.new_horizons import proposed_studies
 from animations.beamer.presentation.conclusion.plan import proposed_plan
 from animations.beamer.presentation.introduction.proposal import proposal
 from animations.beamer.slides import PromptSlide
@@ -69,9 +70,8 @@ def make_ww2_slide(file_name: str, poi: int, caption: str) -> TimelineEvent:
 def get_noteworthy_events() -> ListType:
     bib_manager = BibTexManager()
     return [
-        # dnn_pros_and_cons(),
-        # PromptSlide(prompt="Could we have done better?", skip=True),
-        # CLIPDemo(),
+        dnn_pros_and_cons(),
+        PromptSlide(prompt="Could we have done better?", skip=True),
         # nfn_pros_and_cons(),
         # proposal(),
         # PromptSlide(prompt='But before we begin - what does "fuzzy" mean?', skip=True),
@@ -311,4 +311,5 @@ def get_noteworthy_events() -> ListType:
         # #     caption="Evelyn is due to be born (June 29, 2024).",
         # # ),
         # proposed_plan()
+        proposed_studies(),
     ]

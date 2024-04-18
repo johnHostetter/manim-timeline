@@ -419,26 +419,26 @@ class Timeline(Slide, MovingCameraScene):
         self.wait(1)
         self.next_slide()
         self.play(self.camera.frame.animate.set(width=10))
-        self.play(Restore(self.camera.frame, run_time=15))
-        origin_vertex: Dot = timeline.digraph.vertices[0]
-        self.play(
-            Succession(
-                Create(origin_vertex),
-                GrowFromPoint(
-                    self.make_boundary_at_coords(
-                        direction=LEFT, vertex_coords=origin_vertex.get_center()
-                    ),
-                    origin_vertex.get_center()
-                ), run_time=2
-            )
-        )
-        self.play(
-            Write(
-                Text(
-                    "Q&A", font="TeX Gyre Termes", color=BLACK
-                ).move_to(origin_vertex.get_center() + (2 * LEFT))
-            )
-        )
+        # self.play(Restore(self.camera.frame, run_time=15))
+        # origin_vertex: Dot = timeline.digraph.vertices[0]
+        # self.play(
+        #     Succession(
+        #         Create(origin_vertex),
+        #         GrowFromPoint(
+        #             self.make_boundary_at_coords(
+        #                 direction=LEFT, vertex_coords=origin_vertex.get_center()
+        #             ),
+        #             origin_vertex.get_center()
+        #         ), run_time=2
+        #     )
+        # )
+        # self.play(
+        #     Write(
+        #         Text(
+        #             "Q&A", font="TeX Gyre Termes", color=BLACK
+        #         ).move_to(origin_vertex.get_center() + (2 * LEFT))
+        #     )
+        # )
         self.wait(1)
 
     @staticmethod
