@@ -26,7 +26,7 @@ class BertrandRussellQuote(Slide):
         self.wait(2)
 
     @staticmethod
-    def draw(scene, origin, scale):
+    def draw(scene, origin, scale, animate: bool = True):
         signature = SVGMobject(
             path_to_project_root()
             / "animations"
@@ -59,6 +59,7 @@ class BertrandRussellQuote(Slide):
             origin=origin,
             scale=scale,
             left_shift=1.25,
+            animate=animate,
         )
         # all quotes are from:
         # http://astrofrelat.fcaglp.unlp.edu.ar/filosofia_cientifica/media/papers/Russell-Vagueness.pdf

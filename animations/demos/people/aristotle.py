@@ -23,7 +23,7 @@ class Aristotle(Slide):
         self.wait(2)
 
     @staticmethod
-    def draw(scene, origin, scale):
+    def draw(scene, origin, scale, animate: bool = True):
         signature = Text(
             "Ἀριστοτέλης (Aristotle)", font="TeX Gyre Termes", color=BLACK
         )  # .scale(0.7)
@@ -52,6 +52,7 @@ class Aristotle(Slide):
             origin=origin,
             scale=scale,
             left_shift=1.0,
+            animate=animate,
         )
         quote_1 = (
             '"A sea-fight must either take place tomorrow or not, \n'

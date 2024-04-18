@@ -19,6 +19,7 @@ def person_with_quote(
     origin: np.ndarray,
     scale: float,
     left_shift: float = 0.5,
+    animate: bool = True,
 ):
     paragraph = (
         Paragraph(quote, font="TeX Gyre Termes", slant=ITALIC, color=BLACK)
@@ -42,13 +43,16 @@ def person_with_quote(
     # scene.play(Write(paragraph), run_time=3)
 
     # scene.play(paragraph.animate.shift(RIGHT * 2), run_time=1)
-    scene.play(
-        AnimationGroup(
-            Create(person_svg, run_time=2),
-            Write(VGroup(paragraph, source_text), run_time=2),
-            lag_ratio=0.5,
+    if animate:
+        scene.play(
+            AnimationGroup(
+                Create(person_svg, run_time=2),
+                Write(VGroup(paragraph, source_text), run_time=2),
+                lag_ratio=0.5,
+            )
         )
-    )
+    else:
+        scene.add(person_and_quote)
 
     signature_dash = (
         Text("- ", font="TeX Gyre Termes")
@@ -62,8 +66,11 @@ def person_with_quote(
     # signature.next_to(signature_dash, RIGHT).set_color(BLACK)
 
     # add the signature to the scene
-    scene.play(Create(signature_combo, run_time=2))
-    scene.wait(1)
+    if animate:
+        scene.play(Create(signature_combo, run_time=2))
+        scene.wait(1)
+    else:
+        scene.add(signature_combo)
     return paragraph, source_text, person_svg, signature_combo
 
 
@@ -81,7 +88,7 @@ class EinsteinQuote(Scene):
         self.wait(2)
 
     @staticmethod
-    def draw(scene, origin, scale):
+    def draw(scene, origin, scale, animate: bool = True):
         signature = SVGMobject(
             path_to_project_root()
             / "animations"
@@ -111,6 +118,7 @@ class EinsteinQuote(Scene):
             origin=origin,
             scale=scale,
             left_shift=1,
+            animate=animate,
         )
         return paragraph, source, person, signature_group
 

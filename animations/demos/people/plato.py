@@ -109,7 +109,7 @@ class PlatoTheoryOfForms(MovingCameraScene):
         # self.play(Create(earth, run_time=3))
 
     @staticmethod
-    def quote(scene, origin, scale):
+    def quote(scene, origin, scale, animate=True):
         signature = Text(
             "Πλάτων (Plato)", font="TeX Gyre Termes", color=BLACK
         )  # .scale(0.7)
@@ -133,6 +133,7 @@ class PlatoTheoryOfForms(MovingCameraScene):
             origin=origin,
             scale=scale,
             left_shift=1.0,
+            animate=True,
         )
         return paragraph, source, person, person_svg, signature_group
 

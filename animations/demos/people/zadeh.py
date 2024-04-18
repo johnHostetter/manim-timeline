@@ -24,7 +24,7 @@ class Zadeh(Scene):
         self.wait(2)
 
     @staticmethod
-    def draw(scene, origin, scale):
+    def draw(scene, origin, scale, animate=True):
         signature = Text(
             "Lotfi A. Zadeh", font="TeX Gyre Termes", color=BLACK
         )  # .scale(0.7)
@@ -51,6 +51,7 @@ class Zadeh(Scene):
             origin=origin,
             scale=scale,
             left_shift=1.25,
+            animate=animate,
         )
         return paragraph, source, person, signature_group
 

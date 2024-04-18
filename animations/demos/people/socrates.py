@@ -22,7 +22,7 @@ class Socrates(Scene):
         self.wait(2)
 
     @staticmethod
-    def draw(scene, origin, scale):
+    def draw(scene, origin, scale, animate=True):
         signature = Text(
             "Σωκράτης (Socrates)", font="TeX Gyre Termes", color=BLACK
         )  # .scale(0.7)
@@ -45,6 +45,7 @@ class Socrates(Scene):
             origin=origin,
             scale=scale,
             left_shift=1.0,
+            animate=animate,
         )
         return paragraph, source, person, signature_group
 

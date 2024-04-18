@@ -20,7 +20,7 @@ class GodelQuote(Scene):
         self.wait(2)
 
     @staticmethod
-    def draw(scene, origin, scale):
+    def draw(scene, origin, scale, animate: bool = True):
         signature = SVGMobject(
             path_to_project_root()
             / "animations"
@@ -56,6 +56,7 @@ class GodelQuote(Scene):
             origin=origin,
             scale=scale,
             left_shift=1.25,
+            animate=animate,
         )
         return paragraph, person, signature_group
 
