@@ -2,11 +2,11 @@ import igraph as ig
 from manim import *
 from manim_slides import Slide
 
-from animations.beamer.slides import SlideWithBlocks, PromptSlide, SlideWithList
 from animations.common import MANIM_BLUE
 from animations.demos.graph_example import GraphPair
-from animations.demos.methods.clip import CLIPDemo
-from animations.demos.timeline_helper import get_noteworthy_events, TimelineEvent
+from animations.beamer.slides import SlideWithBlocks, PromptSlide, SlideWithList
+from animations.demos.timeline_events import get_noteworthy_events, TimelineEvent
+from animations.demos.timeline_helper import create_timeline_layout
 from animations.demos.ww2 import CaptionedSVG, CaptionedJPG
 
 config.disable_caching = True  # may need to disable caching for the timeline
@@ -23,46 +23,10 @@ class Timeline(Slide, MovingCameraScene):
         # self.greeting()
 
         timeline_igraph: ig.Graph = ig.Graph(directed=True)
-
         timeline_events = get_noteworthy_events()
 
         # get the layout for the possible graph which will implement the timeline
-        prev_x_location: float = 0
-        prev_timeline_event = None
-        digraph_layout = {0: (prev_x_location, 0, 0)}
-        global_idx = 0
-        for timeline_event in timeline_events:
-            if not isinstance(timeline_event, dict):
-                spacing = 5  # a good spacing for the timeline I found works well
-                if isinstance(prev_timeline_event, str) and isinstance(
-                    timeline_event, str
-                ):
-                    # two consecutive strings do not need as much spacing
-                    spacing = 1
-                # technically we never use the vertex located at index 0
-                new_x_location = prev_x_location + spacing
-                digraph_layout[max(digraph_layout.keys()) + 1] = (new_x_location, 0, 0)
-                prev_timeline_event = timeline_event
-                prev_x_location = new_x_location
-            else:
-                # this is a dictionary, which means we breeze over the timeline,
-                # but we still need to account for the spacing and timeline pins
-                for publication in list(timeline_event.values())[0]:
-                    spacing = 5  # a good spacing for the timeline I found works well
-                    if isinstance(prev_timeline_event, str) and isinstance(
-                        publication, str
-                    ):
-                        # two consecutive strings do not need as much spacing
-                        spacing = 1
-                    # technically we never use the vertex located at index 0
-                    new_x_location = prev_x_location + spacing
-                    digraph_layout[max(digraph_layout.keys()) + 1] = (
-                        new_x_location,
-                        0,
-                        0,
-                    )
-                    prev_timeline_event = publication
-                    prev_x_location = new_x_location
+        digraph_layout = create_timeline_layout(timeline_events)
 
         # now create the necessary graph components based on the above needed layout
         # num_of_vertices = len(timeline_events) + 1
@@ -71,30 +35,6 @@ class Timeline(Slide, MovingCameraScene):
         # timeline_igraph.vs["name"] = ["2010", "2015", "2020", "2025", "2030"]
         edges = list(zip(range(0, num_of_vertices - 1), range(1, num_of_vertices)))
         timeline_igraph.add_edges(edges)
-
-        # consistent spacing for the timeline
-        # spacing = 5  # a good spacing for the timeline I found works well
-        # digraph_layout = {idx: (idx * spacing, 0, 0) for idx in range(num_of_vertices)}
-        # spacing relative to timeline events' start and end years
-        # def get_loc_from_start_end_years(start_year, end_year):
-        #     return (start_year + end_year) / 2
-
-        # def get_event_plot_coords(timeline_event: TimelineEvent):
-        #     spacing = 5  # a good spacing for the timeline I found works well
-        #
-        #     if timeline_event.poi is not None:
-        #         return timeline_event.poi + spacing, 0, 0
-        #     return (
-        #         timeline_event.start_year + spacing, 0, 0
-        #     ) if timeline_event.era_notation == "CE" else (
-        #         -1 * (timeline_event.start_year + spacing), 0, 0
-        #     )
-        #
-        # digraph_layout = {
-        #     idx: get_event_plot_coords(timeline_events[idx - 1])
-        #     for idx in range(1, num_of_vertices)
-        # }
-        # digraph_layout[0] = (timeline_events[0].start_year - 10, 0, 0)
 
         timeline_manim = DiGraph(
             timeline_igraph.vs.indices,
@@ -114,14 +54,18 @@ class Timeline(Slide, MovingCameraScene):
             },
         )
 
+        PLAY_ANIMATION = False  # master override for playing the animations, helps with debugging
+
         timeline = GraphPair(timeline_igraph, digraph=timeline_manim)
         self.camera.frame.move_to(timeline.digraph.get_center()).set(width=10)
 
         # start_loc = timeline.digraph.vertices[0].get_center()
         # end_loc = timeline.digraph.vertices[num_of_vertices - 1].get_center()
-        source_vertex_idx = 0
-        source_vertex = timeline.digraph.vertices[source_vertex_idx]
-        self.play(self.camera.frame.animate.move_to(source_vertex).set(width=10))
+        source_vertex = timeline.digraph.vertices[0]  # 0 indexes the source/origin vertex
+        if PLAY_ANIMATION:
+            self.play(self.camera.frame.animate.move_to(source_vertex).set(width=10))
+        else:
+            self.camera.frame.move_to(source_vertex).set(width=10)
         self.camera.frame.save_state()
 
         running_offset: float = (
@@ -172,14 +116,18 @@ class Timeline(Slide, MovingCameraScene):
                     line.shift(running_offset * RIGHT)
 
                 if play_as_ready and v_group_to_render is None:
-                    self.play(
-                        AnimationGroup(
-                            Create(line),
-                            self.camera.frame.animate.move_to(target_vertex),
-                            run_time=default_run_time,
+                    if PLAY_ANIMATION:
+                        self.play(
+                            AnimationGroup(
+                                Create(line),
+                                self.camera.frame.animate.move_to(target_vertex),
+                                run_time=default_run_time,
+                            )
                         )
-                    )
-                    self.play(Create(target_vertex, run_time=default_run_time))
+                        self.play(Create(target_vertex, run_time=default_run_time))
+                    else:
+                        self.add(line)
+                        self.add(target_vertex)
                 else:
                     v_group_to_render.add(line)
                     v_group_to_render.add(target_vertex)
@@ -199,18 +147,21 @@ class Timeline(Slide, MovingCameraScene):
                         stroke_width=2,
                     )
 
-                    if play_as_ready:
-                        slide_animations.append(
-                            AnimationGroup(
-                                Create(pin, run_time=default_run_time),
-                                self.camera.frame.animate.move_to(
-                                    vertex_coords + direction
-                                ).set(width=10),
-                                run_time=default_run_time,
+                    if PLAY_ANIMATION:
+                        if play_as_ready:
+                            slide_animations.append(
+                                AnimationGroup(
+                                    Create(pin, run_time=default_run_time),
+                                    self.camera.frame.animate.move_to(
+                                        vertex_coords + direction
+                                    ).set(width=10),
+                                    run_time=default_run_time,
+                                )
                             )
-                        )
+                        else:
+                            slide_animations.append(Create(pin, run_time=default_run_time))
                     else:
-                        slide_animations.append(Create(pin, run_time=default_run_time))
+                        self.add(pin)
 
                     # store the pin
                     timeline_lookup[idx].add(pin)
@@ -242,11 +193,16 @@ class Timeline(Slide, MovingCameraScene):
                             v_group_to_render.add(boundary)
                             v_group_to_render.add(timestamp)
 
-                        slide_animations.append(
-                            Create(
-                                VGroup(boundary, timestamp), run_time=default_run_time
+                        timestamped_boundary = VGroup(boundary, timestamp)
+
+                        if PLAY_ANIMATION:
+                            slide_animations.append(
+                                Create(
+                                    timestamped_boundary, run_time=default_run_time
+                                )
                             )
-                        )
+                        else:
+                            self.add(timestamped_boundary)
                     else:
                         # this is a string, treat it as a publication citation
                         amount_to_rotate: float = (PI / 4) * (1 if idx % 2 == 0 else -1)
@@ -264,47 +220,50 @@ class Timeline(Slide, MovingCameraScene):
                         #     0.5 * (RIGHT if idx % 2 == 0 else LEFT)
                         # )  # shift it to the right if UP else shift to the left if DOWN
 
-                        if play_as_ready:
-                            # save the state of the publication
-                            publication.save_state()
-                            old_width = publication.width
-                            old_height = publication.height
+                        if PLAY_ANIMATION:
+                            if play_as_ready:
+                                # save the state of the publication
+                                publication.save_state()
+                                old_width = publication.width
+                                old_height = publication.height
 
-                            # temporarily undo publication flip for easier reading and scale it
-                            publication.rotate(-1 * amount_to_rotate)
-                            publication.scale(0.25)
-                            publication.next_to(pin, direction)
+                                # temporarily undo publication flip for easier reading and scale it
+                                publication.rotate(-1 * amount_to_rotate)
+                                publication.scale(0.25)
+                                publication.next_to(pin, direction)
 
-                            slide_animations.append(
-                                AnimationGroup(
-                                    Create(publication),
+                                slide_animations.append(
+                                    AnimationGroup(
+                                        Create(publication),
+                                        self.camera.frame.animate.move_to(
+                                            publication.get_center()
+                                        ).set(
+                                            width=publication.width + 0.5,
+                                            height=publication.height + 0.5,
+                                        ),
+                                        run_time=default_run_time,
+                                    )
+                                )
+                                self.play(Succession(*slide_animations))
+                                self.wait(1)
+                                self.next_slide()
+
+                                self.play(
+                                    Restore(publication),
                                     self.camera.frame.animate.move_to(
                                         publication.get_center()
-                                    ).set(
-                                        width=publication.width + 0.5,
-                                        height=publication.height + 0.5,
-                                    ),
-                                    run_time=default_run_time,
+                                    ).set(width=old_width + 2, height=old_height + 2),
+                                    # rotate with respect to the publication's center
+                                    # self.camera.frame.animate.rotate(
+                                    #     amount_to_rotate, axis=np.array([0, 1, 0]), #about_point=publication.get_center()
+                                    # ).move_to(publication.get_center()).set(
+                                    #     width=old_width, height=old_height
+                                    # ),
                                 )
-                            )
-                            self.play(Succession(*slide_animations))
-                            self.wait(1)
-                            self.next_slide()
-
-                            self.play(
-                                Restore(publication),
-                                self.camera.frame.animate.move_to(
-                                    publication.get_center()
-                                ).set(width=old_width + 2, height=old_height + 2),
-                                # rotate with respect to the publication's center
-                                # self.camera.frame.animate.rotate(
-                                #     amount_to_rotate, axis=np.array([0, 1, 0]), #about_point=publication.get_center()
-                                # ).move_to(publication.get_center()).set(
-                                #     width=old_width, height=old_height
-                                # ),
-                            )
+                            else:
+                                slide_animations.append(Create(publication))
                         else:
-                            slide_animations.append(Create(publication))
+                            self.add(publication)
 
                         # store the publication
                         timeline_lookup[idx].add(publication)
@@ -325,44 +284,49 @@ class Timeline(Slide, MovingCameraScene):
                     if v_group_to_render is not None:
                         v_group_to_render.add(boundary)
 
-                    slide_animations.append(
-                        AnimationGroup(
-                            GrowFromPoint(boundary, vertex_coords),
-                            self.camera.frame.animate.move_to(vertex_coords).set(
-                                width=10
-                            ),
-                            run_time=default_run_time,
+                    if PLAY_ANIMATION:
+                        slide_animations.append(
+                            AnimationGroup(
+                                GrowFromPoint(boundary, vertex_coords),
+                                self.camera.frame.animate.move_to(vertex_coords).set(
+                                    width=10
+                                ),
+                                run_time=default_run_time,
+                            )
                         )
-                    )
+                    else:
+                        self.add(boundary)
                     # uncomment to show a dot at the vertex, but this causes issues
                     # dot = Dot(vertex_coords + (boundary.width * RIGHT), color=BLACK)
                     # self.play(Create(dot, run_time=0.1))
 
-                if play_as_ready:  # has no effect at this time
-                    self.play(Succession(*slide_animations))
+                if PLAY_ANIMATION:
+                    if play_as_ready:  # has no effect at this time
+                        self.play(Succession(*slide_animations))
 
-                self.wait(1)
-                self.next_slide()
+                    self.wait(1)
+                    self.next_slide()
 
                 ######################################################################
                 # the rest of this code is for how to zoom in on certain events/slides
                 ######################################################################
 
-                if isinstance(slide, TimelineEvent) or isinstance(slide, PromptSlide):
-                    if not slide.skip:
+                if PLAY_ANIMATION:
+                    if isinstance(slide, TimelineEvent) or isinstance(slide, PromptSlide):
+                        if not slide.skip:
+                            # now zoom in on the event
+                            self.play(
+                                self.camera.frame.animate.move_to(
+                                    boundary.get_center()
+                                ).set(width=boundary.width)
+                            )
+                    else:
                         # now zoom in on the event
                         self.play(
-                            self.camera.frame.animate.move_to(
-                                boundary.get_center()
-                            ).set(width=boundary.width)
+                            self.camera.frame.animate.move_to(boundary.get_center()).set(
+                                width=boundary.width
+                            )
                         )
-                else:
-                    # now zoom in on the event
-                    self.play(
-                        self.camera.frame.animate.move_to(boundary.get_center()).set(
-                            width=boundary.width
-                        )
-                    )
 
                 # show the event
                 origin_to_draw_at = self.camera.frame.get_center()
@@ -374,10 +338,13 @@ class Timeline(Slide, MovingCameraScene):
                         event, CaptionedJPG
                     ):
                         event.draw(
-                            origin=origin_to_draw_at, scale=0.25, target_scene=self
+                            origin=origin_to_draw_at, scale=0.25,
+                            target_scene=self, animate=PLAY_ANIMATION
                         )
                     else:
-                        event.draw(self, origin=origin_to_draw_at, scale=0.25)
+                        event.draw(
+                            self, origin=origin_to_draw_at, scale=0.25, animate=PLAY_ANIMATION
+                        )
                 elif isinstance(slide, SlideWithBlocks) or isinstance(
                     slide, SlideWithList
                 ):
@@ -385,24 +352,32 @@ class Timeline(Slide, MovingCameraScene):
                         origin=boundary.get_top() - (boundary.height / 10),
                         scale=0.15,
                         target_scene=self,
+                        animate=PLAY_ANIMATION
                     )
                 elif isinstance(slide, PromptSlide):
                     if slide.skip:
                         origin_to_draw_at = boundary.get_center()
-                    slide.draw(origin=origin_to_draw_at, scale=0.2, target_scene=self)
+                    slide.draw(
+                        origin=origin_to_draw_at, scale=0.2,
+                        target_scene=self, animate=PLAY_ANIMATION
+                    )
                 else:  # e.g., CLIPDemo
                     # try:
-                    slide.draw(origin=origin_to_draw_at, scale=0.25, target_scene=self)
+                    slide.draw(
+                        origin=origin_to_draw_at, scale=0.25,
+                        target_scene=self, animate=PLAY_ANIMATION
+                    )
                     # except TypeError:
                     #     print(type(slide), slide)
                     #     raise TypeError("The slide is not a recognized type.")
                 # event.draw(self, origin=self.camera.frame.get_center(), scale=0.25)
-                self.wait(1)
-                self.next_slide()
-                # move to the next location
-                self.play(
-                    self.camera.frame.animate.move_to(origin_to_draw_at).set(width=10)
-                )
+                if PLAY_ANIMATION:
+                    self.wait(1)
+                    self.next_slide()
+                    # move to the next location
+                    self.play(
+                        self.camera.frame.animate.move_to(origin_to_draw_at).set(width=10)
+                    )
 
             if not play_as_ready:
                 # create a brace for everything but the line (located at index 0)
@@ -424,42 +399,43 @@ class Timeline(Slide, MovingCameraScene):
                     UP if (next_brace_direction == DOWN).all() else DOWN
                 )
 
-                # fade in the group of manim objects
-                self.play(
-                    FadeIn(v_group_to_render, run_time=1),
-                    self.camera.frame.animate.move_to(
-                        v_group_to_render[1:].get_center()
-                    ).set(
-                        width=v_group_to_render[1:].width + 2,
-                        height=v_group_to_render[1:].height + 2,
-                    ),
-                )
-                # now play everything
-                # self.play(Succession(*slide_animations))
-                self.wait(1)
+                if PLAY_ANIMATION:
+                    # fade in the group of manim objects
+                    self.play(
+                        FadeIn(v_group_to_render, run_time=1),
+                        self.camera.frame.animate.move_to(
+                            v_group_to_render[1:].get_center()
+                        ).set(
+                            width=v_group_to_render[1:].width + 2,
+                            height=v_group_to_render[1:].height + 2,
+                        ),
+                    )
+                    # now play everything
+                    # self.play(Succession(*slide_animations))
+                    self.wait(1)
+                    self.next_slide(loop=True)
+                    # now highlight it
+                    # self.play(
+                    #     AnimationGroup(
+                    #         *[ApplyMethod(obj.set_color, RED) for obj in v_group_to_render]
+                    #     )
+                    # )
+                    self.play(
+                        # do not circumscribe:
+                        # (1) the line (v_group_to_render[0]), (2) the brace (v_group_to_render[-2])
+                        # (3) or the brace's text (v_group_to_render[-1])
+                        Circumscribe(v_group_to_render[1:-2], color=MANIM_BLUE, run_time=2)
+                    )
 
-                # self.play(Create(brace), Create(brace_text))
-                # self.play(self.camera.frame.animate.move_to(brace.get_center()).set(width=10))
-                self.next_slide(loop=True)
-                # now highlight it
-                # self.play(
-                #     AnimationGroup(
-                #         *[ApplyMethod(obj.set_color, RED) for obj in v_group_to_render]
-                #     )
-                # )
-                self.play(
-                    # do not circumscribe:
-                    # (1) the line (v_group_to_render[0]), (2) the brace (v_group_to_render[-2])
-                    # (3) or the brace's text (v_group_to_render[-1])
-                    Circumscribe(v_group_to_render[1:-2], color=MANIM_BLUE, run_time=2)
-                )
+                    self.wait(1)
+                    self.next_slide()
+                else:
+                    self.add(v_group_to_render)
 
-                self.wait(1)
-                self.next_slide()
-
-        self.wait(1)
-        self.next_slide()
-        self.play(self.camera.frame.animate.set(width=10))
+        if PLAY_ANIMATION:
+            self.wait(1)
+            self.next_slide()
+            self.play(self.camera.frame.animate.set(width=10))
         # self.play(Restore(self.camera.frame, run_time=15))
         # origin_vertex: Dot = timeline.digraph.vertices[0]
         # self.play(
@@ -480,7 +456,7 @@ class Timeline(Slide, MovingCameraScene):
         #         ).move_to(origin_vertex.get_center() + (2 * LEFT))
         #     )
         # )
-        self.wait(1)
+        self.wait(10)
 
     @staticmethod
     def make_boundary_at_coords(direction, vertex_coords) -> Rectangle:
@@ -512,11 +488,6 @@ class Timeline(Slide, MovingCameraScene):
             ),
             Text("Timeline of Noteworthy Events", font="TeX Gyre Termes", color=BLACK),
             Text("© 2024 John Wesley Hostetter", font="TeX Gyre Termes", color=BLACK),
-            # Text(
-            #     "Presented by John Wesley Hostetter",
-            #     font="TeX Gyre Termes",
-            #     color=BLACK,
-            # ),
             Text(
                 "The presentation will begin shortly.",
                 font="TeX Gyre Termes",

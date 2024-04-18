@@ -119,7 +119,7 @@ class CLIPDemo(Slide, MovingCameraScene):
     def construct(self):
         self.draw(origin=ORIGIN, scale=1.0)
 
-    def draw(self, origin=ORIGIN, scale=1.0, target_scene=None):
+    def draw(self, origin=ORIGIN, scale=1.0, target_scene=None, animate: bool = True):
         if target_scene is None:
             target_scene = self
         method = (
@@ -127,188 +127,192 @@ class CLIPDemo(Slide, MovingCameraScene):
             .scale(scale_factor=scale)
             .move_to(origin)
         )
-        # target_scene.camera.frame.move_to(method.get_center()).set(width=method.width + 1)
-        target_scene.play(Write(method, run_time=1))
-        target_scene.wait(3)
-        target_scene.next_slide()
-        # X, env = get_data_and_env(n_samples=1000)
-        # X = X[:, 1]
-        import torch
+        if not animate:
+            # do not animate the demo
+            target_scene.add(method)
+        else:
+            # target_scene.camera.frame.move_to(method.get_center()).set(width=method.width + 1)
+            target_scene.play(Write(method, run_time=1))
+            target_scene.wait(3)
+            target_scene.next_slide()
+            # X, env = get_data_and_env(n_samples=1000)
+            # X = X[:, 1]
+            import torch
 
-        # X = 2 * (torch.rand(10) - 0.5)
-        X = torch.tensor(
-            [
-                0.2794,
-                0.9486,
-                0.6601,
-                # -0.9111,
-                -0.9508,
-                -0.4823,
-                # 0.8781,
-                # -0.1666,
-                # 0.4280,
-                # -0.4647,
-            ]
-        )
-        # config = {
-        #     "minimums": X.min(0).values,
-        #     "maximums": X.max(0).values,
-        #     "eps": 0.2,
-        #     "kappa": 0.6,
-        # }
-
-        self.fuzzy_sets, self.data_dots = [], []
-        x_axis_config = AxisConfig(X.min().item(), X.max().item(), step=0.1, length=8)
-        axes = make_axes(
-            target_scene,
-            x_axis_config=x_axis_config,
-            y_axis_config=AxisConfig(0, 1.1, step=0.1, length=5),
-            stroke_width=1 * scale,
-            axes_color=BLACK,
-        )
-        # x_axis_lbl, y_axis_lbl = add_labels_to_axes(
-        #     axes, x_label="Cart Position", y_label="Degree of Membership"
-        # )
-        axis_labels: VGroup = axes.get_axis_labels(
-            # axis labels are in math mode already
-            x_label="x",
-            y_label=r"\mu(x)",
-            # x_label=r"\textit{Cart Position}",
-            # y_label=r"\textit{Membership Degree}",
-        ).set_color(BLACK)
-        axis_labels[0].scale(scale_factor=(self.default_scale_multiplier * scale))
-        # rotate y label 90 degrees and move it to the left
-        axis_labels[1].rotate(PI / 2).shift(1.5 * LEFT * scale).scale(
-            scale_factor=(self.default_scale_multiplier * scale)
-        )
-        axis_group = VGroup(axes, axis_labels).scale(scale_factor=scale).move_to(origin)
-
-        target_scene.play(
-            Succession(
-                FadeOut(method),
-                Create(axis_group),
-                target_scene.camera.frame.animate.move_to(axis_group.get_center()).set(
-                    width=axis_group.width + 1
-                ),
-                run_time=2,
+            # X = 2 * (torch.rand(10) - 0.5)
+            X = torch.tensor(
+                [
+                    0.2794,
+                    0.9486,
+                    0.6601,
+                    # -0.9111,
+                    -0.9508,
+                    -0.4823,
+                    # 0.8781,
+                    # -0.1666,
+                    # 0.4280,
+                    # -0.4647,
+                ]
             )
-            # Create(VGroup(axes, x_axis_lbl, y_axis_lbl)),
-        )
+            # config = {
+            #     "minimums": X.min(0).values,
+            #     "maximums": X.max(0).values,
+            #     "eps": 0.2,
+            #     "kappa": 0.6,
+            # }
 
-        old_terms, new_terms = None, None
-        for idx, x in enumerate(X):
-            x: float = x.item()  # x is a 1D tensor
-            dot = Dot(color=str(ItemColor.ACTIVE_1)).scale(
-                scale_factor=((self.default_scale_multiplier / 3) * scale)
+            self.fuzzy_sets, self.data_dots = [], []
+            x_axis_config = AxisConfig(X.min().item(), X.max().item(), step=0.1, length=8)
+            axes = make_axes(
+                target_scene,
+                x_axis_config=x_axis_config,
+                y_axis_config=AxisConfig(0, 1.1, step=0.1, length=5),
+                stroke_width=1 * scale,
+                axes_color=BLACK,
             )
-            self.data_dots.append(dot)
-            dot.move_to(axes.c2p(0, 0))
+            # x_axis_lbl, y_axis_lbl = add_labels_to_axes(
+            #     axes, x_label="Cart Position", y_label="Degree of Membership"
+            # )
+            axis_labels: VGroup = axes.get_axis_labels(
+                # axis labels are in math mode already
+                x_label="x",
+                y_label=r"\mu(x)",
+                # x_label=r"\textit{Cart Position}",
+                # y_label=r"\textit{Membership Degree}",
+            ).set_color(BLACK)
+            axis_labels[0].scale(scale_factor=(self.default_scale_multiplier * scale))
+            # rotate y label 90 degrees and move it to the left
+            axis_labels[1].rotate(PI / 2).shift(1.5 * LEFT * scale).scale(
+                scale_factor=(self.default_scale_multiplier * scale)
+            )
+            axis_group = VGroup(axes, axis_labels).scale(scale_factor=scale).move_to(origin)
 
-            # get the attention of the viewer to focus on the data point
             target_scene.play(
-                LaggedStart(
-                    Create(dot),
-                    Indicate(dot, scale_factor=1.5),
-                    AnimationGroup(
-                        dot.animate.set_glow_factor(1.0),
-                        Flash(dot, color=ItemColor.ACTIVE_1),
+                Succession(
+                    FadeOut(method),
+                    Create(axis_group),
+                    target_scene.camera.frame.animate.move_to(axis_group.get_center()).set(
+                        width=axis_group.width + 1
                     ),
+                    run_time=2,
                 )
+                # Create(VGroup(axes, x_axis_lbl, y_axis_lbl)),
             )
 
-            target_scene.play(dot.animate.move_to(axes.c2p(x, 0)))
+            old_terms, new_terms = None, None
+            for idx, x in enumerate(X):
+                x: float = x.item()  # x is a 1D tensor
+                dot = Dot(color=str(ItemColor.ACTIVE_1)).scale(
+                    scale_factor=((self.default_scale_multiplier / 3) * scale)
+                )
+                self.data_dots.append(dot)
+                dot.move_to(axes.c2p(0, 0))
 
-            if old_terms is not None:
-                degree = old_terms(x).degrees.max().item()
-                target_scene.play(dot.animate.move_to(axes.c2p(x, degree)))
-                target_scene.wait()
-                target_scene.next_slide(loop=True)
+                # get the attention of the viewer to focus on the data point
                 target_scene.play(
-                    Circumscribe(
-                        dot,
-                        color=ItemColor.ACTIVE_2,
+                    LaggedStart(
+                        Create(dot),
+                        Indicate(dot, scale_factor=1.5),
+                        AnimationGroup(
+                            dot.animate.set_glow_factor(1.0),
+                            Flash(dot, color=ItemColor.ACTIVE_1),
+                        ),
+                    )
+                )
+
+                target_scene.play(dot.animate.move_to(axes.c2p(x, 0)))
+
+                if old_terms is not None:
+                    degree = old_terms(x).degrees.max().item()
+                    target_scene.play(dot.animate.move_to(axes.c2p(x, degree)))
+                    target_scene.wait()
+                    target_scene.next_slide(loop=True)
+                    target_scene.play(
+                        Circumscribe(
+                            dot,
+                            color=ItemColor.ACTIVE_2,
+                            stroke_width=(self.default_scale_multiplier * scale),
+                            run_time=2,
+                        )
+                    )
+                    target_scene.wait()
+                    target_scene.next_slide()
+                    line_graph = axes.plot(
+                        lambda x: config.fuzzy.partition.epsilon,
+                        stroke_color=RED,
                         stroke_width=(self.default_scale_multiplier * scale),
-                        run_time=2,
                     )
-                )
-                target_scene.wait()
-                target_scene.next_slide()
-                line_graph = axes.plot(
-                    lambda x: config.fuzzy.partition.epsilon,
-                    stroke_color=RED,
-                    stroke_width=(self.default_scale_multiplier * scale),
-                )
-                dashed_line_graph = DashedVMobject(line_graph)
-                target_scene.wait()
-                target_scene.next_slide()
-                target_scene.play(Create(dashed_line_graph), run_time=2)
-                target_scene.wait()
-                message_str = "Not Satisfied"
-                if degree >= config.fuzzy.partition.epsilon:
-                    message_str = "Satisfied"
-                dashed_line_label = axes.get_graph_label(
-                    line_graph,
-                    Text(message_str).scale(scale_factor=scale),
-                    color=RED,
-                    direction=UP * scale,
-                )
-                target_scene.play(FadeIn(dashed_line_label))
-                target_scene.wait()
-                target_scene.next_slide()
-                target_scene.play(FadeOut(VGroup(dashed_line_label, dashed_line_graph)))
+                    dashed_line_graph = DashedVMobject(line_graph)
+                    target_scene.wait()
+                    target_scene.next_slide()
+                    target_scene.play(Create(dashed_line_graph), run_time=2)
+                    target_scene.wait()
+                    message_str = "Not Satisfied"
+                    if degree >= config.fuzzy.partition.epsilon:
+                        message_str = "Satisfied"
+                    dashed_line_label = axes.get_graph_label(
+                        line_graph,
+                        Text(message_str).scale(scale_factor=scale),
+                        color=RED,
+                        direction=UP * scale,
+                    )
+                    target_scene.play(FadeIn(dashed_line_label))
+                    target_scene.wait()
+                    target_scene.next_slide()
+                    target_scene.play(FadeOut(VGroup(dashed_line_label, dashed_line_graph)))
 
-            selected_X = X[: idx + 1]
-            if selected_X.ndim == 1:
-                selected_X = selected_X.unsqueeze(dim=1)
-            config = load_configuration()
-            with config.unfreeze():
-                config.fuzzy.partition.adjustment = 0.2
-            linguistic_variables: LinguisticVariables = CLIP(
-                dataset=SupervisedDataset(inputs=selected_X, targets=None),
-                config=config,
-            )
-            new_terms = linguistic_variables.inputs[0]
-            self.revise_fuzzy_sets(
-                axes, new_terms, X, scale=scale, target_scene=target_scene
-            )
+                selected_X = X[: idx + 1]
+                if selected_X.ndim == 1:
+                    selected_X = selected_X.unsqueeze(dim=1)
+                config = load_configuration()
+                with config.unfreeze():
+                    config.fuzzy.partition.adjustment = 0.2
+                linguistic_variables: LinguisticVariables = CLIP(
+                    dataset=SupervisedDataset(inputs=selected_X, targets=None),
+                    config=config,
+                )
+                new_terms = linguistic_variables.inputs[0]
+                self.revise_fuzzy_sets(
+                    axes, new_terms, X, scale=scale, target_scene=target_scene
+                )
 
-            if (
-                old_terms is None
-                or new_terms.centers.flatten().shape[0]
-                > old_terms.centers.flatten().shape[0]
-            ):
-                # new fuzzy set
-                if new_terms.centers.ndim == 0:
-                    center, width = new_terms.centers.item(), new_terms.widths.item()
+                if (
+                    old_terms is None
+                    or new_terms.centers.flatten().shape[0]
+                    > old_terms.centers.flatten().shape[0]
+                ):
+                    # new fuzzy set
+                    if new_terms.centers.ndim == 0:
+                        center, width = new_terms.centers.item(), new_terms.widths.item()
+                    else:
+                        center, width = (
+                            new_terms.centers[-1].item(),
+                            new_terms.widths[-1].item(),
+                        )
+
+                    self.add_fuzzy_set(
+                        axes,
+                        center,
+                        width,
+                        x,
+                        dot,
+                        new_terms,
+                        x_axis_config=x_axis_config,
+                        scale=scale,
+                        target_scene=target_scene,
+                    )
+
                 else:
-                    center, width = (
-                        new_terms.centers[-1].item(),
-                        new_terms.widths[-1].item(),
+                    target_scene.play(
+                        dot.animate.move_to(axes.c2p(x, new_terms(x).degrees.max().item())),
+                        # dot.animate.set_color(PURPLE_A),
+                        dot.animate.set_glow_factor(1.0),
                     )
-
-                self.add_fuzzy_set(
-                    axes,
-                    center,
-                    width,
-                    x,
-                    dot,
-                    new_terms,
-                    x_axis_config=x_axis_config,
-                    scale=scale,
-                    target_scene=target_scene,
-                )
-
-            else:
-                target_scene.play(
-                    dot.animate.move_to(axes.c2p(x, new_terms(x).degrees.max().item())),
-                    # dot.animate.set_color(PURPLE_A),
-                    dot.animate.set_glow_factor(1.0),
-                )
-            # self.revise_fuzzy_sets(axes, new_terms, X)
-            target_scene.play(dot.animate.set_color(str(ItemColor.INACTIVE_1)))
-            target_scene.wait()
-            old_terms = new_terms
-        target_scene.wait(1)
+                # self.revise_fuzzy_sets(axes, new_terms, X)
+                target_scene.play(dot.animate.set_color(str(ItemColor.INACTIVE_1)))
+                target_scene.wait()
+                old_terms = new_terms
+            target_scene.wait(1)
 
 
 if __name__ == "__main__":

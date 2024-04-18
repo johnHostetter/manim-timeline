@@ -205,7 +205,7 @@ class ECMDemo(Slide, MovingCameraScene):
     def construct(self):
         self.draw(origin=ORIGIN, scale=1.0, target_scene=self)
 
-    def draw(self, origin, scale, target_scene=None):
+    def draw(self, origin, scale, target_scene=None, animate: bool = True):
         if target_scene is None:
             target_scene = self
         method = (
@@ -213,79 +213,83 @@ class ECMDemo(Slide, MovingCameraScene):
             .scale(scale_factor=scale)
             .move_to(origin)
         )
-        target_scene.play(Write(method, run_time=1))
-        target_scene.wait(3)
-        target_scene.next_slide()
-        self.fuzzy_sets, self.data_dots = [], []
-        X, env = get_data_and_env(n_samples=1000)
-        tsne = TSNE(n_iter=900, perplexity=5, verbose=True)
-        tsne._EXPLORATION_N_ITER = 300
-        Y_seq = extract_sequence(tsne, X)
+        if not animate:
+            # do not animate the demo
+            target_scene.add(method)
+        else:
+            target_scene.play(Write(method, run_time=1))
+            target_scene.wait(3)
+            target_scene.next_slide()
+            self.fuzzy_sets, self.data_dots = [], []
+            X, env = get_data_and_env(n_samples=1000)
+            tsne = TSNE(n_iter=900, perplexity=5, verbose=True)
+            tsne._EXPLORATION_N_ITER = 300
+            Y_seq = extract_sequence(tsne, X)
 
-        axes = make_axes(
-            target_scene,
-            x_axis_config=AxisConfig(0, 1, step=0.1, length=8),
-            y_axis_config=AxisConfig(0, 1, step=0.1, length=5),
-            stroke_width=1 * scale,
-            axes_color=BLACK,
-        )
-        axis_labels: VGroup = axes.get_axis_labels(
-            # axis labels are in math mode already
-            x_label=r"\textit{t-SNE}_1",
-            y_label=r"\textit{t-SNE}_2",
-        ).set_color(BLACK)
-        axis_labels[0].scale(scale_factor=(self.default_scale_multiplier * scale))
-        # rotate y label 90 degrees and move it to the left
-        axis_labels[1].rotate(PI / 2).shift(1.5 * LEFT).scale(
-            scale_factor=(self.default_scale_multiplier * scale)
-        )
-        # x_axis_lbl, y_axis_lbl = add_labels_to_axes(
-        #     axes, x_label="t-SNE 1", y_label="t-SNE 2"
-        # )
-        axis_group = VGroup(axes, axis_labels).scale(scale_factor=scale).move_to(origin)
-        target_scene.play(
-            Succession(
-                FadeOut(method),
-                Create(axis_group),
-                target_scene.camera.frame.animate.move_to(axis_group.get_center()).set(
-                    width=axis_group.width + 1
-                ),
-                run_time=2,
+            axes = make_axes(
+                target_scene,
+                x_axis_config=AxisConfig(0, 1, step=0.1, length=8),
+                y_axis_config=AxisConfig(0, 1, step=0.1, length=5),
+                stroke_width=1 * scale,
+                axes_color=BLACK,
             )
-            # Create(VGroup(axes, x_axis_lbl, y_axis_lbl)),
-        )
-
-        visited_X = set()
-        for tsne_iter, tsne_X in enumerate(Y_seq[600:]):
-            if tsne_iter % 60 == 0:
-                animations = []
-                tsne_X = (tsne_X - tsne_X.min(0)[None, :]) / (
-                    tsne_X.max(0)[None, :] - tsne_X.min(0)[None, :]
+            axis_labels: VGroup = axes.get_axis_labels(
+                # axis labels are in math mode already
+                x_label=r"\textit{t-SNE}_1",
+                y_label=r"\textit{t-SNE}_2",
+            ).set_color(BLACK)
+            axis_labels[0].scale(scale_factor=(self.default_scale_multiplier * scale))
+            # rotate y label 90 degrees and move it to the left
+            axis_labels[1].rotate(PI / 2).shift(1.5 * LEFT).scale(
+                scale_factor=(self.default_scale_multiplier * scale)
+            )
+            # x_axis_lbl, y_axis_lbl = add_labels_to_axes(
+            #     axes, x_label="t-SNE 1", y_label="t-SNE 2"
+            # )
+            axis_group = VGroup(axes, axis_labels).scale(scale_factor=scale).move_to(origin)
+            target_scene.play(
+                Succession(
+                    FadeOut(method),
+                    Create(axis_group),
+                    target_scene.camera.frame.animate.move_to(axis_group.get_center()).set(
+                        width=axis_group.width + 1
+                    ),
+                    run_time=2,
                 )
-                for idx, tsne_x in enumerate(tsne_X):
-                    try:
-                        dot = self.data_dots[idx]
-                        animations.append(
-                            dot.animate.move_to(axes.c2p(tsne_x[0], tsne_x[1]))
-                        )
-                    except IndexError:
-                        dot = Dot(color=MANIM_BLUE).scale(
-                            scale_factor=((self.default_scale_multiplier / 3) * scale)
-                        )
-                        self.data_dots.append(dot)
-                        dot.move_to(axes.c2p(tsne_x[0], tsne_x[1]))
-                        animations.append(FadeIn(dot))
-                target_scene.wait(3)
-                target_scene.play(*animations)
+                # Create(VGroup(axes, x_axis_lbl, y_axis_lbl)),
+            )
 
-                rewind = self.run_ecm(
-                    target_scene, axes, tsne_X, X, visited_X, env, scale=scale
-                )
-                target_scene.wait(3)
-                target_scene.next_slide()
-                if len(rewind) > 0:
-                    target_scene.play(*rewind)  # undo the animations from ECM
-                break
+            visited_X = set()
+            for tsne_iter, tsne_X in enumerate(Y_seq[600:]):
+                if tsne_iter % 60 == 0:
+                    animations = []
+                    tsne_X = (tsne_X - tsne_X.min(0)[None, :]) / (
+                        tsne_X.max(0)[None, :] - tsne_X.min(0)[None, :]
+                    )
+                    for idx, tsne_x in enumerate(tsne_X):
+                        try:
+                            dot = self.data_dots[idx]
+                            animations.append(
+                                dot.animate.move_to(axes.c2p(tsne_x[0], tsne_x[1]))
+                            )
+                        except IndexError:
+                            dot = Dot(color=MANIM_BLUE).scale(
+                                scale_factor=((self.default_scale_multiplier / 3) * scale)
+                            )
+                            self.data_dots.append(dot)
+                            dot.move_to(axes.c2p(tsne_x[0], tsne_x[1]))
+                            animations.append(FadeIn(dot))
+                    target_scene.wait(3)
+                    target_scene.play(*animations)
+
+                    rewind = self.run_ecm(
+                        target_scene, axes, tsne_X, X, visited_X, env, scale=scale
+                    )
+                    target_scene.wait(3)
+                    target_scene.next_slide()
+                    if len(rewind) > 0:
+                        target_scene.play(*rewind)  # undo the animations from ECM
+                    break
 
 
 if __name__ == "__main__":
