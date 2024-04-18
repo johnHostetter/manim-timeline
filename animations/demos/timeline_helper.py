@@ -27,6 +27,7 @@ from animations.demos.timeline_events import TimelineEvent
 # }
 # digraph_layout[0] = (timeline_events[0].start_year - 10, 0, 0)
 
+
 def create_timeline_layout(timeline_events: List[TimelineEvent]) -> dict:
     """
     Given a sequence of timeline events, create a layout for the timeline.
@@ -45,9 +46,7 @@ def create_timeline_layout(timeline_events: List[TimelineEvent]) -> dict:
     for timeline_event in timeline_events:
         if not isinstance(timeline_event, dict):
             spacing = 5  # a good spacing for the timeline I found works well
-            if isinstance(prev_timeline_event, str) and isinstance(
-                    timeline_event, str
-            ):
+            if isinstance(prev_timeline_event, str) and isinstance(timeline_event, str):
                 # two consecutive strings do not need as much spacing
                 spacing = 1
             # technically we never use the vertex located at index 0
@@ -61,7 +60,7 @@ def create_timeline_layout(timeline_events: List[TimelineEvent]) -> dict:
             for publication in list(timeline_event.values())[0]:
                 spacing = 5  # a good spacing for the timeline I found works well
                 if isinstance(prev_timeline_event, str) and isinstance(
-                        publication, str
+                    publication, str
                 ):
                     # two consecutive strings do not need as much spacing
                     spacing = 1

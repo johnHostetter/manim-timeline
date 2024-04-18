@@ -58,9 +58,11 @@ class PlatoTheoryOfForms(MovingCameraScene):
         VGroup(header, sub_header.next_to(header, DOWN)).to_corner(UP, buff=0.5)
         cave.next_to(bust_svg, RIGHT).next_to(sub_header, DOWN)
 
-        all_content = VGroup(header, sub_header, bust_svg, cave).scale(
-            scale_factor=scale
-        ).move_to(origin)
+        all_content = (
+            VGroup(header, sub_header, bust_svg, cave)
+            .scale(scale_factor=scale)
+            .move_to(origin)
+        )
 
         if animate:
             scene.play(

@@ -54,14 +54,18 @@ class Timeline(Slide, MovingCameraScene):
             },
         )
 
-        PLAY_ANIMATION = False  # master override for playing the animations, helps with debugging
+        PLAY_ANIMATION = (
+            False  # master override for playing the animations, helps with debugging
+        )
 
         timeline = GraphPair(timeline_igraph, digraph=timeline_manim)
         self.camera.frame.move_to(timeline.digraph.get_center()).set(width=10)
 
         # start_loc = timeline.digraph.vertices[0].get_center()
         # end_loc = timeline.digraph.vertices[num_of_vertices - 1].get_center()
-        source_vertex = timeline.digraph.vertices[0]  # 0 indexes the source/origin vertex
+        source_vertex = timeline.digraph.vertices[
+            0
+        ]  # 0 indexes the source/origin vertex
         if PLAY_ANIMATION:
             self.play(self.camera.frame.animate.move_to(source_vertex).set(width=10))
         else:
@@ -159,7 +163,9 @@ class Timeline(Slide, MovingCameraScene):
                                 )
                             )
                         else:
-                            slide_animations.append(Create(pin, run_time=default_run_time))
+                            slide_animations.append(
+                                Create(pin, run_time=default_run_time)
+                            )
                     else:
                         self.add(pin)
 
@@ -197,9 +203,7 @@ class Timeline(Slide, MovingCameraScene):
 
                         if PLAY_ANIMATION:
                             slide_animations.append(
-                                Create(
-                                    timestamped_boundary, run_time=default_run_time
-                                )
+                                Create(timestamped_boundary, run_time=default_run_time)
                             )
                         else:
                             self.add(timestamped_boundary)
@@ -312,7 +316,9 @@ class Timeline(Slide, MovingCameraScene):
                 ######################################################################
 
                 if PLAY_ANIMATION:
-                    if isinstance(slide, TimelineEvent) or isinstance(slide, PromptSlide):
+                    if isinstance(slide, TimelineEvent) or isinstance(
+                        slide, PromptSlide
+                    ):
                         if not slide.skip:
                             # now zoom in on the event
                             self.play(
@@ -323,27 +329,33 @@ class Timeline(Slide, MovingCameraScene):
                     else:
                         # now zoom in on the event
                         self.play(
-                            self.camera.frame.animate.move_to(boundary.get_center()).set(
-                                width=boundary.width
-                            )
+                            self.camera.frame.animate.move_to(
+                                boundary.get_center()
+                            ).set(width=boundary.width)
                         )
 
                 # show the event
-                origin_to_draw_at = self.camera.frame.get_center()
+                # origin_to_draw_at = self.camera.frame.get_center()
+                origin_to_draw_at = boundary.get_center()
                 if isinstance(slide, TimelineEvent):
                     event = slide.animation
-                    if slide.skip:
-                        origin_to_draw_at = boundary.get_center()
+                    # if slide.skip:
+                    #     origin_to_draw_at = boundary.get_center()
                     if isinstance(event, CaptionedSVG) or isinstance(
                         event, CaptionedJPG
                     ):
                         event.draw(
-                            origin=origin_to_draw_at, scale=0.25,
-                            target_scene=self, animate=PLAY_ANIMATION
+                            origin=origin_to_draw_at,
+                            scale=0.25,
+                            target_scene=self,
+                            animate=PLAY_ANIMATION,
                         )
                     else:
                         event.draw(
-                            self, origin=origin_to_draw_at, scale=0.25, animate=PLAY_ANIMATION
+                            self,
+                            origin=origin_to_draw_at,
+                            scale=0.25,
+                            animate=PLAY_ANIMATION,
                         )
                 elif isinstance(slide, SlideWithBlocks) or isinstance(
                     slide, SlideWithList
@@ -352,20 +364,24 @@ class Timeline(Slide, MovingCameraScene):
                         origin=boundary.get_top() - (boundary.height / 10),
                         scale=0.15,
                         target_scene=self,
-                        animate=PLAY_ANIMATION
+                        animate=PLAY_ANIMATION,
                     )
                 elif isinstance(slide, PromptSlide):
-                    if slide.skip:
-                        origin_to_draw_at = boundary.get_center()
+                    # if slide.skip:
+                    #     origin_to_draw_at = boundary.get_center()
                     slide.draw(
-                        origin=origin_to_draw_at, scale=0.2,
-                        target_scene=self, animate=PLAY_ANIMATION
+                        origin=origin_to_draw_at,
+                        scale=0.2,
+                        target_scene=self,
+                        animate=PLAY_ANIMATION,
                     )
                 else:  # e.g., CLIPDemo
                     # try:
                     slide.draw(
-                        origin=origin_to_draw_at, scale=0.25,
-                        target_scene=self, animate=PLAY_ANIMATION
+                        origin=origin_to_draw_at,
+                        scale=0.25,
+                        target_scene=self,
+                        animate=PLAY_ANIMATION,
                     )
                     # except TypeError:
                     #     print(type(slide), slide)
@@ -376,7 +392,9 @@ class Timeline(Slide, MovingCameraScene):
                     self.next_slide()
                     # move to the next location
                     self.play(
-                        self.camera.frame.animate.move_to(origin_to_draw_at).set(width=10)
+                        self.camera.frame.animate.move_to(origin_to_draw_at).set(
+                            width=10
+                        )
                     )
 
             if not play_as_ready:
@@ -424,7 +442,9 @@ class Timeline(Slide, MovingCameraScene):
                         # do not circumscribe:
                         # (1) the line (v_group_to_render[0]), (2) the brace (v_group_to_render[-2])
                         # (3) or the brace's text (v_group_to_render[-1])
-                        Circumscribe(v_group_to_render[1:-2], color=MANIM_BLUE, run_time=2)
+                        Circumscribe(
+                            v_group_to_render[1:-2], color=MANIM_BLUE, run_time=2
+                        )
                     )
 
                     self.wait(1)
@@ -436,6 +456,14 @@ class Timeline(Slide, MovingCameraScene):
             self.wait(1)
             self.next_slide()
             self.play(self.camera.frame.animate.set(width=10))
+        else:
+            self.camera.frame.set(width=25)
+            self.play(
+                self.camera.frame.animate.move_to(
+                    timeline_manim.vertices[len(digraph_layout) - 1].get_center()
+                ).set(width=10),
+                run_time=10,
+            )
         # self.play(Restore(self.camera.frame, run_time=15))
         # origin_vertex: Dot = timeline.digraph.vertices[0]
         # self.play(

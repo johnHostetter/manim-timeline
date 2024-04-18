@@ -70,8 +70,8 @@ def make_ww2_slide(file_name: str, poi: int, caption: str) -> TimelineEvent:
 def get_noteworthy_events() -> ListType:
     bib_manager = BibTexManager()
     return [
-        dnn_pros_and_cons(),
-        PromptSlide(prompt="Could we have done better?", skip=True),
+        # dnn_pros_and_cons(),
+        # PromptSlide(prompt="Could we have done better?", skip=True),
         # nfn_pros_and_cons(),
         # proposal(),
         # PromptSlide(prompt='But before we begin - what does "fuzzy" mean?', skip=True),
@@ -137,21 +137,21 @@ def get_noteworthy_events() -> ListType:
             1940,
             caption="First mass bombing in London (September 7, 1940).",
         ),
-        # # make_ww2_slide(
-        # #     "germans_attack_soviets_eastern_front_june_22_1941",
-        # #     1941,
-        # #     "Germans attack Soviets on the Eastern Front (June 22, 1941).",
-        # # ),
-        # # make_ww2_slide(
-        # #     "pearl_harbor_dec_7_1941",
-        # #     1941,
-        # #     "Pearl Harbor attacked by Japan (December 7, 1941).",
-        # # ),
-        # # make_ww2_slide(
-        # #     "soviet_offensive_against_germans_in_stalingrad_feb_1943",
-        # #     1942,
-        # #     "Battle of Stalingrad (August 23, 1942).",
-        # # ),
+        # make_ww2_slide(
+        #     "germans_attack_soviets_eastern_front_june_22_1941",
+        #     1941,
+        #     "Germans attack Soviets on the Eastern Front (June 22, 1941).",
+        # ),
+        # make_ww2_slide(
+        #     "pearl_harbor_dec_7_1941",
+        #     1941,
+        #     "Pearl Harbor attacked by Japan (December 7, 1941).",
+        # ),
+        # make_ww2_slide(
+        #     "soviet_offensive_against_germans_in_stalingrad_feb_1943",
+        #     1942,
+        #     "Battle of Stalingrad (August 23, 1942).",
+        # ),
         make_ww2_slide(
             "d_day_june_6_1944",
             1944,
@@ -169,101 +169,125 @@ def get_noteworthy_events() -> ListType:
             event="Lotfi A. Zadeh",
             animation=Zadeh,
         ),
-        # bib_manager.cite_entry(bib_manager["zadeh_fuzzy_sets"]),  # 1965
-        # bib_manager.cite_entry(bib_manager["fuzzy_dp"]),  # 1970
-        # # mamdani FLC
-        # bib_manager.cite_entry(bib_manager["Mamdani1974ApplicationsOF"]),
-        # # relationship to lukasiewicz logic
-        # # bib_manager.cite_entry(bib_manager["giles1976lukasiewicz"]),
-        # # online
-        # # bib_manager.cite_entry(bib_manager["barto_neuronlike_1983"]),
-        # # fuzzy logic formalized by zadeh
-        # bib_manager.cite_entry(bib_manager["fuzzy_logic"]),  # 1988
-        # # possibly first NFN?
-        # bib_manager.cite_entry(bib_manager["lin_neural-network-based_1991"]),  # 1991
-        # # online fuzzy RL
-        # # {
-        # #     "Online Fuzzy\nReinforcement\nLearning": [
-        # #         bib_manager.cite_entry(bib_manager["aric_1"]),  # 1991
-        # #         bib_manager.cite_entry(bib_manager["berenji_learning_1992"]),  # 1991
-        # #     ]
-        # # },
-        # # # Q-learning
-        # # bib_manager.cite_entry(bib_manager["Watkins1992"]),  # 1992
-        # # Wang-Mendel Method for fuzzy logic rules
-        # bib_manager.cite_entry(bib_manager["wang_generating_1992"]),  # 1992
+        bib_manager.cite_entry(bib_manager["zadeh_fuzzy_sets"]),  # 1965
+        bib_manager.cite_entry(bib_manager["fuzzy_dp"]),  # 1970
+        # mamdani FLC
+        bib_manager.cite_entry(bib_manager["Mamdani1974ApplicationsOF"]),
+        # relationship to lukasiewicz logic
+        bib_manager.cite_entry(bib_manager["giles1976lukasiewicz"]),
+        # online
+        # bib_manager.cite_entry(bib_manager["barto_neuronlike_1983"]),
+        # fuzzy logic formalized by zadeh
+        bib_manager.cite_entry(bib_manager["fuzzy_logic"]),  # 1988
+        # possibly first NFN?
+        bib_manager.cite_entry(bib_manager["lin_neural-network-based_1991"]),  # 1991
+        # online fuzzy RL
+        {
+            "Online Fuzzy\nReinforcement\nLearning": [
+                bib_manager.cite_entry(bib_manager["aric_1"]),  # 1991
+                bib_manager.cite_entry(bib_manager["berenji_learning_1992"]),  # 1991
+            ]
+        },
+        # Q-learning
+        bib_manager.cite_entry(bib_manager["Watkins1992"]),  # 1992
+        # Wang-Mendel Method for fuzzy logic rules
+        bib_manager.cite_entry(bib_manager["wang_generating_1992"]),  # 1992
         # defend fuzzy logic
-        # {
-        #     "FLCs are\nuniversal function\napproximators": [
-        #         bib_manager.cite_entry(bib_manager["wang_mendel_universal_function_approx"]),
-        #         # 1992
-        #         bib_manager.cite_entry(bib_manager["wang_universal_function_approx"]),  # 1992
-        #     ],
-        # },
-        # # ANFIS
-        # bib_manager.cite_entry(bib_manager["jang_anfis_1993"]),  # 1993
-        # # self-organize NFNs
-        # bib_manager.cite_entry(bib_manager["chen_self-organizing_1993"]),  # 1993
-        # bib_manager.cite_entry(bib_manager["lin_reinforcement_1994"]),  # 1994 Lin does RL
-        # bib_manager.cite_entry(bib_manager["fql_and_dynamic_fql"]),  # 1994 first FQL paper
-        # bib_manager.cite_entry(bib_manager["elkan_paradoxical_1994"]),
+        {
+            "FLCs are\nuniversal function\napproximators": [
+                bib_manager.cite_entry(
+                    bib_manager["wang_mendel_universal_function_approx"]
+                ),
+                # 1992
+                bib_manager.cite_entry(
+                    bib_manager["wang_universal_function_approx"]
+                ),  # 1992
+            ],
+        },
+        # ANFIS
+        bib_manager.cite_entry(bib_manager["jang_anfis_1993"]),  # 1993
+        # self-organize NFNs
+        bib_manager.cite_entry(bib_manager["chen_self-organizing_1993"]),  # 1993
+        bib_manager.cite_entry(
+            bib_manager["lin_reinforcement_1994"]
+        ),  # 1994 Lin does RL
+        bib_manager.cite_entry(
+            bib_manager["fql_and_dynamic_fql"]
+        ),  # 1994 first FQL paper
+        bib_manager.cite_entry(bib_manager["elkan_paradoxical_1994"]),
         # 1994 (defend f.l. w/ berenji & zadeh)
-        # {
-        #     "Additional proof\nFLCs are universal\nfunction approximators": [
-        #         bib_manager.cite_entry(bib_manager["kosko_1994"]),  # 1994
-        #         bib_manager.cite_entry(bib_manager["zeng_approximation_1995"]),  # 1995
-        #     ],
-        # },
-        # # self-organize
-        # bib_manager.cite_entry(bib_manager["zhou_popfnn_1996"]),  # 1996 first POPFNN
-        # # broader applications
-        # bib_manager.cite_entry(bib_manager["zadeh_fuzzy_1996"]),  # zadeh's CWW
-        # bib_manager.cite_entry(bib_manager["glorennec_fuzzy_1997"]),  # 1997 fuzzy q-learning
-        # bib_manager.cite_entry(bib_manager["are_ann_black_boxes"]),  # 1997
-        # bib_manager.cite_entry(bib_manager["tfig"]),  # 1997
-        # bib_manager.cite_entry(bib_manager["kosko_blue_book"]),  # 1998 kosko
-        # bib_manager.cite_entry(bib_manager["jouffe_fuzzy_1998"]),  # 1998 fuzzy actor critic
-        # bib_manager.cite_entry(bib_manager["lin_granular_1999"]),  # 1999 zadeh w/ Kacprzyk, Janusz
-        # bib_manager.cite_entry(bib_manager["quek_popfnn-aars_1999"]),  # 1999 POPFNN-AARS
+        {
+            "Additional proof\nFLCs are universal\nfunction approximators": [
+                bib_manager.cite_entry(bib_manager["kosko_1994"]),  # 1994
+                bib_manager.cite_entry(bib_manager["zeng_approximation_1995"]),  # 1995
+            ],
+        },
+        # self-organize
+        bib_manager.cite_entry(bib_manager["zhou_popfnn_1996"]),  # 1996 first POPFNN
+        # broader applications
+        bib_manager.cite_entry(bib_manager["zadeh_fuzzy_1996"]),  # zadeh's CWW
+        bib_manager.cite_entry(
+            bib_manager["glorennec_fuzzy_1997"]
+        ),  # 1997 fuzzy q-learning
+        bib_manager.cite_entry(bib_manager["are_ann_black_boxes"]),  # 1997
+        bib_manager.cite_entry(bib_manager["tfig"]),  # 1997
+        bib_manager.cite_entry(bib_manager["kosko_blue_book"]),  # 1998 kosko
+        bib_manager.cite_entry(
+            bib_manager["jouffe_fuzzy_1998"]
+        ),  # 1998 fuzzy actor critic
+        bib_manager.cite_entry(
+            bib_manager["lin_granular_1999"]
+        ),  # 1999 zadeh w/ Kacprzyk, Janusz
+        bib_manager.cite_entry(
+            bib_manager["quek_popfnn-aars_1999"]
+        ),  # 1999 POPFNN-AARS
         # equivalence to ANNs/DNNs
-        # {
-        #     "FLCs are\nmathematically \nequivalent\nto ANNs/DNNs": [
-        #         bib_manager.cite_entry(bib_manager["fls_ann_equivalence"]),  # 2000
-        #         bib_manager.cite_entry(bib_manager["black_box_ext"]),  # 2002
-        #     ],
-        # },
+        {
+            "FLCs are\nmathematically \nequivalent\nto ANNs/DNNs": [
+                bib_manager.cite_entry(bib_manager["fls_ann_equivalence"]),  # 2000
+                bib_manager.cite_entry(bib_manager["black_box_ext"]),  # 2002
+            ],
+        },
         # DENFIS
-        # bib_manager.cite_entry(bib_manager["kasabov_denfis_2002"]),  # 2002
-        # ECMDemo(),
-        # # back to equivalence to ANNs/DNNs
+        bib_manager.cite_entry(bib_manager["kasabov_denfis_2002"]),  # 2002
+        ECMDemo(),
+        # back to equivalence to ANNs/DNNs
+        {
+            "FLCs are\nmathematically \nequivalent\nto ANNs/DNNs": [
+                bib_manager.cite_entry(bib_manager["fls_ann_equivalence"]),  # 2000
+                bib_manager.cite_entry(bib_manager["black_box_ext"]),  # 2002
+            ],
+        },
         # bib_manager.cite_entry(bib_manager["equivalence_implications"]),  # 2003
         # bib_manager.cite_entry(bib_manager["ang_popfnn-cris_2003"]),  # 2003 update to POPFNN
-        # bib_manager.cite_entry(bib_manager["are_ann_white_boxes"]),  # 2005
+        bib_manager.cite_entry(bib_manager["are_ann_white_boxes"]),  # 2005
         # rough set w/ NFN
-        # {
-        #     "Rough set theory\n with NFN": [
-        #         bib_manager.cite_entry(bib_manager["ang_rspop_2005"]),  # 2005
-        #         bib_manager.cite_entry(bib_manager["ang_stock_2006"]),  # 2006
-        #     ]
-        # },
-        # # return to CWW
+        {
+            "Rough set theory\n with NFN": [
+                bib_manager.cite_entry(bib_manager["ang_rspop_2005"]),  # 2005
+                bib_manager.cite_entry(bib_manager["ang_stock_2006"]),  # 2006
+            ]
+        },
+        # return to CWW
         # bib_manager.cite_entry(bib_manager["mendel_computing_2007"]),  # argues CWW to be embraced
-        # bib_manager.cite_entry(bib_manager["is_there_a_need_for_fuzzy_logic"]),  # 2008
-        # # genetic fuzzy systems for high dimensions
-        # bib_manager.cite_entry(bib_manager["gacto_handling_2009"]),  # 2009
-        # bib_manager.cite_entry(bib_manager["kacprzyk_computing_2010"]),  # 2010 CWW is implementable
+        bib_manager.cite_entry(bib_manager["is_there_a_need_for_fuzzy_logic"]),  # 2008
+        # genetic fuzzy systems for high dimensions
+        bib_manager.cite_entry(bib_manager["gacto_handling_2009"]),  # 2009
+        bib_manager.cite_entry(
+            bib_manager["kacprzyk_computing_2010"]
+        ),  # 2010 CWW is implementable
         # CLIP
-        # bib_manager.cite_entry(bib_manager["tung_safin_2011"]),  # 2011
-        # CLIPDemo(),
+        bib_manager.cite_entry(bib_manager["tung_safin_2011"]),  # 2011
+        CLIPDemo(),
         # bib_manager.cite_entry(bib_manager["wiering_batch_2012"]),  # 2012, batch RL
         # genetic fuzzy systems for high dimensions
-        # bib_manager.cite_entry(bib_manager["marquez_efficient_2012"]),  # 2012
-        # # DENFIS for RL
-        # bib_manager.cite_entry(bib_manager["denfis_rl"]),  # 2014
-        # # update rough set w/ NFN
-        # bib_manager.cite_entry(bib_manager["das_ierspop_2016"]),  # 2016 incremental NFN
-        # # first offline (model-based) fuzzy RL
-        # bib_manager.cite_entry(bib_manager["hein_particle_2017"]),  # 2017
+        bib_manager.cite_entry(bib_manager["marquez_efficient_2012"]),  # 2012
+        # DENFIS for RL
+        bib_manager.cite_entry(bib_manager["denfis_rl"]),  # 2014
+        # update rough set w/ NFN
+        bib_manager.cite_entry(bib_manager["das_ierspop_2016"]),  # 2016 incremental NFN
+        # first offline (model-based) fuzzy RL
+        bib_manager.cite_entry(bib_manager["hein_particle_2017"]),  # 2017
         # people begin noticing f.l. can help w/ XAI
         {
             "Zadeh begins to \nbe recognized for \nhis XAI efforts": [
@@ -277,8 +301,8 @@ def get_noteworthy_events() -> ListType:
                 bib_manager.cite_entry(bib_manager["arrieta_explainable_2019"]),
             ],
         },
-        # bib_manager.cite_entry(bib_manager["aghaeipoor_mokblmoms_2019"]),
-        # # 2019 growing shift to XAI
+        bib_manager.cite_entry(bib_manager["aghaeipoor_mokblmoms_2019"]),
+        # 2019 growing shift to XAI
         # # offline RL focus
         # # {
         # #     "Offline \nReinforcement \nLearning": [
@@ -291,17 +315,27 @@ def get_noteworthy_events() -> ListType:
         bib_manager.cite_entry(bib_manager["cql"]),  # 2020 CQL
         CQLDemo(),
         # 2021 Zadeh recognized for XAI
-        # {
-        #     "Zadeh further \nrecognized for \nhis XAI efforts": [
-        #         bib_manager.cite_entry(bib_manager["bouchon-meunier_lotfi_2021"]),
-        #         bib_manager.cite_entry(bib_manager["rayz_why_2022"]), # 2022, why f.l. is needed for XAI
-        #         bib_manager.cite_entry(bib_manager["noauthor_towards_nodate"]),  # 2022, toward f.l. XAI
-        #     ],
-        # },
-        # # time for me
-        # bib_manager.cite_entry(bib_manager["hostetter2023leveraging"]),  # 2023 APFRB
-        # bib_manager.cite_entry(bib_manager["hostetter2023self"]),  # 2023 CEW
-        # bib_manager.cite_entry(bib_manager["hostetter2023latent"]),  # 2023 LLM
+        {
+            "Zadeh further \nrecognized for \nhis XAI efforts": [
+                bib_manager.cite_entry(bib_manager["bouchon-meunier_lotfi_2021"]),
+                bib_manager.cite_entry(
+                    bib_manager["rayz_why_2022"]
+                ),  # 2022, why f.l. is needed for XAI
+                bib_manager.cite_entry(
+                    bib_manager["noauthor_towards_nodate"]
+                ),  # 2022, toward f.l. XAI
+            ],
+        },
+        # time for me
+        PromptSlide(prompt="Part I: Translation", skip=True),
+        bib_manager.cite_entry(bib_manager["hostetter2023leveraging"]),  # 2023 APFRB
+        PromptSlide(prompt="Part II: Self-Organization", skip=True),
+        bib_manager.cite_entry(bib_manager["hostetter2023self"]),  # 2023 CEW
+        bib_manager.cite_entry(bib_manager["hostetter2023latent"]),  # 2023 LLM
+        PromptSlide(prompt="Part III: Morphism", skip=True),
+        "The Morphetic ϵ-Delayed Neuro-Fuzzy Network:\n"
+        "A General Architecture for Transparent Rule-Based Decision-Making"
+        " (Hostetter, John Wesley 2025)",
         # curr_limitations(),
         # PromptSlide(prompt="Expected Timeline", skip=True),
         # # CaptionedJPG(

@@ -162,7 +162,9 @@ class CLIPDemo(Slide, MovingCameraScene):
             # }
 
             self.fuzzy_sets, self.data_dots = [], []
-            x_axis_config = AxisConfig(X.min().item(), X.max().item(), step=0.1, length=8)
+            x_axis_config = AxisConfig(
+                X.min().item(), X.max().item(), step=0.1, length=8
+            )
             axes = make_axes(
                 target_scene,
                 x_axis_config=x_axis_config,
@@ -185,15 +187,17 @@ class CLIPDemo(Slide, MovingCameraScene):
             axis_labels[1].rotate(PI / 2).shift(1.5 * LEFT * scale).scale(
                 scale_factor=(self.default_scale_multiplier * scale)
             )
-            axis_group = VGroup(axes, axis_labels).scale(scale_factor=scale).move_to(origin)
+            axis_group = (
+                VGroup(axes, axis_labels).scale(scale_factor=scale).move_to(origin)
+            )
 
             target_scene.play(
                 Succession(
                     FadeOut(method),
                     Create(axis_group),
-                    target_scene.camera.frame.animate.move_to(axis_group.get_center()).set(
-                        width=axis_group.width + 1
-                    ),
+                    target_scene.camera.frame.animate.move_to(
+                        axis_group.get_center()
+                    ).set(width=axis_group.width + 1),
                     run_time=2,
                 )
                 # Create(VGroup(axes, x_axis_lbl, y_axis_lbl)),
@@ -259,7 +263,9 @@ class CLIPDemo(Slide, MovingCameraScene):
                     target_scene.play(FadeIn(dashed_line_label))
                     target_scene.wait()
                     target_scene.next_slide()
-                    target_scene.play(FadeOut(VGroup(dashed_line_label, dashed_line_graph)))
+                    target_scene.play(
+                        FadeOut(VGroup(dashed_line_label, dashed_line_graph))
+                    )
 
                 selected_X = X[: idx + 1]
                 if selected_X.ndim == 1:
@@ -283,7 +289,10 @@ class CLIPDemo(Slide, MovingCameraScene):
                 ):
                     # new fuzzy set
                     if new_terms.centers.ndim == 0:
-                        center, width = new_terms.centers.item(), new_terms.widths.item()
+                        center, width = (
+                            new_terms.centers.item(),
+                            new_terms.widths.item(),
+                        )
                     else:
                         center, width = (
                             new_terms.centers[-1].item(),
@@ -304,7 +313,9 @@ class CLIPDemo(Slide, MovingCameraScene):
 
                 else:
                     target_scene.play(
-                        dot.animate.move_to(axes.c2p(x, new_terms(x).degrees.max().item())),
+                        dot.animate.move_to(
+                            axes.c2p(x, new_terms(x).degrees.max().item())
+                        ),
                         # dot.animate.set_color(PURPLE_A),
                         dot.animate.set_glow_factor(1.0),
                     )

@@ -91,7 +91,9 @@ class BertrandRussellQuote(Slide):
             scene.wait(1)
             scene.next_slide()
             scene.play(
-                Transform(paragraph, paragraph_1, replace_mobject_with_target_in_scene=True)
+                Transform(
+                    paragraph, paragraph_1, replace_mobject_with_target_in_scene=True
+                )
             )
             scene.wait(2)
             scene.next_slide()

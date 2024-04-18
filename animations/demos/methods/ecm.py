@@ -246,14 +246,16 @@ class ECMDemo(Slide, MovingCameraScene):
             # x_axis_lbl, y_axis_lbl = add_labels_to_axes(
             #     axes, x_label="t-SNE 1", y_label="t-SNE 2"
             # )
-            axis_group = VGroup(axes, axis_labels).scale(scale_factor=scale).move_to(origin)
+            axis_group = (
+                VGroup(axes, axis_labels).scale(scale_factor=scale).move_to(origin)
+            )
             target_scene.play(
                 Succession(
                     FadeOut(method),
                     Create(axis_group),
-                    target_scene.camera.frame.animate.move_to(axis_group.get_center()).set(
-                        width=axis_group.width + 1
-                    ),
+                    target_scene.camera.frame.animate.move_to(
+                        axis_group.get_center()
+                    ).set(width=axis_group.width + 1),
                     run_time=2,
                 )
                 # Create(VGroup(axes, x_axis_lbl, y_axis_lbl)),
@@ -274,7 +276,9 @@ class ECMDemo(Slide, MovingCameraScene):
                             )
                         except IndexError:
                             dot = Dot(color=MANIM_BLUE).scale(
-                                scale_factor=((self.default_scale_multiplier / 3) * scale)
+                                scale_factor=(
+                                    (self.default_scale_multiplier / 3) * scale
+                                )
                             )
                             self.data_dots.append(dot)
                             dot.move_to(axes.c2p(tsne_x[0], tsne_x[1]))

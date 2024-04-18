@@ -98,7 +98,9 @@ class Aristotle(Slide):
                 Transform(
                     paragraph, paragraph_1, replace_mobject_with_target_in_scene=True
                 ),
-                Transform(source, new_source, replace_mobject_with_target_in_scene=True),
+                Transform(
+                    source, new_source, replace_mobject_with_target_in_scene=True
+                ),
             )
             scene.wait(2)
 
