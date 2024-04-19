@@ -22,6 +22,7 @@ def get_notation() -> SlideWithList:
     return SlideWithList(
         title="Necessary Notation",
         subtitle=None,
+        width_buffer=12.0,
         beamer_list=ItemizedList(
             items=[
                 "Membership Matrix",

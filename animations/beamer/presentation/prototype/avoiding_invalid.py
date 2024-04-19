@@ -71,7 +71,7 @@ def avoiding_invalid_selections() -> SlideWithBlocks:
     myTemplate = TexTemplate()
     myTemplate.add_to_preamble(r"\usepackage{mathrsfs}")
     return SlideWithBlocks(
-        title="Fix Numerical Instability",
+        title="Avoid Invalid Selections",
         subtitle=None,
         blocks=[
             get_scalar_cardinality(),

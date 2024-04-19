@@ -15,7 +15,7 @@ light_theme_style = {
 }
 
 
-def proposal() -> SlideWithBlocks:
+def get_proposal() -> SlideWithBlocks:
     """
     Create a slide with two blocks: one for the advantages and one for the disadvantages of
     deep neural networks (DNNs).
@@ -102,5 +102,5 @@ def pad_block_text_with_spacing(blocks):
 
 
 if __name__ == "__main__":
-    beamer_slide = proposal()
+    beamer_slide = get_proposal()
     beamer_slide.render()

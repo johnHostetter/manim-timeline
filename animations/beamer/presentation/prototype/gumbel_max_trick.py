@@ -51,7 +51,7 @@ def gumbel_max_trick() -> SlideWithList:
     #     r"applies a simple bounding operation to $\tilde{L}'$.", color=BLACK
     # ).next_to(formula, DOWN)
     return SlideWithList(
-        title="The Gumbel-Max Trick",
+        title="Gumbel Noise for Stochasticity",
         subtitle=None,
         beamer_list=ItemizedList(
             items=[

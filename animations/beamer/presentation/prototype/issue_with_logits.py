@@ -50,7 +50,7 @@ def issue_with_logits() -> SlideWithBlocks:
         "categorical distribution.",
     )
     return SlideWithBlocks(
-        title="Why Modify Gumbel-Max Trick?",
+        title="Why the Gumbel-Max Trick?",
         subtitle=None,
         blocks=[alert_block, remark_block, example_block],
     )

@@ -20,6 +20,7 @@ def get_outline() -> SlideWithList:
     return SlideWithList(
         title="Outline",
         subtitle=None,
+        width_buffer=12.0,
         beamer_list=ItemizedList(
             items=[
                 "Introduction & Background",

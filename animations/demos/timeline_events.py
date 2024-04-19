@@ -11,7 +11,7 @@ from animations.beamer.presentation.bibtex import BibTexManager
 from animations.beamer.presentation.conclusion.existing_issues import curr_limitations
 from animations.beamer.presentation.conclusion.new_horizons import proposed_studies
 from animations.beamer.presentation.conclusion.plan import proposed_plan
-from animations.beamer.presentation.introduction.proposal import proposal
+from animations.beamer.presentation.introduction.proposal import get_proposal
 from animations.beamer.slides import PromptSlide
 from animations.demos.methods.clip import CLIPDemo
 from animations.demos.methods.cql import CQLDemo
