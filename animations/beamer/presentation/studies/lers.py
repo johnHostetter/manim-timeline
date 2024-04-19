@@ -318,6 +318,7 @@ def lers_summary() -> SlideWithList:
     return SlideWithList(
         title="A Minimal Discriminant Description of Fuzzy Rules",
         subtitle="Testing the Viability of Human-Readable Fuzzy Rules in Reinforcement Learning",
+        width_buffer=6.0,
         beamer_list=BL(
             items=[
                 "Hostetter, John Wesley et al., Self-Organizing Computing with Words:\n"

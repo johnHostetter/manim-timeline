@@ -1,14 +1,30 @@
 from manim import *
 
-from animations.beamer.slides import SlideWithList
 from animations.beamer.presentation.bibtex import BibTexManager
 from animations.beamer.lists import ItemizedList, BulletedList as BL
+from animations.beamer.slides import SlideShow, SlideWithList, SlideDiagram
 
 config.background_color = WHITE
 light_theme_style = {
     "fill_color": BLACK,
     "background_stroke_color": WHITE,
 }
+
+
+class LLM(SlideShow):
+    def __init__(self, **kwargs):
+        super().__init__(slides=[LLMDiagram(), llm_summary()], **kwargs)
+
+
+class LLMDiagram(SlideDiagram):
+    def __init__(self, **kwargs):
+        super().__init__(
+            path="images/llm_diagram.png",
+            caption="A diagram of the Latent Lockstep Method (LLM)\n"
+                    "systematic design process of NFNs.",
+            original_image_scale=1.00,
+            **kwargs
+        )
 
 
 def llm_summary() -> SlideWithList:
@@ -28,22 +44,19 @@ def llm_summary() -> SlideWithList:
                 "Primary Intuition",
                 ItemizedList(
                     items=[
-                        "If the latent representations are similar, the input data is similar",
-                        "If data is unique in the latent space, it is unique in the original space",
+                        "If data is unique in latent space, it is unique in original space",
                     ]
                 ),
                 "Summary",
                 ItemizedList(
                     items=[
-                        "Latent representations are used to identify exemplars",
-                        "The method is simple, yet effective",
-                        "The method is problem-independent",
+                        "Latent representations identify exemplars",
+                        "Simple, yet effective problem-independent method",
                     ]
                 ),
                 "Contributions",
                 ItemizedList(
                     items=[
-                        "Simple & quick",
                         "Problem independent exemplar identification",
                         "Works well in high-dimensional spaces",
                     ]
@@ -51,7 +64,7 @@ def llm_summary() -> SlideWithList:
                 "Limitations",
                 ItemizedList(
                     items=[
-                        "The premises of fuzzy logic rule grows linear with the number of inputs",
+                        "Premises of fuzzy logic rule grows linear w/ number of inputs",
                         "Chosen encoder architecture may not be ideal",
                     ]
                 ),
@@ -61,5 +74,4 @@ def llm_summary() -> SlideWithList:
 
 
 if __name__ == "__main__":
-    beamer_slide = llm_summary()
-    beamer_slide.render()
+    LLM().render()
