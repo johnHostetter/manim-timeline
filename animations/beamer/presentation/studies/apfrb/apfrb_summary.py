@@ -19,41 +19,42 @@ def apfrb_summary() -> SlideWithList:
         The slide with a list of studies.
     """
     bibtex_manager = BibTexManager()
+    beamer_list = BL(
+        items=[
+            bibtex_manager.cite_entry(bibtex_manager["hostetter2023leveraging"]),
+            "Primary Intuition",
+            ItemizedList(
+                items=[
+                    "APFRB offers a mathematical equivalence between DNNs and FLCs",
+                    "Train the more complex DNN, then convert to FLC for inference",
+                ]
+            ),
+            "Summary",
+            ItemizedList(
+                items=[
+                    "The FLC significantly helped students learn probability",
+                ]
+            ),
+            "Contributions",
+            ItemizedList(
+                items=[
+                    "First pedagogical policy using FLCs to teach students",
+                ]
+            ),
+            "Limitations",
+            ItemizedList(
+                items=[
+                    "Works only for some DNNs (e.g., hyperbolic tangent required)",
+                    "Number of rules grows exponentially with the number of neurons in the DNN",
+                    "The rules are not interpretable by humans",
+                ]
+            ),
+        ]
+    )
     return SlideWithList(
         title="Leveraging All-Permutations Fuzzy Rule Base (APFRB)",
         subtitle="Exploring the Potential of Fuzzy Logic in Real-World Applications",
-        beamer_list=BL(
-            items=[
-                bibtex_manager.cite_entry(bibtex_manager["hostetter2023leveraging"]),
-                "Primary Intuition",
-                ItemizedList(
-                    items=[
-                        "APFRB offers a mathematical equivalence between DNNs and FLCs",
-                        "Train the more complex DNN, then convert to FLC for inference",
-                    ]
-                ),
-                "Summary",
-                ItemizedList(
-                    items=[
-                        "The FLC significantly helped students learn probability",
-                    ]
-                ),
-                "Contributions",
-                ItemizedList(
-                    items=[
-                        "First pedagogical policy using FLCs to teach students",
-                    ]
-                ),
-                "Limitations",
-                ItemizedList(
-                    items=[
-                        "Works only for some DNNs (e.g., hyperbolic tangent required)",
-                        "Number of rules grows exponentially with the number of neurons in the DNN",
-                        "The rules are not interpretable by humans",
-                    ]
-                ),
-            ]
-        ),
+        beamer_list=beamer_list,
     )
 
 

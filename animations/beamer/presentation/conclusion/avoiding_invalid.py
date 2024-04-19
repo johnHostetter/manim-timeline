@@ -11,6 +11,21 @@ light_theme_style = {
 }
 
 
+def get_scalar_cardinality() -> MathTex:
+    return MathTex(
+        r"""
+        S = \begin{bmatrix} 
+        \sum_{\mathbf{x}} \mu_{1, 1}(x_{1}) & \sum_{\mathbf{x}} \mu_{1, 2}(x_{1}) & \dots \\
+        \vdots & \ddots & \\
+        \sum_{\mathbf{x}} \mu_{n, 1}(x_{n}) &        
+        & \sum_{\mathbf{x}} \mu_{n, \max_{v} \mid \mathcal{T}_{v} \mid }(x_{n}) 
+        \end{bmatrix}
+        \qquad
+        """,
+        color=BLACK,
+    )
+
+
 def avoiding_invalid_selections() -> SlideWithBlocks:
     """
     Create a slide discussing how to avoid invalid selections according to
@@ -66,36 +81,17 @@ def avoiding_invalid_selections() -> SlideWithBlocks:
             ]
         ),
     )
-    sentence_1 = Tex(
-        r"Restrict logits to $[-\kappa, \kappa]$ by modifying \texttt{Sigmoid} such that",
-        color=BLACK,
-    )
 
     myTemplate = TexTemplate()
     myTemplate.add_to_preamble(r"\usepackage{mathrsfs}")
-    formula = MathTex(
-        r"""
-        S = \begin{bmatrix} 
-        \sum_{\mathbf{x}} \mu_{1, 1}(x_{1}) & \sum_{\mathbf{x}} \mu_{1, 2}(x_{1}) & \dots \\
-        \vdots & \ddots & \\
-        \sum_{\mathbf{x}} \mu_{n, 1}(x_{n}) &        & \sum_{\mathbf{x}} \mu_{n, \max_{i} \mid \mu_i \mid }(x_{n}) 
-        \end{bmatrix}
-        \qquad
-        """,
-        color=BLACK,
-    )
-    sentence_2 = Tex(
-        r"applies a simple bounding operation to $\tilde{L}'$.", color=BLACK
-    ).next_to(formula, DOWN)
     return SlideWithBlocks(
         title="Fix Numerical Instability",
         subtitle=None,
         blocks=[
-            formula,
+            get_scalar_cardinality(),
             remark_block,
             example_block,
             alert_block,
-            # VGroup(sentence_1, formula, sentence_2)
         ],
     )
 

@@ -36,16 +36,17 @@ class CaptionedSVG(Scene):
 
 
 class CaptionedJPG(Scene):
-    def __init__(self, path, caption, **kwargs):
+    def __init__(self, path, caption, original_image_scale: float = 0.25, **kwargs):
         self.path = path
         self.caption = caption
+        self.original_image_scale = original_image_scale
         super().__init__(**kwargs)
 
     def construct(self, origin=ORIGIN, scale=1.0):
         self.draw(origin, scale)
 
     def draw(self, origin, scale, target_scene=None, animate=True):
-        jpg = ImageMobject(self.path).scale(0.25)
+        jpg = ImageMobject(self.path).scale(self.original_image_scale)
         text = (
             Text(self.caption, font="TeX Gyre Termes", color=BLACK)
             .scale(0.7)
