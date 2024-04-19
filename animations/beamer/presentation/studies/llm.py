@@ -36,15 +36,15 @@ def llm_summary() -> SlideWithList:
     """
     bibtex_manager = BibTexManager()
     return SlideWithList(
-        title="The Latent Lockstep Method",
-        subtitle="Identifying Exemplars by Leveraging Latent Representations",
+        title="Identifying Exemplars by Leveraging Latent Representations",
+        subtitle="The Latent Lockstep Method (LLM)",
         beamer_list=BL(
             items=[
-                bibtex_manager.cite_entry(bibtex_manager["hostetter2023latent"]),
+                bibtex_manager.cite_entry(bibtex_manager["hostetter2023latent"], num_of_words=8),
                 "Primary Intuition",
                 ItemizedList(
                     items=[
-                        "If data is unique in latent space, it is unique in original space",
+                        "Data is unique if the latent encoding is unique",
                     ]
                 ),
                 "Summary",
@@ -64,7 +64,7 @@ def llm_summary() -> SlideWithList:
                 "Limitations",
                 ItemizedList(
                     items=[
-                        "Premises of fuzzy logic rule grows linear w/ number of inputs",
+                        "Fuzzy rules\' premises grows linear w/ number of inputs",
                         "Chosen encoder architecture may not be ideal",
                     ]
                 ),

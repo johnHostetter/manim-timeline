@@ -1,3 +1,4 @@
+import random
 from typing import Set, Tuple
 
 import igraph as ig
@@ -94,7 +95,6 @@ class LERSDiagram(Slide, MovingCameraScene):
             self.graphs[displayed_model_name] = GraphPair(igraph=graph, digraph=digraph)
 
         # code specific to LERS diagram
-        import random
         premise_terms = grouped_vertices[1]
         premises_to_remove: Set[int] = set(
             random.choices(premise_terms, k=int(len(premise_terms) / 2))
@@ -122,9 +122,7 @@ class LERSDiagram(Slide, MovingCameraScene):
                 all_edges_to_remove=set()
             )
             objects_to_fade_out = VGroup(*[digraph.vertices[i] for i in vs])
-            indications = AnimationGroup(
-                *[Flash(digraph.vertices[i], color=RED, line_stroke_width=3) for i in vs]
-            )
+            indications = [Flash(digraph.vertices[i], color=RED, line_stroke_width=3) for i in vs]
             objects_to_fade_out.add(
                 *[digraph.edges[e] for e in es]
             )
@@ -133,9 +131,13 @@ class LERSDiagram(Slide, MovingCameraScene):
             target_scene.next_slide(loop=True)
             # color the vertices red
             for v in vs:
-                digraph.vertices[v].set_color(RED)
+                indications.append(digraph.vertices[v].animate.set_color(RED))
 
-            target_scene.play(indications, run_time=2)
+            # color the edges red
+            for e in es:
+                indications.append(digraph.edges[e].animate.set_color(RED))
+
+            target_scene.play(AnimationGroup(*indications), run_time=2)
             target_scene.wait(1)
             target_scene.next_slide(loop=True)
             target_scene.play(FadeOut(objects_to_fade_out, run_time=3))

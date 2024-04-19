@@ -1,5 +1,6 @@
 from manim import *
 
+from animations.beamer.presentation.studies.fyd import get_scalar_cardinality
 from animations.beamer.slides import SlideWithBlocks
 from animations.beamer.blocks import AlertBlock, ExampleBlock, RemarkBlock
 from animations.beamer.lists import DisadvantagesList, AdvantagesList, ItemizedList
@@ -9,21 +10,6 @@ light_theme_style = {
     "fill_color": BLACK,
     "background_stroke_color": WHITE,
 }
-
-
-def get_scalar_cardinality() -> MathTex:
-    return MathTex(
-        r"""
-        S = \begin{bmatrix} 
-        \sum_{\mathbf{x}} \mu_{1, 1}(x_{1}) & \sum_{\mathbf{x}} \mu_{1, 2}(x_{1}) & \dots \\
-        \vdots & \ddots & \\
-        \sum_{\mathbf{x}} \mu_{n, 1}(x_{n}) &        
-        & \sum_{\mathbf{x}} \mu_{n, \max_{v} \mid \mathcal{T}_{v} \mid }(x_{n}) 
-        \end{bmatrix}
-        \qquad
-        """,
-        color=BLACK,
-    )
 
 
 def avoiding_invalid_selections() -> SlideWithBlocks:

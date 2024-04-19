@@ -1,4 +1,5 @@
 from manim import *
+from manim_slides import Slide
 
 from animations.demos.people.einstein import person_with_quote
 from soft.utilities.reproducibility import path_to_project_root
@@ -10,9 +11,7 @@ light_theme_style = {
 }
 
 
-class GodelQuote(Scene):
-    # Godel actually worked on multivalued logic, called Gödel-Dummett logic
-    # https://link.springer.com/article/10.1023/A:1022997524909
+class Lukasiewicz(Slide):
     def construct(self):
         paragraph, source_text, person, signature_group = self.draw(self, origin=ORIGIN, scale=1.0)
         self.wait(10)
@@ -23,22 +22,16 @@ class GodelQuote(Scene):
 
     @staticmethod
     def draw(scene, origin, scale, animate: bool = True):
-        signature = SVGMobject(
-            path_to_project_root()
-            / "animations"
-            / "demos"
-            / "assets"
-            / "signatures"
-            / "Kurt_Gödel_signature.svg",
-            # color=WHITE
-        ).scale(1.0)
+        signature = Text(
+            "Jan Łukasiewicz", font="TeX Gyre Termes", color=BLACK
+        )  # .scale(0.7)
         person_svg = SVGMobject(
             path_to_project_root()
             / "animations"
             / "demos"
             / "assets"
             / "people"
-            / "Young_Kurt_Gödel_as_a_student_in_1925.svg"
+            / "Jan_Łukasiewicz.svg"
             # / "kurt_godel.svg",
             # color=BLACK,
             # fill_color=WHITE,
@@ -48,12 +41,18 @@ class GodelQuote(Scene):
             scene,
             person_svg=person_svg,
             quote=(
-                '"The more I think about language,\nthe more it amazes me that people\never understand each other at all."'
-                # '"So far as the laws of mathematics refer to reality,\nthey are not certain. '
-                # 'And so far as they are certain, \nthey do not refer to reality."'
+                """
+                \"Therefore the proposition considered is at 
+                the moment neither true nor false and 
+                must possess a third value, different 
+                from “0” or falsity and “1” or truth. 
+                This value we can designate by “1/2”. 
+                It represents “the possible,” and joins 
+                “the true” and “the false” as a third value.\"
+                """
             ),
-            # http://kevincarmody.com/math/goedel.html
-            source="(Reflections on Kurt Gödel, MIT Press, 1987, pg. 95)",
+            # https://builds.openlogicproject.org/content/many-valued-logic/three-valued-logics/three-valued-logics.pdf
+            source="(On Three-Valued Logic, 1921)",
             signature=signature,
             origin=origin,
             scale=scale,
@@ -64,5 +63,5 @@ class GodelQuote(Scene):
 
 
 if __name__ == "__main__":
-    c = GodelQuote()
+    c = Lukasiewicz()
     c.render()
