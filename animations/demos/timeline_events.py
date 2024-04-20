@@ -11,6 +11,7 @@ from animations.beamer.presentation.bibtex import BibTexManager
 from animations.beamer.presentation.conclusion.existing_issues import curr_limitations
 from animations.beamer.presentation.conclusion.new_horizons import proposed_studies
 from animations.beamer.presentation.conclusion.plan import proposed_plan
+from animations.beamer.presentation.introduction.linguistics import define_linguistics
 from animations.beamer.presentation.introduction.proposal import get_proposal
 from animations.beamer.slides import PromptSlide
 from animations.demos.methods.clip import CLIPDemo
@@ -19,6 +20,7 @@ from animations.demos.methods.ecm import ECMDemo
 from animations.demos.people.aristotle import Aristotle
 from animations.demos.people.bertrand_russell import BertrandRussellQuote
 from animations.demos.people.einstein import EinsteinQuote
+from animations.demos.people.lukasiewicz import Lukasiewicz
 from animations.demos.people.max_black import MaxBlack
 from animations.demos.people.plato import PlatoTheoryOfForms
 from animations.demos.people.zadeh import Zadeh
@@ -55,11 +57,11 @@ def make_ww2_slide(file_name: str, poi: int, caption: str) -> TimelineEvent:
         event="World War II",
         animation=CaptionedSVG(
             path=path_to_project_root()
-            / "animations"
-            / "demos"
-            / "assets"
-            / "ww2"
-            / f"{file_name}.svg",
+                 / "animations"
+                 / "demos"
+                 / "assets"
+                 / "ww2"
+                 / f"{file_name}.svg",
             caption=caption,
         ),
         poi=poi,
@@ -67,8 +69,7 @@ def make_ww2_slide(file_name: str, poi: int, caption: str) -> TimelineEvent:
     )
 
 
-def get_noteworthy_events() -> ListType:
-    bib_manager = BibTexManager()
+def get_historical_context() -> ListType:
     return [
         # dnn_pros_and_cons(),
         # PromptSlide(prompt="Could we have done better?", skip=True),
@@ -110,6 +111,15 @@ def get_noteworthy_events() -> ListType:
             animation=EinsteinQuote,
         ),
         TimelineEvent(
+            start_year=1878,
+            end_year=1956,
+            poi=1937,
+            era="Common Era",
+            era_notation="CE",
+            event="Jan Łukasiewicz",
+            animation=Lukasiewicz,
+        ),
+        TimelineEvent(
             start_year=1872,
             end_year=1970,
             poi=1923,  # the year of the quote (Vagueness)
@@ -137,29 +147,29 @@ def get_noteworthy_events() -> ListType:
             1940,
             caption="First mass bombing in London (September 7, 1940).",
         ),
-        # make_ww2_slide(
-        #     "germans_attack_soviets_eastern_front_june_22_1941",
-        #     1941,
-        #     "Germans attack Soviets on the Eastern Front (June 22, 1941).",
-        # ),
-        # make_ww2_slide(
-        #     "pearl_harbor_dec_7_1941",
-        #     1941,
-        #     "Pearl Harbor attacked by Japan (December 7, 1941).",
-        # ),
-        # make_ww2_slide(
-        #     "soviet_offensive_against_germans_in_stalingrad_feb_1943",
-        #     1942,
-        #     "Battle of Stalingrad (August 23, 1942).",
-        # ),
+        make_ww2_slide(
+            "germans_attack_soviets_eastern_front_june_22_1941",
+            1941,
+            "Germans attack Soviets on the Eastern Front (June 22, 1941).",
+        ),
+        make_ww2_slide(
+            "pearl_harbor_dec_7_1941",
+            1941,
+            "Pearl Harbor attacked by Japan (December 7, 1941).",
+        ),
+        make_ww2_slide(
+            "soviet_offensive_against_germans_in_stalingrad_feb_1943",
+            1942,
+            "Battle of Stalingrad (August 23, 1942).",
+        ),
         make_ww2_slide(
             "d_day_june_6_1944",
             1944,
             "D-Day: Allied invasion of Normandy (June 6, 1944).",
         ),
-        # # make_ww2_slide(
-        # #     "nagasaki_aug_9_1945", 1945, "Nagasaki bombed by the US (August 9, 1945)."
-        # # ),
+        make_ww2_slide(
+            "nagasaki_aug_9_1945", 1945, "Nagasaki bombed by the US (August 9, 1945)."
+        ),
         TimelineEvent(
             start_year=1921,
             end_year=2017,
@@ -169,6 +179,12 @@ def get_noteworthy_events() -> ListType:
             event="Lotfi A. Zadeh",
             animation=Zadeh,
         ),
+    ] + from_zadeh_to_nfn()
+
+
+def from_zadeh_to_nfn():
+    bib_manager = BibTexManager()
+    return [
         bib_manager.cite_entry(bib_manager["zadeh_fuzzy_sets"]),  # 1965
         bib_manager.cite_entry(bib_manager["fuzzy_dp"]),  # 1970
         # mamdani FLC
@@ -179,8 +195,21 @@ def get_noteworthy_events() -> ListType:
         # bib_manager.cite_entry(bib_manager["barto_neuronlike_1983"]),
         # fuzzy logic formalized by zadeh
         bib_manager.cite_entry(bib_manager["fuzzy_logic"]),  # 1988
+        define_linguistics(),
         # possibly first NFN?
         bib_manager.cite_entry(bib_manager["lin_neural-network-based_1991"]),  # 1991
+    ]
+
+
+def from_nfn_to_wang_mendel():
+    """
+    Pick up from the first NFN and move to the Wang-Mendel method.
+
+    Returns:
+
+    """
+    bib_manager = BibTexManager()
+    return [
         # online fuzzy RL
         {
             "Online Fuzzy\nReinforcement\nLearning": [
@@ -192,6 +221,18 @@ def get_noteworthy_events() -> ListType:
         bib_manager.cite_entry(bib_manager["Watkins1992"]),  # 1992
         # Wang-Mendel Method for fuzzy logic rules
         bib_manager.cite_entry(bib_manager["wang_generating_1992"]),  # 1992
+    ]
+
+
+def from_wang_mendel_to_apfrb():
+    """
+    Pick up from the Wang-Mendel method and move to my APFRB study.
+
+    Returns:
+
+    """
+    bib_manager = BibTexManager()
+    return [
         # defend fuzzy logic
         {
             "FLCs are\nuniversal function\napproximators": [
@@ -302,7 +343,6 @@ def get_noteworthy_events() -> ListType:
             ],
         },
         bib_manager.cite_entry(bib_manager["aghaeipoor_mokblmoms_2019"]),
-        # 2019 growing shift to XAI
         # # offline RL focus
         # # {
         # #     "Offline \nReinforcement \nLearning": [
@@ -329,25 +369,70 @@ def get_noteworthy_events() -> ListType:
         # time for me
         PromptSlide(prompt="Part I: Translation", skip=True),
         bib_manager.cite_entry(bib_manager["hostetter2023leveraging"]),  # 2023 APFRB
+    ]
+
+
+def from_apfrb_to_cew():
+    bib_manager = BibTexManager()
+    return [
         PromptSlide(prompt="Part II: Self-Organization", skip=True),
         bib_manager.cite_entry(bib_manager["hostetter2023self"]),  # 2023 CEW
+    ]
+
+
+def from_cew_to_lers():
+    return [
+        "Self-Organizing Computing with Words:\n"
+        "Automatic Discovery of Natural Language Control\n"
+        "within an Intelligent Tutoring System (Hostetter et al., In Review)",
+    ]
+
+
+def from_lers_to_llm():
+    bib_manager = BibTexManager()
+    return [
         bib_manager.cite_entry(bib_manager["hostetter2023latent"]),  # 2023 LLM
+    ]
+
+
+def from_llm_to_fyd():
+    return [
+        "Self-Organizing ε-Complete Neuro-Fuzzy Q-Networks\n"
+        "from Frequent Yet Discernible Patterns (Hostetter et al., In Review)",
+    ]
+
+
+def from_fyd_to_morphism():
+    return [
         PromptSlide(prompt="Part III: Morphism", skip=True),
         "The Morphetic ϵ-Delayed Neuro-Fuzzy Network:\n"
         "A General Architecture for Transparent Rule-Based Decision-Making\n"
         "(Hostetter, John Wesley 2025)",
-        # curr_limitations(),
-        # PromptSlide(prompt="Expected Timeline", skip=True),
-        # # CaptionedJPG(
-        # #     path=path_to_project_root()
-        # #     / "animations"
-        # #     / "demos"
-        # #     / "assets"
-        # #     / "people"
-        # #     / "pictures"
-        # #     / "evelyn_prenatal_picture.jpg",
-        # #     caption="Evelyn is due to be born (June 29, 2024).",
-        # # ),
-        # proposed_plan()
+    ]
+
+
+def expected_timeline():
+    return [
+        curr_limitations(),
         proposed_studies(),
+        PromptSlide(prompt="Expected Timeline", skip=True),
+        "May to June 2024: Implement experiments",
+        CaptionedJPG(
+            path=path_to_project_root()
+                 / "animations"
+                 / "demos"
+                 / "assets"
+                 / "people"
+                 / "pictures"
+                 / "evelyn_prenatal_picture.jpg",
+            caption="Evelyn is due to be born (June 29, 2024).",
+        ),
+        "July to August 2024: Attempt proof & begin job search",
+        "September to October 2024: Implement proposed changes",
+        "November to December 2024: Run experiments",
+        "January to February 2025: Run and analyze ITS study",
+        "March 2025: Prepare dissertation & slides",
+        "April 2025: Defend dissertation",
+        "May 2025: Graduate (hopefully)",
+        proposed_plan()
     ]

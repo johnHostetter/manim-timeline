@@ -5,7 +5,9 @@ from manim_slides import Slide
 from animations.common import MANIM_BLUE
 from animations.demos.graph_example import GraphPair
 from animations.beamer.slides import SlideWithBlocks, PromptSlide, SlideWithList
-from animations.demos.timeline_events import get_noteworthy_events, TimelineEvent
+from animations.demos.timeline_events import get_historical_context, TimelineEvent, \
+    from_nfn_to_wang_mendel, from_zadeh_to_nfn, from_wang_mendel_to_apfrb, from_apfrb_to_cew, \
+    from_cew_to_lers, from_lers_to_llm, from_llm_to_fyd
 from animations.demos.timeline_helper import create_timeline_layout
 from animations.demos.ww2 import CaptionedSVG, CaptionedJPG
 
@@ -18,29 +20,27 @@ light_theme_style = {
 
 
 class Timeline(Slide, MovingCameraScene):
-    def construct(self):
-        # introduction to presentation
-        # self.greeting()
-
+    def __init__(self, timeline_events, incl_ending, begin_with_first, **kwargs):
+        super().__init__(**kwargs)
+        self.timeline_events = timeline_events
         timeline_igraph: ig.Graph = ig.Graph(directed=True)
-        timeline_events = get_noteworthy_events()
 
         # get the layout for the possible graph which will implement the timeline
-        digraph_layout = create_timeline_layout(timeline_events)
+        self.digraph_layout = create_timeline_layout(self.timeline_events)
 
         # now create the necessary graph components based on the above needed layout
-        # num_of_vertices = len(timeline_events) + 1
-        num_of_vertices = len(digraph_layout)
-        timeline_igraph.add_vertices(num_of_vertices)
+        # self.num_of_vertices = len(self.timeline_events) + 1
+        self.num_of_vertices = len(self.digraph_layout)
+        timeline_igraph.add_vertices(self.num_of_vertices)
         # timeline_igraph.vs["name"] = ["2010", "2015", "2020", "2025", "2030"]
-        edges = list(zip(range(0, num_of_vertices - 1), range(1, num_of_vertices)))
+        edges = list(zip(range(0, self.num_of_vertices - 1), range(1, self.num_of_vertices)))
         timeline_igraph.add_edges(edges)
 
         timeline_manim = DiGraph(
             timeline_igraph.vs.indices,
             timeline_igraph.get_edgelist(),
             label_fill_color=BLACK,
-            layout=digraph_layout,
+            layout=self.digraph_layout,
             vertex_config={
                 "fill_color": BLACK,
                 "stroke_color": BLACK,
@@ -53,23 +53,22 @@ class Timeline(Slide, MovingCameraScene):
                 "tip_config": {"tip_length": 0.07, "tip_width": 0.07},
             },
         )
+        self.paired_graphs = GraphPair(timeline_igraph, digraph=timeline_manim)
+        # master override for playing the animations, helps with debugging
+        self.globally_enable_animation = True
+        # 0 indexes the source/origin vertex
+        self.origin_vertex: Dot = self.paired_graphs.digraph.vertices[0]
+        # whether to begin with the first given event already displayed
+        self.begin_with_first = begin_with_first
+        # include the ending slide, which is a Q&A session
+        self.incl_ending = incl_ending
 
-        PLAY_ANIMATION = (
-            False  # master override for playing the animations, helps with debugging
-        )
-
-        timeline = GraphPair(timeline_igraph, digraph=timeline_manim)
-        self.camera.frame.move_to(timeline.digraph.get_center()).set(width=10)
-
-        # start_loc = timeline.digraph.vertices[0].get_center()
-        # end_loc = timeline.digraph.vertices[num_of_vertices - 1].get_center()
-        source_vertex = timeline.digraph.vertices[
-            0
-        ]  # 0 indexes the source/origin vertex
-        if PLAY_ANIMATION:
-            self.play(self.camera.frame.animate.move_to(source_vertex).set(width=10))
+    def construct(self):
+        # self.camera.frame.move_to(self.paired_graphs.digraph.get_center()).set(width=10)
+        if self.globally_enable_animation:
+            self.play(self.camera.frame.animate.move_to(self.origin_vertex).set(width=10))
         else:
-            self.camera.frame.move_to(source_vertex).set(width=10)
+            self.camera.frame.move_to(self.origin_vertex).set(width=10)
         self.camera.frame.save_state()
 
         running_offset: float = (
@@ -81,10 +80,20 @@ class Timeline(Slide, MovingCameraScene):
         next_brace_direction = (
             DOWN  # alternate the direction of the braces to avoid overlap
         )
-        for slides in timeline_events:
-            # slides = timeline_events[idx]
+
+        original_globally_enable_animation = self.globally_enable_animation
+        for slides_idx, slides in enumerate(self.timeline_events):
+            if self.begin_with_first:
+                if slides_idx == 0:
+                    # temporarily disable it so the first slide is already displayed
+                    self.globally_enable_animation = False
+                else:
+                    # re-enable it for the rest of the slides
+                    self.globally_enable_animation = original_globally_enable_animation
+
+            # slides = self.timeline_events[idx]
             print(
-                f"Processing slide {idx + 1} of {len(timeline_events)}: {type(slides)}"
+                f"Processing slide {idx + 1} of {len(self.timeline_events)}: {type(slides)}"
             )
 
             if isinstance(slides, dict):
@@ -108,19 +117,19 @@ class Timeline(Slide, MovingCameraScene):
 
             for slide in slides:
                 idx += 1
-                print(idx, slide, len(edges))
-                edge = edges[idx]
-                source_vertex_idx, target_vertex_idx = edge[0], edge[1]
-                target_vertex = timeline.digraph.vertices[target_vertex_idx]
+                print(idx, slide, len(self.paired_graphs.igraph.es))
+                edge = self.paired_graphs.igraph.es[idx]
+                source_vertex_idx, target_vertex_idx = edge.source, edge.target
+                target_vertex = self.paired_graphs.digraph.vertices[target_vertex_idx]
 
-                line: Line = timeline.digraph.edges[edge[0], edge[1]]
+                line: Line = self.paired_graphs.digraph.edges[edge.source, edge.target]
                 # apply a slight offset to the target vertex, to account for thought slides, if any
                 if running_offset > 0:
                     target_vertex.shift(running_offset * RIGHT)
                     line.shift(running_offset * RIGHT)
 
                 if play_as_ready and v_group_to_render is None:
-                    if PLAY_ANIMATION:
+                    if self.globally_enable_animation:
                         self.play(
                             AnimationGroup(
                                 Create(line),
@@ -151,7 +160,7 @@ class Timeline(Slide, MovingCameraScene):
                         stroke_width=2,
                     )
 
-                    if PLAY_ANIMATION:
+                    if self.globally_enable_animation:
                         if play_as_ready:
                             slide_animations.append(
                                 AnimationGroup(
@@ -201,7 +210,7 @@ class Timeline(Slide, MovingCameraScene):
 
                         timestamped_boundary = VGroup(boundary, timestamp)
 
-                        if PLAY_ANIMATION:
+                        if self.globally_enable_animation:
                             slide_animations.append(
                                 Create(timestamped_boundary, run_time=default_run_time)
                             )
@@ -224,7 +233,7 @@ class Timeline(Slide, MovingCameraScene):
                         #     0.5 * (RIGHT if idx % 2 == 0 else LEFT)
                         # )  # shift it to the right if UP else shift to the left if DOWN
 
-                        if PLAY_ANIMATION:
+                        if self.globally_enable_animation:
                             if play_as_ready:
                                 # save the state of the publication
                                 publication.save_state()
@@ -288,7 +297,7 @@ class Timeline(Slide, MovingCameraScene):
                     if v_group_to_render is not None:
                         v_group_to_render.add(boundary)
 
-                    if PLAY_ANIMATION:
+                    if self.globally_enable_animation:
                         slide_animations.append(
                             AnimationGroup(
                                 GrowFromPoint(boundary, vertex_coords),
@@ -304,7 +313,7 @@ class Timeline(Slide, MovingCameraScene):
                     # dot = Dot(vertex_coords + (boundary.width * RIGHT), color=BLACK)
                     # self.play(Create(dot, run_time=0.1))
 
-                if PLAY_ANIMATION:
+                if self.globally_enable_animation:
                     if play_as_ready:  # has no effect at this time
                         self.play(Succession(*slide_animations))
 
@@ -315,9 +324,9 @@ class Timeline(Slide, MovingCameraScene):
                 # the rest of this code is for how to zoom in on certain events/slides
                 ######################################################################
 
-                if PLAY_ANIMATION:
+                if self.globally_enable_animation:
                     if isinstance(slide, TimelineEvent) or isinstance(
-                        slide, PromptSlide
+                            slide, PromptSlide
                     ):
                         if not slide.skip:
                             # now zoom in on the event
@@ -342,29 +351,29 @@ class Timeline(Slide, MovingCameraScene):
                     # if slide.skip:
                     #     origin_to_draw_at = boundary.get_center()
                     if isinstance(event, CaptionedSVG) or isinstance(
-                        event, CaptionedJPG
+                            event, CaptionedJPG
                     ):
                         event.draw(
                             origin=origin_to_draw_at,
                             scale=0.25,
                             target_scene=self,
-                            animate=PLAY_ANIMATION,
+                            animate=self.globally_enable_animation,
                         )
                     else:
                         event.draw(
                             self,
                             origin=origin_to_draw_at,
                             scale=0.25,
-                            animate=PLAY_ANIMATION,
+                            animate=self.globally_enable_animation,
                         )
                 elif isinstance(slide, SlideWithBlocks) or isinstance(
-                    slide, SlideWithList
+                        slide, SlideWithList
                 ):
                     slide.draw(
                         origin=boundary.get_top() - (boundary.height / 10),
                         scale=0.15,
                         target_scene=self,
-                        animate=PLAY_ANIMATION,
+                        animate=self.globally_enable_animation,
                     )
                 elif isinstance(slide, PromptSlide):
                     # if slide.skip:
@@ -373,7 +382,7 @@ class Timeline(Slide, MovingCameraScene):
                         origin=origin_to_draw_at,
                         scale=0.2,
                         target_scene=self,
-                        animate=PLAY_ANIMATION,
+                        animate=self.globally_enable_animation,
                     )
                 else:  # e.g., CLIPDemo
                     # try:
@@ -381,13 +390,13 @@ class Timeline(Slide, MovingCameraScene):
                         origin=origin_to_draw_at,
                         scale=0.25,
                         target_scene=self,
-                        animate=PLAY_ANIMATION,
+                        animate=self.globally_enable_animation,
                     )
                     # except TypeError:
                     #     print(type(slide), slide)
                     #     raise TypeError("The slide is not a recognized type.")
                 # event.draw(self, origin=self.camera.frame.get_center(), scale=0.25)
-                if PLAY_ANIMATION:
+                if self.globally_enable_animation:
                     self.wait(1)
                     self.next_slide()
                     # move to the next location
@@ -398,26 +407,27 @@ class Timeline(Slide, MovingCameraScene):
                     )
 
             if not play_as_ready:
-                # create a brace for everything but the line (located at index 0)
-                brace = Brace(
-                    v_group_to_render[1:],
-                    direction=next_brace_direction,
-                    color=BLACK,
-                    fill_opacity=0.75,
-                )
-                brace_text = (
-                    Text(overview_str, color=BLACK, opacity=0.75)
-                    .scale(scale_factor=0.5)
-                    .next_to(brace, next_brace_direction)
-                )
-                v_group_to_render.add(brace)
-                v_group_to_render.add(brace_text)
-                # alternate brace's direction to avoid overlap if another publication overview comes
-                next_brace_direction = (
-                    UP if (next_brace_direction == DOWN).all() else DOWN
-                )
+                if overview_str is not None:  # may be None if we do not want a brace
+                    # create a brace for everything but the line (located at index 0)
+                    brace = Brace(
+                        v_group_to_render[1:],
+                        direction=next_brace_direction,
+                        color=BLACK,
+                        fill_opacity=0.75,
+                    )
+                    brace_text = (
+                        Text(overview_str, color=BLACK, opacity=0.75)
+                        .scale(scale_factor=0.5)
+                        .next_to(brace, next_brace_direction)
+                    )
+                    v_group_to_render.add(brace)
+                    v_group_to_render.add(brace_text)
+                    # alternate brace's direction to avoid overlap if another publication overview comes
+                    next_brace_direction = (
+                        UP if (next_brace_direction == DOWN).all() else DOWN
+                    )
 
-                if PLAY_ANIMATION:
+                if self.globally_enable_animation:
                     # fade in the group of manim objects
                     self.play(
                         FadeIn(v_group_to_render, run_time=1),
@@ -452,7 +462,7 @@ class Timeline(Slide, MovingCameraScene):
                 else:
                     self.add(v_group_to_render)
 
-        if PLAY_ANIMATION:
+        if self.globally_enable_animation:
             self.wait(1)
             self.next_slide()
             self.play(self.camera.frame.animate.set(width=10))
@@ -460,30 +470,31 @@ class Timeline(Slide, MovingCameraScene):
             self.camera.frame.set(width=25)
             self.play(
                 self.camera.frame.animate.move_to(
-                    timeline_manim.vertices[len(digraph_layout) - 1].get_center()
+                    self.paired_graphs.digraph.vertices[len(self.digraph_layout) - 1].get_center()
                 ).set(width=10),
                 run_time=10,
             )
+        # this would only work if the camera frame state was saved
         # self.play(Restore(self.camera.frame, run_time=15))
-        # origin_vertex: Dot = timeline.digraph.vertices[0]
-        # self.play(
-        #     Succession(
-        #         Create(origin_vertex),
-        #         GrowFromPoint(
-        #             self.make_boundary_at_coords(
-        #                 direction=LEFT, vertex_coords=origin_vertex.get_center()
-        #             ),
-        #             origin_vertex.get_center()
-        #         ), run_time=2
-        #     )
-        # )
-        # self.play(
-        #     Write(
-        #         Text(
-        #             "Q&A", font="TeX Gyre Termes", color=BLACK
-        #         ).move_to(origin_vertex.get_center() + (2 * LEFT))
-        #     )
-        # )
+        self.play(self.camera.frame.animate.move_to(self.origin_vertex).set(width=20))
+        self.play(
+            Succession(
+                Create(self.origin_vertex),
+                GrowFromPoint(
+                    self.make_boundary_at_coords(
+                        direction=LEFT, vertex_coords=self.origin_vertex.get_center()
+                    ),
+                    self.origin_vertex.get_center()
+                ), run_time=2
+            )
+        )
+        self.play(
+            Write(
+                Text(
+                    "Q&A", font="TeX Gyre Termes", color=BLACK
+                ).move_to(self.origin_vertex.get_center() + (2 * LEFT))
+            )
+        )
         self.wait(10)
 
     @staticmethod
@@ -553,6 +564,164 @@ class Timeline(Slide, MovingCameraScene):
         self.play(FadeOut(standby_text[last_idx]))
 
 
+class History(Timeline):
+    """
+    Stops at the first NFN publication.
+    """
+
+    def __init__(self, **kwargs):
+        super().__init__(
+            timeline_events=get_historical_context() + from_zadeh_to_nfn(),
+            incl_ending=False,
+            begin_with_first=False,
+            **kwargs
+        )
+
+
+class RW1(Timeline):
+    """
+    Continues from the first NFN publication to the Wang-Mendel publication.
+    """
+
+    def __init__(self, **kwargs):
+        # the following has already been added, and the {None: ...} is a special flag
+        prior_events = [{None: get_historical_context() + from_zadeh_to_nfn()}]
+        super().__init__(
+            timeline_events=(
+                    prior_events + from_nfn_to_wang_mendel()
+            ),
+            incl_ending=False,
+            begin_with_first=True,
+            **kwargs
+        )
+
+
+class RW2(Timeline):
+    """
+    Continues from the Wang-Mendel publication to my APFRB study.
+    """
+
+    def __init__(self, **kwargs):
+        # the following has already been added, and the {None: ...} is a special flag
+        prior_events = [
+            {
+                # None: get_historical_context() + from_zadeh_to_nfn() + from_nfn_to_wang_mendel()
+                None: from_zadeh_to_nfn() + from_nfn_to_wang_mendel()
+            }
+        ]
+        super().__init__(
+            timeline_events=(
+                    prior_events + from_wang_mendel_to_apfrb()
+            ),
+            incl_ending=False,
+            begin_with_first=True,
+            **kwargs
+        )
+
+
+class M1(Timeline):
+    """
+    Continues from my APFRB study to my CEW study.
+    """
+
+    def __init__(self, **kwargs):
+        # the following has already been added, and the {None: ...} is a special flag
+        background = (
+                get_historical_context() + from_zadeh_to_nfn()
+                + from_nfn_to_wang_mendel() + from_wang_mendel_to_apfrb()
+        )
+        prior_events = [
+            {
+                None: background
+            }
+        ]
+        super().__init__(
+            timeline_events=(
+                    prior_events + from_apfrb_to_cew()
+            ),
+            incl_ending=False,
+            begin_with_first=True,
+            **kwargs
+        )
+
+
+class M2(Timeline):
+    """
+    Continues from my CEW study to my LERS study.
+    """
+
+    def __init__(self, **kwargs):
+        # the following has already been added, and the {None: ...} is a special flag
+        background = (
+                get_historical_context() + from_zadeh_to_nfn()
+                + from_nfn_to_wang_mendel() + from_wang_mendel_to_apfrb()
+        )
+        prior_events = [
+            {
+                None: background + from_apfrb_to_cew()
+            }
+        ]
+        super().__init__(
+            timeline_events=(
+                    prior_events + from_cew_to_lers()
+            ),
+            incl_ending=False,
+            begin_with_first=True,
+            **kwargs
+        )
+
+
+class M3(Timeline):
+    """
+    Continues from my LERS study to my LLM study.
+    """
+
+    def __init__(self, **kwargs):
+        # the following has already been added, and the {None: ...} is a special flag
+        background = (
+                get_historical_context() + from_zadeh_to_nfn()
+                + from_nfn_to_wang_mendel() + from_wang_mendel_to_apfrb()
+        )
+        prior_events = [
+            {
+                None: background + from_apfrb_to_cew() + from_cew_to_lers()
+            }
+        ]
+        super().__init__(
+            timeline_events=(
+                    prior_events + from_lers_to_llm()
+            ),
+            incl_ending=False,
+            begin_with_first=True,
+            **kwargs
+        )
+
+
+class M4(Timeline):
+    """
+    Continues from my LLM study to my FYD study.
+    """
+
+    def __init__(self, **kwargs):
+        # the following has already been added, and the {None: ...} is a special flag
+        background = (
+                get_historical_context() + from_zadeh_to_nfn()
+                + from_nfn_to_wang_mendel() + from_wang_mendel_to_apfrb()
+        )
+        prior_events = [
+            {
+                None: background + from_apfrb_to_cew() + from_cew_to_lers() + from_lers_to_llm()
+            }
+        ]
+        super().__init__(
+            timeline_events=(
+                    prior_events + from_llm_to_fyd()
+            ),
+            incl_ending=False,
+            begin_with_first=True,
+            **kwargs
+        )
+
+
 if __name__ == "__main__":
-    c = Timeline()
-    c.render()
+    RW2().render()
