@@ -5,10 +5,7 @@ from manim_slides import Slide
 from animations.common import MANIM_BLUE
 from animations.demos.graph_example import GraphPair
 from animations.beamer.slides import SlideWithBlocks, PromptSlide, SlideWithList
-from animations.demos.timeline_events import get_historical_context, TimelineEvent, \
-    from_nfn_to_wang_mendel, from_zadeh_to_nfn, from_wang_mendel_to_apfrb, from_apfrb_to_cew, \
-    from_cew_to_lers, from_lers_to_llm, from_llm_to_fyd
-from animations.demos.timeline_helper import create_timeline_layout
+from animations.demos.timeline_helper import create_timeline_layout, TimelineConfig, TimelineEvent
 from animations.demos.ww2 import CaptionedSVG, CaptionedJPG
 
 config.disable_caching = True  # may need to disable caching for the timeline
@@ -20,7 +17,9 @@ light_theme_style = {
 
 
 class Timeline(Slide, MovingCameraScene):
-    def __init__(self, timeline_events, incl_ending, begin_with_first, **kwargs):
+    def __init__(
+            self, timeline_events, incl_ending, globally_enable_animation, **kwargs
+    ):
         super().__init__(**kwargs)
         self.timeline_events = timeline_events
         timeline_igraph: ig.Graph = ig.Graph(directed=True)
@@ -55,21 +54,21 @@ class Timeline(Slide, MovingCameraScene):
         )
         self.paired_graphs = GraphPair(timeline_igraph, digraph=timeline_manim)
         # master override for playing the animations, helps with debugging
-        self.globally_enable_animation = True
+        self.globally_enable_animation = globally_enable_animation
         # 0 indexes the source/origin vertex
         self.origin_vertex: Dot = self.paired_graphs.digraph.vertices[0]
-        # whether to begin with the first given event already displayed
-        self.begin_with_first = begin_with_first
         # include the ending slide, which is a Q&A session
         self.incl_ending = incl_ending
+        # the time to wait before returning to the last spot
+        self.time_until_back_to_last_spot = 3
 
     def construct(self):
         # self.camera.frame.move_to(self.paired_graphs.digraph.get_center()).set(width=10)
         if self.globally_enable_animation:
             self.play(self.camera.frame.animate.move_to(self.origin_vertex).set(width=10))
-        else:
-            self.camera.frame.move_to(self.origin_vertex).set(width=10)
-        self.camera.frame.save_state()
+        # else:
+        #     self.camera.frame.move_to(self.origin_vertex).set(width=10)
+        # self.camera.frame.save_state()
 
         running_offset: float = (
             0  # offset for the timeline events to account for thought slides
@@ -81,17 +80,13 @@ class Timeline(Slide, MovingCameraScene):
             DOWN  # alternate the direction of the braces to avoid overlap
         )
 
-        original_globally_enable_animation = self.globally_enable_animation
+        # original_globally_enable_animation = self.globally_enable_animation
         for slides_idx, slides in enumerate(self.timeline_events):
-            if self.begin_with_first:
-                if slides_idx == 0:
-                    # temporarily disable it so the first slide is already displayed
-                    self.globally_enable_animation = False
-                else:
-                    # re-enable it for the rest of the slides
-                    self.globally_enable_animation = original_globally_enable_animation
+            if isinstance(slides, TimelineConfig):
+                # this is a configuration slide, do not draw anything
+                self.globally_enable_animation = slides.draw_animations
+                continue
 
-            # slides = self.timeline_events[idx]
             print(
                 f"Processing slide {idx + 1} of {len(self.timeline_events)}: {type(slides)}"
             )
@@ -467,35 +462,42 @@ class Timeline(Slide, MovingCameraScene):
             self.next_slide()
             self.play(self.camera.frame.animate.set(width=10))
         else:
-            self.camera.frame.set(width=25)
+            # pick back up where we left off
+            # self.camera.frame.set(width=25)
             self.play(
                 self.camera.frame.animate.move_to(
                     self.paired_graphs.digraph.vertices[len(self.digraph_layout) - 1].get_center()
-                ).set(width=10),
-                run_time=10,
+                ).set(width=20),
+                run_time=self.time_until_back_to_last_spot,
             )
-        # this would only work if the camera frame state was saved
-        # self.play(Restore(self.camera.frame, run_time=15))
-        self.play(self.camera.frame.animate.move_to(self.origin_vertex).set(width=20))
-        self.play(
-            Succession(
-                Create(self.origin_vertex),
-                GrowFromPoint(
-                    self.make_boundary_at_coords(
-                        direction=LEFT, vertex_coords=self.origin_vertex.get_center()
-                    ),
-                    self.origin_vertex.get_center()
-                ), run_time=2
+
+        if self.incl_ending:
+            # this would only work if the camera frame state was saved
+            # self.play(Restore(self.camera.frame, run_time=15))
+            self.play(self.camera.frame.animate.move_to(self.origin_vertex).set(width=20))
+            self.play(
+                Succession(
+                    Create(self.origin_vertex),
+                    GrowFromPoint(
+                        self.make_boundary_at_coords(
+                            direction=LEFT, vertex_coords=self.origin_vertex.get_center()
+                        ),
+                        self.origin_vertex.get_center()
+                    ), run_time=2
+                )
             )
-        )
-        self.play(
-            Write(
-                Text(
-                    "Q&A", font="TeX Gyre Termes", color=BLACK
-                ).move_to(self.origin_vertex.get_center() + (2 * LEFT))
+            self.play(
+                Write(
+                    Text(
+                        "Q&A", font="TeX Gyre Termes", color=BLACK
+                    ).move_to(self.origin_vertex.get_center() + (2 * LEFT))
+                )
             )
-        )
-        self.wait(10)
+            self.wait(10)
+        else:
+            # fade out everything
+            self.play(FadeOut(self.paired_graphs.digraph))
+            self.play(*[FadeOut(obj) for obj in timeline_lookup.values()])
 
     @staticmethod
     def make_boundary_at_coords(direction, vertex_coords) -> Rectangle:
@@ -562,166 +564,3 @@ class Timeline(Slide, MovingCameraScene):
         self.wait(1)
         self.next_slide()
         self.play(FadeOut(standby_text[last_idx]))
-
-
-class History(Timeline):
-    """
-    Stops at the first NFN publication.
-    """
-
-    def __init__(self, **kwargs):
-        super().__init__(
-            timeline_events=get_historical_context() + from_zadeh_to_nfn(),
-            incl_ending=False,
-            begin_with_first=False,
-            **kwargs
-        )
-
-
-class RW1(Timeline):
-    """
-    Continues from the first NFN publication to the Wang-Mendel publication.
-    """
-
-    def __init__(self, **kwargs):
-        # the following has already been added, and the {None: ...} is a special flag
-        prior_events = [{None: get_historical_context() + from_zadeh_to_nfn()}]
-        super().__init__(
-            timeline_events=(
-                    prior_events + from_nfn_to_wang_mendel()
-            ),
-            incl_ending=False,
-            begin_with_first=True,
-            **kwargs
-        )
-
-
-class RW2(Timeline):
-    """
-    Continues from the Wang-Mendel publication to my APFRB study.
-    """
-
-    def __init__(self, **kwargs):
-        # the following has already been added, and the {None: ...} is a special flag
-        prior_events = [
-            {
-                # None: get_historical_context() + from_zadeh_to_nfn() + from_nfn_to_wang_mendel()
-                None: from_zadeh_to_nfn() + from_nfn_to_wang_mendel()
-            }
-        ]
-        super().__init__(
-            timeline_events=(
-                    prior_events + from_wang_mendel_to_apfrb()
-            ),
-            incl_ending=False,
-            begin_with_first=True,
-            **kwargs
-        )
-
-
-class M1(Timeline):
-    """
-    Continues from my APFRB study to my CEW study.
-    """
-
-    def __init__(self, **kwargs):
-        # the following has already been added, and the {None: ...} is a special flag
-        background = (
-                get_historical_context() + from_zadeh_to_nfn()
-                + from_nfn_to_wang_mendel() + from_wang_mendel_to_apfrb()
-        )
-        prior_events = [
-            {
-                None: background
-            }
-        ]
-        super().__init__(
-            timeline_events=(
-                    prior_events + from_apfrb_to_cew()
-            ),
-            incl_ending=False,
-            begin_with_first=True,
-            **kwargs
-        )
-
-
-class M2(Timeline):
-    """
-    Continues from my CEW study to my LERS study.
-    """
-
-    def __init__(self, **kwargs):
-        # the following has already been added, and the {None: ...} is a special flag
-        background = (
-                get_historical_context() + from_zadeh_to_nfn()
-                + from_nfn_to_wang_mendel() + from_wang_mendel_to_apfrb()
-        )
-        prior_events = [
-            {
-                None: background + from_apfrb_to_cew()
-            }
-        ]
-        super().__init__(
-            timeline_events=(
-                    prior_events + from_cew_to_lers()
-            ),
-            incl_ending=False,
-            begin_with_first=True,
-            **kwargs
-        )
-
-
-class M3(Timeline):
-    """
-    Continues from my LERS study to my LLM study.
-    """
-
-    def __init__(self, **kwargs):
-        # the following has already been added, and the {None: ...} is a special flag
-        background = (
-                get_historical_context() + from_zadeh_to_nfn()
-                + from_nfn_to_wang_mendel() + from_wang_mendel_to_apfrb()
-        )
-        prior_events = [
-            {
-                None: background + from_apfrb_to_cew() + from_cew_to_lers()
-            }
-        ]
-        super().__init__(
-            timeline_events=(
-                    prior_events + from_lers_to_llm()
-            ),
-            incl_ending=False,
-            begin_with_first=True,
-            **kwargs
-        )
-
-
-class M4(Timeline):
-    """
-    Continues from my LLM study to my FYD study.
-    """
-
-    def __init__(self, **kwargs):
-        # the following has already been added, and the {None: ...} is a special flag
-        background = (
-                get_historical_context() + from_zadeh_to_nfn()
-                + from_nfn_to_wang_mendel() + from_wang_mendel_to_apfrb()
-        )
-        prior_events = [
-            {
-                None: background + from_apfrb_to_cew() + from_cew_to_lers() + from_lers_to_llm()
-            }
-        ]
-        super().__init__(
-            timeline_events=(
-                    prior_events + from_llm_to_fyd()
-            ),
-            incl_ending=False,
-            begin_with_first=True,
-            **kwargs
-        )
-
-
-if __name__ == "__main__":
-    RW2().render()

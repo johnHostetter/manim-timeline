@@ -1,18 +1,11 @@
 """
 This script is used to assist in the creation of a timeline of events.
 """
-
-from dataclasses import dataclass
-from typing import List as ListType, Union as UnionType
-
-from manim import *
-
 from animations.beamer.presentation.bibtex import BibTexManager
 from animations.beamer.presentation.conclusion.existing_issues import curr_limitations
 from animations.beamer.presentation.conclusion.new_horizons import proposed_studies
 from animations.beamer.presentation.conclusion.plan import proposed_plan
 from animations.beamer.presentation.introduction.linguistics import define_linguistics
-from animations.beamer.presentation.introduction.proposal import get_proposal
 from animations.beamer.slides import PromptSlide
 from animations.demos.methods.clip import CLIPDemo
 from animations.demos.methods.cql import CQLDemo
@@ -20,32 +13,14 @@ from animations.demos.methods.ecm import ECMDemo
 from animations.demos.people.aristotle import Aristotle
 from animations.demos.people.bertrand_russell import BertrandRussellQuote
 from animations.demos.people.einstein import EinsteinQuote
+from animations.demos.people.godel import GodelQuote
 from animations.demos.people.lukasiewicz import Lukasiewicz
 from animations.demos.people.max_black import MaxBlack
 from animations.demos.people.plato import PlatoTheoryOfForms
 from animations.demos.people.zadeh import Zadeh
+from animations.demos.timeline_helper import TimelineEvent
 from animations.demos.ww2 import CaptionedSVG, CaptionedJPG
-from animations.beamer.presentation.introduction.dnn import (
-    pros_and_cons as dnn_pros_and_cons,
-)
-from animations.beamer.presentation.introduction.nfn import (
-    pros_and_cons as nfn_pros_and_cons,
-)
 from soft.utilities.reproducibility import path_to_project_root
-
-
-@dataclass
-class TimelineEvent:
-    start_year: int  # e.g. 2015
-    end_year: int  # e.g. 2025
-    era: str  # e.g. Ancient Greece
-    era_notation: str  # e.g. BCE, CE
-    event: str  # e.g. The birth of the internet
-    animation: UnionType[Scene, MovingCameraScene]
-    poi: int = None  # e.g. 2020,  A specific year of interest
-    skip: bool = (
-        False  # skip this event, if True, event is still drawn but not focused on
-    )
 
 
 def make_ww2_slide(file_name: str, poi: int, caption: str) -> TimelineEvent:
@@ -69,7 +44,7 @@ def make_ww2_slide(file_name: str, poi: int, caption: str) -> TimelineEvent:
     )
 
 
-def get_historical_context() -> ListType:
+def get_historical_context() -> list:
     return [
         # dnn_pros_and_cons(),
         # PromptSlide(prompt="Could we have done better?", skip=True),
@@ -113,7 +88,7 @@ def get_historical_context() -> ListType:
         TimelineEvent(
             start_year=1878,
             end_year=1956,
-            poi=1937,
+            poi=1921,
             era="Common Era",
             era_notation="CE",
             event="Jan Łukasiewicz",
@@ -127,6 +102,15 @@ def get_historical_context() -> ListType:
             era_notation="CE",
             event="Bertrand Russell",
             animation=BertrandRussellQuote,
+        ),
+        TimelineEvent(
+            start_year=1906,
+            end_year=1978,
+            poi=1932,  # Gödel-Dummett logic
+            era="Common Era",
+            era_notation="CE",
+            event="Kurt Gödel",
+            animation=GodelQuote,
         ),
         TimelineEvent(
             start_year=1909,
@@ -179,7 +163,7 @@ def get_historical_context() -> ListType:
             event="Lotfi A. Zadeh",
             animation=Zadeh,
         ),
-    ] + from_zadeh_to_nfn()
+    ]
 
 
 def from_zadeh_to_nfn():

@@ -1,6 +1,27 @@
-from typing import List
+from typing import List, Union
+from dataclasses import dataclass
 
-from animations.demos.timeline_events import TimelineEvent
+from manim_slides import Slide
+from manim import Scene, MovingCameraScene
+
+
+@dataclass
+class TimelineEvent:
+    start_year: int  # e.g. 2015
+    end_year: int  # e.g. 2025
+    era: str  # e.g. Ancient Greece
+    era_notation: str  # e.g. BCE, CE
+    event: str  # e.g. The birth of the internet
+    animation: Union[Slide, Scene, MovingCameraScene]
+    poi: int = None  # e.g. 2020,  A specific year of interest
+    skip: bool = (
+        False  # skip this event, if True, event is still drawn but not focused on
+    )
+
+
+@dataclass
+class TimelineConfig:
+    draw_animations: bool
 
 
 # consistent spacing for the timeline
@@ -52,15 +73,18 @@ def create_timeline_layout(timeline_events: List[TimelineEvent]) -> dict:
             # technically we never use the vertex located at index 0
             new_x_location = prev_x_location + spacing
             digraph_layout[max(digraph_layout.keys()) + 1] = (new_x_location, 0, 0)
-            prev_timeline_event = timeline_event
             prev_x_location = new_x_location
+            if isinstance(timeline_event, TimelineConfig):
+                # no need to store it in the prev_timeline_event
+                continue
+            prev_timeline_event = timeline_event
         else:
             # this is a dictionary, which means we breeze over the timeline,
             # but we still need to account for the spacing and timeline pins
             for publication in list(timeline_event.values())[0]:
                 spacing = 5  # a good spacing for the timeline I found works well
                 if isinstance(prev_timeline_event, str) and isinstance(
-                    publication, str
+                        publication, str
                 ):
                     # two consecutive strings do not need as much spacing
                     spacing = 1
@@ -71,6 +95,9 @@ def create_timeline_layout(timeline_events: List[TimelineEvent]) -> dict:
                     0,
                     0,
                 )
-                prev_timeline_event = publication
                 prev_x_location = new_x_location
+                if isinstance(publication, TimelineConfig):
+                    # no need to store it in the prev_timeline_event
+                    continue
+                prev_timeline_event = publication
     return digraph_layout
