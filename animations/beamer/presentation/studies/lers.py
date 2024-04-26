@@ -8,7 +8,7 @@ from manim_slides import Slide
 from animations.demos.graph_example import MyGraph, GraphPair
 from animations.beamer.presentation.bibtex import BibTexManager
 from animations.beamer.lists import ItemizedList, BulletedList as BL
-from animations.beamer.slides import SlideShow, SlideWithList, SlideWithTable
+from animations.beamer.slides import SlideShow, SlideWithList, SlideWithTable, SlideWithTables
 from animations.beamer.presentation.studies.pyrenees import IntelligentTutoringSystemResults
 
 config.background_color = WHITE
@@ -22,7 +22,7 @@ class LERS(SlideShow):
     def __init__(self, **kwargs):
         super().__init__(
             slides=[
-                LERSDiagram(), LERSResults(), get_original_rules(),
+                LERSDiagram(), get_example_of_lers(), LERSResults(), get_original_rules(),
                 get_natural_language_rules(), lers_summary()
             ], **kwargs
         )
@@ -41,9 +41,11 @@ def gather_items_to_remove(
             e for e in digraph.edges.keys() if e[0] == premise or e[1] == premise
         }
         inner_vertices_indices_to_remove: Set[int] = {
-           vertex_index for edge in inner_edge_keys_to_remove
-           for vertex_index in edge
-        } - set(grouped_vertices[0])  # remove any input vertices from being faded out
+                                                         vertex_index for edge in
+                                                         inner_edge_keys_to_remove
+                                                         for vertex_index in edge
+                                                     } - set(
+            grouped_vertices[0])  # remove any input vertices from being faded out
         inner_vertices_indices_to_remove -= set(grouped_vertices[2])  # do not remove rule vertices
 
         edges_to_remove.update(inner_edge_keys_to_remove)
@@ -145,6 +147,51 @@ class LERSDiagram(Slide, MovingCameraScene):
             target_scene.add(v_group)
 
         return v_group
+
+
+def get_example_of_lers():
+    return SlideWithTables(
+        title="Rule Simplification with Rough Set Theory",
+        subtitle="Example of LERS",
+        tables=[
+            Table(
+                [
+                    ["1", "1", "0", "0", "1", "1"],
+                    ["2", "1", "0", "0", "0", "1"],
+                    ["3", "0", "0", "0", "0", "0"],
+                    ["4", "1", "1", "0", "1", "0"],
+                    ["5", "1", "1", "0", "2", "2"],
+                    ["6", "2", "1", "0", "2", "2"],
+                    ["7", "2", "2", "2", "2", "2"],
+                ],
+                col_labels=[
+                    Text("Rule"),
+                    MathTex(r"\mu_1").scale(1.5),
+                    MathTex(r"\mu_2").scale(1.5),
+                    MathTex(r"\mu_3").scale(1.5),
+                    MathTex(r"\mu_4").scale(1.5),
+                    Text("Decision"),
+                ]
+            ),
+            Table(
+                [
+                    ["1, 2", "1", "0", "", "1"],
+                    ["3", "0", "", "", "0"],
+                    ["4", "", "1", "1", "0"],
+                    ["5, 6, 7", "", "", "2", "2"],
+                ],
+                col_labels=[
+                    Text("Rule"),
+                    MathTex(r"\mu_1").scale(1.5),
+                    MathTex(r"\mu_2").scale(1.5),
+                    MathTex(r"\mu_4").scale(1.5),
+                    Text("Decision"),
+                ]
+            ),
+        ],
+        captions=["Before", "After"],
+        highlighted_columns=[]
+    )
 
 
 class LERSResults(IntelligentTutoringSystemResults):

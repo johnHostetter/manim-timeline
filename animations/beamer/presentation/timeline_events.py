@@ -276,13 +276,6 @@ def from_wang_mendel_to_apfrb():
         # DENFIS
         bib_manager.cite_entry(bib_manager["kasabov_denfis_2002"]),  # 2002
         ECMDemo(),
-        # back to equivalence to ANNs/DNNs
-        {
-            "FLCs are\nmathematically \nequivalent\nto ANNs/DNNs": [
-                bib_manager.cite_entry(bib_manager["fls_ann_equivalence"]),  # 2000
-                bib_manager.cite_entry(bib_manager["black_box_ext"]),  # 2002
-            ],
-        },
         # bib_manager.cite_entry(bib_manager["equivalence_implications"]),  # 2003
         # bib_manager.cite_entry(bib_manager["ang_popfnn-cris_2003"]),  # 2003 update to POPFNN
         bib_manager.cite_entry(bib_manager["are_ann_white_boxes"]),  # 2005

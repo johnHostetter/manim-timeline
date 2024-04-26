@@ -22,10 +22,9 @@ class BlackBox(ThreeDSlide):
         intro = VGroup(intro_prefix, black_box_txt)
         intro.to_corner(UP, buff=0.5)
         self.add_fixed_in_frame_mobjects(intro)
-
         self.play(Write(intro), run_time=2)
         self.wait(3)
-
+        self.next_slide()
         blackbox = Cube(
             side_length=3, fill_opacity=1, stroke_width=5, **light_theme_style
         )
@@ -42,12 +41,12 @@ class BlackBox(ThreeDSlide):
             LaggedStart(
                 FadeOut(intro_prefix), FadeOut(black_box_txt), lag_ratio=0.8, run_time=5
             ),
-            Write(blackbox, run_time=10),
+            Write(blackbox, run_time=5),
             run_time=5,
         )
-
+        self.wait(1)
+        self.next_slide()
         self.simulate_input_output(blackbox)
-        self.wait(3)
 
         question = Text("What's inside the black box?", font_size=36, color=BLACK)
         question.to_corner(UP, buff=0.5)
@@ -64,8 +63,9 @@ class BlackBox(ThreeDSlide):
             ),
             run_time=2,
         )
-        self.wait(3)
 
+        self.wait(3)
+        self.next_slide()
         self.play(FadeOut(question), run_time=2)
 
         question = Text(
@@ -82,11 +82,11 @@ class BlackBox(ThreeDSlide):
             run_time=2,
         )
         self.wait(3)
-
+        self.next_slide()
         self.simulate_input_output(whitebox)
         self.wait(3)
-
-        self.play(FadeOut(question, run_time=2), Uncreate(whitebox, run_time=10))
+        self.next_slide()
+        self.play(FadeOut(question, run_time=2), Uncreate(whitebox, run_time=5))
         self.wait(3)
 
     def simulate_input_output(self, box: Cube):
@@ -102,7 +102,8 @@ class BlackBox(ThreeDSlide):
                 color=ManimColor("#58C4DD"),
             )
             self.play(Create(input_arrow), run_time=2)
-            self.wait(3)
+            self.wait(1)
+            self.next_slide()
             self.play(input_arrow.animate.shift(5.5 * RIGHT), run_time=1)
 
             # vertex_coords = [
@@ -125,6 +126,8 @@ class BlackBox(ThreeDSlide):
             # self.play(DrawBorderThenFill(pyramid), run_time=2)
             # self.play(Uncreate(pyramid), run_time=2)
 
+            self.wait(1)
+            self.next_slide()
             self.play(
                 AnimationGroup(
                     # Succession(
@@ -148,8 +151,8 @@ class BlackBox(ThreeDSlide):
                 run_time=1,
             )
 
-            self.wait(3)
-
+            self.wait(1)
+            self.next_slide()
             self.play(
                 Transform(box, box.copy().set_fill(BLACK), run_time=0.5),
                 Uncreate(input_arrow, run_time=2),
