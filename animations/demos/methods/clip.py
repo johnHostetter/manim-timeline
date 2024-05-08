@@ -13,6 +13,7 @@ from soft.fuzzy.sets.continuous.impl import Gaussian
 from soft.fuzzy.unsupervised.granulation.online.clip import (
     apply_categorical_learning_induced_partitioning as CLIP,
 )
+from unit_tests.computing.test_self_organize import get_cart_pole_example_data
 
 set_rng(1)
 
@@ -30,6 +31,7 @@ class CLIPDemo(Slide, MovingCameraScene):
         # background = ImageMobject("background.png").scale(2).set_color("#FFFFFF")
         # self.add(background)
         self.fuzzy_sets = None
+        self.default_text_scale_multiplier: float = 1.0  # use 5.0 if in timeline
         self.default_scale_multiplier: float = 5.0
 
     def add_fuzzy_set(
@@ -144,7 +146,7 @@ class CLIPDemo(Slide, MovingCameraScene):
                 [
                     0.2794,
                     0.9486,
-                    0.6601,
+                    0.6301,
                     # -0.9111,
                     -0.9508,
                     -0.4823,
@@ -154,6 +156,7 @@ class CLIPDemo(Slide, MovingCameraScene):
                     # -0.4647,
                 ]
             )
+            X = get_cart_pole_example_data()[:, 0]
             # config = {
             #     "minimums": X.min(0).values,
             #     "maximums": X.max(0).values,
@@ -164,7 +167,7 @@ class CLIPDemo(Slide, MovingCameraScene):
             self.fuzzy_sets, self.data_dots = [], []
             x_axis_config = AxisConfig(
                 X.min().item(), X.max().item(), step=0.1, length=8
-            )
+            )  # step was 0.1
             axes = make_axes(
                 target_scene,
                 x_axis_config=x_axis_config,
@@ -177,15 +180,15 @@ class CLIPDemo(Slide, MovingCameraScene):
             # )
             axis_labels: VGroup = axes.get_axis_labels(
                 # axis labels are in math mode already
-                x_label="x",
-                y_label=r"\mu(x)",
+                x_label="s_{1}",
+                y_label=r"\mu(s_{1})",
                 # x_label=r"\textit{Cart Position}",
                 # y_label=r"\textit{Membership Degree}",
             ).set_color(BLACK)
-            axis_labels[0].scale(scale_factor=(self.default_scale_multiplier * scale))
+            axis_labels[0].scale(scale_factor=(self.default_text_scale_multiplier * scale))
             # rotate y label 90 degrees and move it to the left
             axis_labels[1].rotate(PI / 2).shift(1.5 * LEFT * scale).scale(
-                scale_factor=(self.default_scale_multiplier * scale)
+                scale_factor=(self.default_text_scale_multiplier * scale)
             )
             axis_group = (
                 VGroup(axes, axis_labels).scale(scale_factor=scale).move_to(origin)
@@ -197,11 +200,15 @@ class CLIPDemo(Slide, MovingCameraScene):
                     Create(axis_group),
                     target_scene.camera.frame.animate.move_to(
                         axis_group.get_center()
-                    ).set(width=axis_group.width + 1),
+                    ).set(
+                        width=axis_group.width + 1, height=axis_group.height + 1
+                    ),  # height originally not included
                     run_time=2,
                 )
                 # Create(VGroup(axes, x_axis_lbl, y_axis_lbl)),
             )
+
+            target_scene.next_slide()
 
             old_terms, new_terms = None, None
             for idx, x in enumerate(X):
@@ -211,6 +218,9 @@ class CLIPDemo(Slide, MovingCameraScene):
                 )
                 self.data_dots.append(dot)
                 dot.move_to(axes.c2p(0, 0))
+
+                target_scene.wait()
+                target_scene.next_slide()
 
                 # get the attention of the viewer to focus on the data point
                 target_scene.play(
@@ -254,6 +264,7 @@ class CLIPDemo(Slide, MovingCameraScene):
                     message_str = "Not Satisfied"
                     if degree >= config.fuzzy.partition.epsilon:
                         message_str = "Satisfied"
+                    # message_str = ''
                     dashed_line_label = axes.get_graph_label(
                         line_graph,
                         Text(message_str).scale(scale_factor=scale),
@@ -264,6 +275,7 @@ class CLIPDemo(Slide, MovingCameraScene):
                     target_scene.wait()
                     target_scene.next_slide()
                     target_scene.play(
+                        # FadeOut(dashed_line_graph)
                         FadeOut(VGroup(dashed_line_label, dashed_line_graph))
                     )
 
