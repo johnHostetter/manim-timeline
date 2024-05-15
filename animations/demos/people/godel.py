@@ -14,7 +14,9 @@ class GodelQuote(Scene):
     # Godel actually worked on multivalued logic, called Gödel-Dummett logic
     # https://link.springer.com/article/10.1023/A:1022997524909
     def construct(self):
-        paragraph, source_text, person, signature_group = self.draw(self, origin=ORIGIN, scale=1.0)
+        paragraph, source_text, person, signature_group = self.draw(
+            self, origin=ORIGIN, scale=1.0
+        )
         self.wait(10)
         self.play(
             FadeOut(Group(VGroup(paragraph, person), signature_group), run_time=2)

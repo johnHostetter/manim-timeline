@@ -4,7 +4,9 @@ from animations.beamer.slides import SlideDiagram
 from animations.beamer.slides import SlideShow, SlideWithList
 from animations.beamer.presentation.bibtex import BibTexManager
 from animations.beamer.lists import ItemizedList, BulletedList as BL
-from animations.beamer.presentation.studies.pyrenees import IntelligentTutoringSystemResults
+from animations.beamer.presentation.studies.pyrenees import (
+    IntelligentTutoringSystemResults,
+)
 
 config.background_color = WHITE
 light_theme_style = {
@@ -23,7 +25,7 @@ class CEWDiagram(SlideDiagram):
         super().__init__(
             path="images/cew_diagram.png",
             caption="A diagram of the CLIP-ECM-Wang-Mendel (CEW)\n"
-                    "systematic design process of NFNs.",
+            "systematic design process of NFNs.",
             original_image_scale=1.00,
             **kwargs
         )
@@ -33,10 +35,18 @@ class CEWResults(IntelligentTutoringSystemResults):
     def __init__(self):
         data: List[List[str]] = [
             [
-                "CEW (N = 45)", ".744 (.138)", ".803 (.163)", ".187 (.658)", "1.58 (.680)"
+                "CEW (N = 45)",
+                ".744 (.138)",
+                ".803 (.163)",
+                ".187 (.658)",
+                "1.58 (.680)",
             ],
             [
-                "Expert (N = 47)", ".761 (.189)", ".683 (.165)", "-1.55 (3.80)", "1.80 (.946)"
+                "Expert (N = 47)",
+                ".761 (.189)",
+                ".683 (.165)",
+                "-1.55 (3.80)",
+                "1.80 (.946)",
             ],
         ]
         super().__init__(data, highlighted_columns=[2, 3])
@@ -56,7 +66,9 @@ def cew_summary() -> SlideWithList:
         width_buffer=6.0,
         beamer_list=BL(
             items=[
-                bibtex_manager.cite_entry(bibtex_manager["hostetter2023self"], num_of_words=8),
+                bibtex_manager.cite_entry(
+                    bibtex_manager["hostetter2023self"], num_of_words=8
+                ),
                 "Primary Intuition",
                 ItemizedList(
                     items=[

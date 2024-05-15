@@ -9,11 +9,22 @@ from animations.beamer.blocks import AlertBlock, ExampleBlock
 from animations.beamer.presentation.studies.lers import gather_items_to_remove
 from animations.common import MANIM_BLUE
 from animations.demos.graph_example import MyGraph, GraphPair
-from animations.beamer.slides import SlideShow, SlideWithList, SlideWithBlocks, SlideWithTable
+from animations.beamer.slides import (
+    SlideShow,
+    SlideWithList,
+    SlideWithBlocks,
+    SlideWithTable,
+)
 from animations.beamer.presentation.bibtex import BibTexManager
-from animations.beamer.lists import ItemizedList, BulletedList as BL, DisadvantagesList, \
-    AdvantagesList
-from animations.beamer.presentation.studies.pyrenees import IntelligentTutoringSystemResults
+from animations.beamer.lists import (
+    ItemizedList,
+    BulletedList as BL,
+    DisadvantagesList,
+    AdvantagesList,
+)
+from animations.beamer.presentation.studies.pyrenees import (
+    IntelligentTutoringSystemResults,
+)
 
 config.background_color = WHITE
 light_theme_style = {
@@ -26,8 +37,13 @@ class FYD(SlideShow):
     def __init__(self, **kwargs):
         super().__init__(
             slides=[
-                FYDDiagram(), get_fyd_formula(), FYDResults(), get_fyd_rules(), fyd_summary()
-            ], **kwargs
+                FYDDiagram(),
+                get_fyd_formula(),
+                FYDResults(),
+                get_fyd_rules(),
+                fyd_summary(),
+            ],
+            **kwargs,
         )
 
 
@@ -81,9 +97,9 @@ def get_fyd_formula() -> SlideWithBlocks:
         content=AdvantagesList(
             items=[
                 "Mimic the behavior of LERs but incorporate fuzziness",
-                "Zadeh\'s f-granulation theory to build graphs",
+                "Zadeh's f-granulation theory to build graphs",
                 bibtex_manager.slide_short_cite("tfig"),
-                "Use the graph\'s structure to simplify rules",
+                "Use the graph's structure to simplify rules",
                 ItemizedList(
                     items=[
                         VGroup(
@@ -96,7 +112,7 @@ def get_fyd_formula() -> SlideWithBlocks:
                             MathTex(r"C", color=BLACK),
                             Text(
                                 " is how reachable other premises are from shared rules",
-                                color=BLACK
+                                color=BLACK,
                             ),
                         ),
                         VGroup(
@@ -107,13 +123,14 @@ def get_fyd_formula() -> SlideWithBlocks:
                         ),
                         VGroup(
                             Text(
-                                "Premise term activation frequency is from ", color=BLACK
+                                "Premise term activation frequency is from ",
+                                color=BLACK,
                             ),
                             Text("scalar cardinality", color=BLACK, slant=ITALIC),
                             MathTex(r"S", color=BLACK),
                         ),
                     ]
-                )
+                ),
             ]
         ),
     )
@@ -144,18 +161,16 @@ def get_fyd_formula() -> SlideWithBlocks:
 class FYDResults(IntelligentTutoringSystemResults):
     def __init__(self):
         data: List[List[str]] = [
+            ["FYD (N = 39)", ".677 (.202)", ".746 (.160)", ".079 (.278)", "1.26 (.41)"],
             [
-                "FYD (N = 39)", ".677 (.202)", ".746 (.160)", ".079 (.278)", "1.26 (.41)"
+                "ECLAIRE (N = 52)",
+                ".675 (.183)",
+                ".736 (.206)",
+                ".080 (.320)",
+                "1.89 (.51)",
             ],
-            [
-                "ECLAIRE (N = 52)", ".675 (.183)", ".736 (.206)", ".080 (.320)", "1.89 (.51)"
-            ],
-            [
-                "CEW (N = 38)", ".645 (.217)", ".733 (.189)", ".104 (.290)", "1.98 (.67)"
-            ],
-            [
-                "CQL (N = 44)", ".635 (.210)", ".708 (.175)", ".094 (.248)", "1.89 (.71)"
-            ]
+            ["CEW (N = 38)", ".645 (.217)", ".733 (.189)", ".104 (.290)", "1.98 (.67)"],
+            ["CQL (N = 44)", ".635 (.210)", ".708 (.175)", ".094 (.248)", "1.89 (.71)"],
         ]
         super().__init__(data, highlighted_columns=[4])
 
@@ -195,7 +210,7 @@ def fyd_summary() -> SlideWithList:
                 "Contributions",
                 ItemizedList(
                     items=[
-                        "Exploit\'s Zadeh\'s f-granulation theory to simplify rules",
+                        "Exploit's Zadeh's f-granulation theory to simplify rules",
                         "Quick mimic of rule simplification in LERS",
                         "Avoids violating ϵ-completeness",
                     ]
@@ -221,25 +236,27 @@ def get_fyd_rules() -> SlideWithTable:
     """
     data = [
         [
-            "FYD", "IF the student only has a FEW hints\n"
-                   "∧ student’s performance on this KC is AVERAGE\n"
-                   "∧ they correctly answer De Morgan’s Law OFTEN"
+            "FYD",
+            "IF the student only has a FEW hints\n"
+            "∧ student’s performance on this KC is AVERAGE\n"
+            "∧ they correctly answer De Morgan’s Law OFTEN",
         ],
         [
-            "ECLAIRE", "IF [(s1 > 0) ∧ (s113 > 0.5) ∧ (s115 > 0.857)\n"
-                       "∧ (s6 > 0.931) ∧ (s86 ≤ 0.056) ∧ (s93 ≤ 0.262)]\n"
-                       "...\n"
-                       "∨ [(s1 > 0) ∧ (s113 > 0) ∧ (s6 ≤ 0.962)\n"
-                       "∧ (s6 > 0.956) ∧ (s76 > 0.925)]"
-        ]
+            "ECLAIRE",
+            "IF [(s1 > 0) ∧ (s113 > 0.5) ∧ (s115 > 0.857)\n"
+            "∧ (s6 > 0.931) ∧ (s86 ≤ 0.056) ∧ (s93 ≤ 0.262)]\n"
+            "...\n"
+            "∨ [(s1 > 0) ∧ (s113 > 0) ∧ (s6 ≤ 0.962)\n"
+            "∧ (s6 > 0.956) ∧ (s76 > 0.925)]",
+        ],
     ]
     table = Table(
         data,
         # row_labels=[Text("FYD"), Text("ECLAIRE")],
         col_labels=[
             Text("Condition", weight=BOLD),
-            Text("Example Rule Premise", weight=BOLD)
-        ]
+            Text("Example Rule Premise", weight=BOLD),
+        ],
     )
 
     return SlideWithTable(
@@ -247,7 +264,7 @@ def get_fyd_rules() -> SlideWithTable:
         subtitle=None,
         table=table.scale(scale_factor=0.75),
         caption="KC is a knowledge component (e.g., Complement Theorem).",
-        highlighted_columns=[]
+        highlighted_columns=[],
     )
 
 
@@ -289,16 +306,18 @@ class FYDDiagram(Slide, MovingCameraScene):
         v_group: VGroup = VGroup()
         for key, value in self.graphs.items():
             new_item = VGroup(
-                Text(
-                    key, font_size=18, color=BLACK
-                ).scale(scale_factor=scale).next_to(value.digraph, UP),
-                value.digraph
+                Text(key, font_size=18, color=BLACK)
+                .scale(scale_factor=scale)
+                .next_to(value.digraph, UP),
+                value.digraph,
             )
             v_group.add(new_item)
 
         v_group.scale(scale_factor=scale).move_to(origin)
         if animate:
-            target_scene.camera.frame.move_to(v_group.get_center()).set(width=v_group.width * 3.0)
+            target_scene.camera.frame.move_to(v_group.get_center()).set(
+                width=v_group.width * 3.0
+            )
             target_scene.play(Create(v_group))
             self.illustrate_fyd_idea(digraph, rule_nodes, target_scene)
             target_scene.wait(1)

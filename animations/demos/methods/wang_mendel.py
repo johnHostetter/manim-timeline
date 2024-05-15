@@ -51,9 +51,11 @@ class WMDemo(Slide):
     def draw(self, origin, scale, target_scene=None, animate=True):
         if target_scene is None:
             target_scene = self
-        method = Text(
-            "Wang-Mendel Method", color=str(BLACK)
-        ).scale(scale_factor=scale).move_to(origin)
+        method = (
+            Text("Wang-Mendel Method", color=str(BLACK))
+            .scale(scale_factor=scale)
+            .move_to(origin)
+        )
 
         if not animate:
             target_scene.add(method)
@@ -65,9 +67,9 @@ class WMDemo(Slide):
         self.play(FadeOut(method))
         _, env = get_data_and_env(n_samples=1000)
         self.env_img = (
-            display_cart_pole(
-                env, env.state, scale=scale, add_border=False
-            ).scale(1).shift(UP * 1.1)
+            display_cart_pole(env, env.state, scale=scale, add_border=False)
+            .scale(1)
+            .shift(UP * 1.1)
         )
         self.fuzzy_sets = {}
         my_config = load_configuration()
@@ -273,7 +275,9 @@ class WMDemo(Slide):
             intermediate_states = np.array(intermediate_states).T
             for intermediate_state in intermediate_states:
                 new_env_img = (
-                    display_cart_pole(env, intermediate_state, scale=scale, add_border=False)
+                    display_cart_pole(
+                        env, intermediate_state, scale=scale, add_border=False
+                    )
                     .scale(1)
                     .shift(UP * 1.1)
                 )

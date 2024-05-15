@@ -1,9 +1,16 @@
 from animations.demos.timeline import Timeline
 from animations.demos.timeline_helper import TimelineConfig
 from animations.beamer.presentation.timeline_events import (
-    get_historical_context, from_zadeh_to_nfn, from_nfn_to_wang_mendel, from_wang_mendel_to_apfrb,
-    from_apfrb_to_cew, from_cew_to_lers, from_lers_to_llm, from_llm_to_fyd, from_fyd_to_morphism,
-    expected_timeline
+    get_historical_context,
+    from_zadeh_to_nfn,
+    from_nfn_to_wang_mendel,
+    from_wang_mendel_to_apfrb,
+    from_apfrb_to_cew,
+    from_cew_to_lers,
+    from_lers_to_llm,
+    from_llm_to_fyd,
+    from_fyd_to_morphism,
+    expected_timeline,
 )
 
 
@@ -29,11 +36,10 @@ class TimelineCatchUp(Timeline):
     def __init__(self, prior_events, new_events, incl_ending=False, **kwargs):
         super().__init__(
             timeline_events=(
-                    [
-                        TimelineConfig(draw_animations=False)
-                    ] + prior_events + [
-                        TimelineConfig(draw_animations=True)
-                    ] + new_events
+                [TimelineConfig(draw_animations=False)]
+                + prior_events
+                + [TimelineConfig(draw_animations=True)]
+                + new_events
             ),
             globally_enable_animation=False,
             incl_ending=incl_ending,
@@ -80,13 +86,13 @@ class M1(TimelineCatchUp):
     def __init__(self, **kwargs):
         # the following has already been added, and the {None: ...} is a special flag
         background = (
-                get_historical_context() + from_zadeh_to_nfn()
-                + from_nfn_to_wang_mendel() + from_wang_mendel_to_apfrb()
+            get_historical_context()
+            + from_zadeh_to_nfn()
+            + from_nfn_to_wang_mendel()
+            + from_wang_mendel_to_apfrb()
         )
         super().__init__(
-            prior_events=background,
-            new_events=from_apfrb_to_cew(),
-            **kwargs
+            prior_events=background, new_events=from_apfrb_to_cew(), **kwargs
         )
 
 
@@ -98,8 +104,10 @@ class M2(TimelineCatchUp):
     def __init__(self, **kwargs):
         # the following has already been added, and the {None: ...} is a special flag
         background = (
-                get_historical_context() + from_zadeh_to_nfn()
-                + from_nfn_to_wang_mendel() + from_wang_mendel_to_apfrb()
+            get_historical_context()
+            + from_zadeh_to_nfn()
+            + from_nfn_to_wang_mendel()
+            + from_wang_mendel_to_apfrb()
         )
         super().__init__(
             prior_events=background + from_apfrb_to_cew(),
@@ -116,8 +124,10 @@ class M3(TimelineCatchUp):
     def __init__(self, **kwargs):
         # the following has already been added, and the {None: ...} is a special flag
         background = (
-                get_historical_context() + from_zadeh_to_nfn()
-                + from_nfn_to_wang_mendel() + from_wang_mendel_to_apfrb()
+            get_historical_context()
+            + from_zadeh_to_nfn()
+            + from_nfn_to_wang_mendel()
+            + from_wang_mendel_to_apfrb()
         )
         super().__init__(
             prior_events=background + from_apfrb_to_cew() + from_cew_to_lers(),
@@ -134,11 +144,16 @@ class M4(TimelineCatchUp):
     def __init__(self, **kwargs):
         # the following has already been added, and the {None: ...} is a special flag
         background = (
-                get_historical_context() + from_zadeh_to_nfn()
-                + from_nfn_to_wang_mendel() + from_wang_mendel_to_apfrb()
+            get_historical_context()
+            + from_zadeh_to_nfn()
+            + from_nfn_to_wang_mendel()
+            + from_wang_mendel_to_apfrb()
         )
         super().__init__(
-            prior_events=background + from_apfrb_to_cew() + from_cew_to_lers() + from_lers_to_llm(),
+            prior_events=background
+            + from_apfrb_to_cew()
+            + from_cew_to_lers()
+            + from_lers_to_llm(),
             new_events=from_llm_to_fyd(),
             **kwargs
         )
@@ -152,11 +167,16 @@ class P1(TimelineCatchUp):
     def __init__(self, **kwargs):
         # the following has already been added, and the {None: ...} is a special flag
         background = (
-                get_historical_context() + from_zadeh_to_nfn()
-                + from_nfn_to_wang_mendel() + from_wang_mendel_to_apfrb()
+            get_historical_context()
+            + from_zadeh_to_nfn()
+            + from_nfn_to_wang_mendel()
+            + from_wang_mendel_to_apfrb()
         )
         old_methods = (
-                from_apfrb_to_cew() + from_cew_to_lers() + from_lers_to_llm() + from_llm_to_fyd()
+            from_apfrb_to_cew()
+            + from_cew_to_lers()
+            + from_lers_to_llm()
+            + from_llm_to_fyd()
         )
         super().__init__(
             prior_events=background + old_methods,
@@ -173,11 +193,16 @@ class P2(TimelineCatchUp):
     def __init__(self, **kwargs):
         # the following has already been added, and the {None: ...} is a special flag
         background = (
-                get_historical_context() + from_zadeh_to_nfn()
-                + from_nfn_to_wang_mendel() + from_wang_mendel_to_apfrb()
+            get_historical_context()
+            + from_zadeh_to_nfn()
+            + from_nfn_to_wang_mendel()
+            + from_wang_mendel_to_apfrb()
         )
         old_methods = (
-                from_apfrb_to_cew() + from_cew_to_lers() + from_lers_to_llm() + from_llm_to_fyd()
+            from_apfrb_to_cew()
+            + from_cew_to_lers()
+            + from_lers_to_llm()
+            + from_llm_to_fyd()
         )
         super().__init__(
             prior_events=background + old_methods + from_fyd_to_morphism(),

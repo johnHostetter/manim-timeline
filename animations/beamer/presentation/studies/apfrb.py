@@ -6,7 +6,9 @@ from animations.demos.graph_example import MyGraph, GraphPair
 from animations.beamer.slides import SlideShow, SlideWithList
 from animations.beamer.presentation.bibtex import BibTexManager
 from animations.beamer.lists import ItemizedList, BulletedList as BL
-from animations.beamer.presentation.studies.pyrenees import IntelligentTutoringSystemResults
+from animations.beamer.presentation.studies.pyrenees import (
+    IntelligentTutoringSystemResults,
+)
 
 config.background_color = WHITE
 light_theme_style = {
@@ -17,21 +19,34 @@ light_theme_style = {
 
 class APFRB(SlideShow):
     def __init__(self, **kwargs):
-        super().__init__(slides=[APFRBDiagram(), APFRBResults(), apfrb_summary()], **kwargs)
+        super().__init__(
+            slides=[APFRBDiagram(), APFRBResults(), apfrb_summary()], **kwargs
+        )
 
 
 class APFRBResults(IntelligentTutoringSystemResults):
     def __init__(self):
         data: List[List[str]] = [
             [
-                "FLC (N = 50)", ".748 (.159)", ".784 (.153)", "-0.02 (0.79)", "1.65 (0.45)"
+                "FLC (N = 50)",
+                ".748 (.159)",
+                ".784 (.153)",
+                "-0.02 (0.79)",
+                "1.65 (0.45)",
             ],
             [
-                "Student Choice (N = 54)", ".746 (.158)", ".643 (.184)", "-0.84 (1.31)",
-                "1.54 (0.68)"
+                "Student Choice (N = 54)",
+                ".746 (.158)",
+                ".643 (.184)",
+                "-0.84 (1.31)",
+                "1.54 (0.68)",
             ],
             [
-                "Expert (N = 66)", ".729 (.166)", ".702 (.182)", "-0.48 (1.75)", "1.60 (0.52)"
+                "Expert (N = 66)",
+                ".729 (.166)",
+                ".702 (.182)",
+                "-0.48 (1.75)",
+                "1.60 (0.52)",
             ],
         ]
         super().__init__(data, highlighted_columns=[2, 3])
@@ -47,7 +62,9 @@ def apfrb_summary() -> SlideWithList:
     bibtex_manager = BibTexManager()
     beamer_list = BL(
         items=[
-            bibtex_manager.cite_entry(bibtex_manager["hostetter2023leveraging"], num_of_words=8),
+            bibtex_manager.cite_entry(
+                bibtex_manager["hostetter2023leveraging"], num_of_words=8
+            ),
             "Primary Intuition",
             ItemizedList(
                 items=[
@@ -121,29 +138,34 @@ class APFRBDiagram(Slide, MovingCameraScene):
         v_group: VGroup = VGroup()
         for key, value in self.graphs.items():
             new_item = VGroup(
-                Text(
-                    key, font_size=18, color=BLACK
-                ).scale(scale_factor=scale).next_to(value.digraph, UP),
-                value.digraph
+                Text(key, font_size=18, color=BLACK)
+                .scale(scale_factor=scale)
+                .next_to(value.digraph, UP),
+                value.digraph,
             )
             if len(v_group) != 0:
                 arrow = Arrow(
-                    LEFT, RIGHT,
-                    color=BLACK, stroke_width=6 * scale, max_stroke_width_to_length_ratio=0.5
+                    LEFT,
+                    RIGHT,
+                    color=BLACK,
+                    stroke_width=6 * scale,
+                    max_stroke_width_to_length_ratio=0.5,
                 ).scale(2.5 * scale)
 
                 v_group.add(arrow.next_to(v_group[-1], RIGHT))
                 v_group.add(
-                    Text(
-                    "Distill & APFRB", font_size=18, color=BLACK
-                    ).scale(scale_factor=scale).next_to(arrow, UP)
+                    Text("Distill & APFRB", font_size=18, color=BLACK)
+                    .scale(scale_factor=scale)
+                    .next_to(arrow, UP)
                 )
                 new_item.next_to(arrow, RIGHT)
             v_group.add(new_item)
 
         v_group.scale(scale_factor=scale).move_to(origin)
         if animate:
-            target_scene.camera.frame.move_to(v_group.get_center()).set(width=v_group.width * 1.5)
+            target_scene.camera.frame.move_to(v_group.get_center()).set(
+                width=v_group.width * 1.5
+            )
             target_scene.play(Create(v_group))
             target_scene.wait(1)
             target_scene.next_slide()

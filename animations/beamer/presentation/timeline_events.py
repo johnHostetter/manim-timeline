@@ -1,6 +1,7 @@
 """
 This script is used to assist in the creation of a timeline of events.
 """
+
 from animations.beamer.presentation.bibtex import BibTexManager
 from animations.beamer.presentation.conclusion.existing_issues import curr_limitations
 from animations.beamer.presentation.conclusion.new_horizons import proposed_studies
@@ -32,11 +33,11 @@ def make_ww2_slide(file_name: str, poi: int, caption: str) -> TimelineEvent:
         event="World War II",
         animation=CaptionedSVG(
             path=path_to_project_root()
-                 / "animations"
-                 / "demos"
-                 / "assets"
-                 / "ww2"
-                 / f"{file_name}.svg",
+            / "animations"
+            / "demos"
+            / "assets"
+            / "ww2"
+            / f"{file_name}.svg",
             caption=caption,
         ),
         poi=poi,
@@ -396,12 +397,12 @@ def expected_timeline():
         "May to June 2024: Implement experiments",
         CaptionedJPG(
             path=path_to_project_root()
-                 / "animations"
-                 / "demos"
-                 / "assets"
-                 / "people"
-                 / "pictures"
-                 / "evelyn_prenatal_picture.jpg",
+            / "animations"
+            / "demos"
+            / "assets"
+            / "people"
+            / "pictures"
+            / "evelyn_prenatal_picture.jpg",
             caption="Evelyn is due to be born (June 29, 2024).",
         ),
         "July to August 2024: Attempt proof & begin job search",
@@ -411,5 +412,5 @@ def expected_timeline():
         "March 2025: Prepare dissertation & slides",
         "April 2025: Defend dissertation",
         "May 2025: Graduate (hopefully)",
-        proposed_plan()
+        proposed_plan(),
     ]

@@ -1,12 +1,17 @@
 from manim import *
 
-from animations.beamer.presentation.prototype.avoiding_invalid import avoiding_invalid_selections
-from animations.beamer.presentation.prototype.constrained_gumbel_softmax import \
-    constrained_gumbel_softmax
+from animations.beamer.presentation.prototype.avoiding_invalid import (
+    avoiding_invalid_selections,
+)
+from animations.beamer.presentation.prototype.constrained_gumbel_softmax import (
+    constrained_gumbel_softmax,
+)
 from animations.beamer.presentation.prototype.gumbel_max_trick import gumbel_max_trick
 from animations.beamer.presentation.prototype.issue_with_logits import issue_with_logits
 from animations.beamer.presentation.prototype.notation import get_notation
-from animations.beamer.presentation.prototype.numerical_instability import fix_numerical_stability
+from animations.beamer.presentation.prototype.numerical_instability import (
+    fix_numerical_stability,
+)
 from animations.beamer.presentation.prototype.relax_links import relax_links
 from animations.beamer.presentation.prototype.why_e_delayed import why_e_delayed
 from animations.beamer.presentation.prototype.why_modify_gumbel import why_modify_gumbel
@@ -30,7 +35,8 @@ class MED(SlideShow):
                 # use gumbel max-trick to sample from a categorical distribution (the rules)
                 issue_with_logits(),
                 # how to avoid violating epsilon-completeness w/ gumbel max-trick
-                why_modify_gumbel(), avoiding_invalid_selections(),
+                why_modify_gumbel(),
+                avoiding_invalid_selections(),
                 # introduce the gumbel max-trick formula
                 gumbel_max_trick(),
                 # bound the logits used for it to prevent numerical instability
@@ -38,8 +44,9 @@ class MED(SlideShow):
                 # constrain gumbel-softmax to avoid invalid rules that violate epsilon-completeness
                 constrained_gumbel_softmax(),
                 # briefly mention epsilon-delayed update to premise layer
-                why_e_delayed()
-            ], **kwargs
+                why_e_delayed(),
+            ],
+            **kwargs
         )
 
 

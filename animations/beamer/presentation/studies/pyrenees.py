@@ -10,6 +10,7 @@ class IntelligentTutoringSystemResults(SlideWithTable):
     A helpful class for creating slides that show the results of an
     intelligent tutoring system study.
     """
+
     def __init__(self, data: List[List[str]], highlighted_columns: List[int]):
         table = Table(
             data,
@@ -18,8 +19,8 @@ class IntelligentTutoringSystemResults(SlideWithTable):
                 Text("Pre-Test", weight=BOLD),
                 Text("Post-Test", weight=BOLD),
                 Text("NLG", weight=BOLD),
-                Text("Time", weight=BOLD)
-            ]
+                Text("Time", weight=BOLD),
+            ],
         )
         table.get_col_labels().set_weight("bold")
         table.get_horizontal_lines().set_color(BLACK)
@@ -32,5 +33,5 @@ class IntelligentTutoringSystemResults(SlideWithTable):
             subtitle=None,
             table=table.scale(0.75),
             caption="Mean (Standard Deviation) of learning performance & training time (in hours).",
-            highlighted_columns=highlighted_columns
+            highlighted_columns=highlighted_columns,
         )

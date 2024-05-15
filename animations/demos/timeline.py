@@ -5,7 +5,11 @@ from manim_slides import Slide
 from animations.common import MANIM_BLUE
 from animations.demos.graph_example import GraphPair
 from animations.beamer.slides import SlideWithBlocks, PromptSlide, SlideWithList
-from animations.demos.timeline_helper import create_timeline_layout, TimelineConfig, TimelineEvent
+from animations.demos.timeline_helper import (
+    create_timeline_layout,
+    TimelineConfig,
+    TimelineEvent,
+)
 from animations.demos.ww2 import CaptionedSVG, CaptionedJPG
 
 config.disable_caching = True  # may need to disable caching for the timeline
@@ -18,7 +22,7 @@ light_theme_style = {
 
 class Timeline(Slide, MovingCameraScene):
     def __init__(
-            self, timeline_events, incl_ending, globally_enable_animation, **kwargs
+        self, timeline_events, incl_ending, globally_enable_animation, **kwargs
     ):
         super().__init__(**kwargs)
         self.timeline_events = timeline_events
@@ -32,7 +36,9 @@ class Timeline(Slide, MovingCameraScene):
         self.num_of_vertices = len(self.digraph_layout)
         timeline_igraph.add_vertices(self.num_of_vertices)
         # timeline_igraph.vs["name"] = ["2010", "2015", "2020", "2025", "2030"]
-        edges = list(zip(range(0, self.num_of_vertices - 1), range(1, self.num_of_vertices)))
+        edges = list(
+            zip(range(0, self.num_of_vertices - 1), range(1, self.num_of_vertices))
+        )
         timeline_igraph.add_edges(edges)
 
         timeline_manim = DiGraph(
@@ -65,7 +71,9 @@ class Timeline(Slide, MovingCameraScene):
     def construct(self):
         # self.camera.frame.move_to(self.paired_graphs.digraph.get_center()).set(width=10)
         if self.globally_enable_animation:
-            self.play(self.camera.frame.animate.move_to(self.origin_vertex).set(width=10))
+            self.play(
+                self.camera.frame.animate.move_to(self.origin_vertex).set(width=10)
+            )
         # else:
         #     self.camera.frame.move_to(self.origin_vertex).set(width=10)
         # self.camera.frame.save_state()
@@ -321,7 +329,7 @@ class Timeline(Slide, MovingCameraScene):
 
                 if self.globally_enable_animation:
                     if isinstance(slide, TimelineEvent) or isinstance(
-                            slide, PromptSlide
+                        slide, PromptSlide
                     ):
                         if not slide.skip:
                             # now zoom in on the event
@@ -346,7 +354,7 @@ class Timeline(Slide, MovingCameraScene):
                     # if slide.skip:
                     #     origin_to_draw_at = boundary.get_center()
                     if isinstance(event, CaptionedSVG) or isinstance(
-                            event, CaptionedJPG
+                        event, CaptionedJPG
                     ):
                         event.draw(
                             origin=origin_to_draw_at,
@@ -362,7 +370,7 @@ class Timeline(Slide, MovingCameraScene):
                             animate=self.globally_enable_animation,
                         )
                 elif isinstance(slide, SlideWithBlocks) or isinstance(
-                        slide, SlideWithList
+                    slide, SlideWithList
                 ):
                     slide.draw(
                         origin=boundary.get_top() - (boundary.height / 10),
@@ -466,7 +474,9 @@ class Timeline(Slide, MovingCameraScene):
             # self.camera.frame.set(width=25)
             self.play(
                 self.camera.frame.animate.move_to(
-                    self.paired_graphs.digraph.vertices[len(self.digraph_layout) - 1].get_center()
+                    self.paired_graphs.digraph.vertices[
+                        len(self.digraph_layout) - 1
+                    ].get_center()
                 ).set(width=20),
                 run_time=self.time_until_back_to_last_spot,
             )
@@ -474,23 +484,27 @@ class Timeline(Slide, MovingCameraScene):
         if self.incl_ending:
             # this would only work if the camera frame state was saved
             # self.play(Restore(self.camera.frame, run_time=15))
-            self.play(self.camera.frame.animate.move_to(self.origin_vertex).set(width=20))
+            self.play(
+                self.camera.frame.animate.move_to(self.origin_vertex).set(width=20)
+            )
             self.play(
                 Succession(
                     Create(self.origin_vertex),
                     GrowFromPoint(
                         self.make_boundary_at_coords(
-                            direction=LEFT, vertex_coords=self.origin_vertex.get_center()
+                            direction=LEFT,
+                            vertex_coords=self.origin_vertex.get_center(),
                         ),
-                        self.origin_vertex.get_center()
-                    ), run_time=2
+                        self.origin_vertex.get_center(),
+                    ),
+                    run_time=2,
                 )
             )
             self.play(
                 Write(
-                    Text(
-                        "Q&A", font="TeX Gyre Termes", color=BLACK
-                    ).move_to(self.origin_vertex.get_center() + (2 * LEFT))
+                    Text("Q&A", font="TeX Gyre Termes", color=BLACK).move_to(
+                        self.origin_vertex.get_center() + (2 * LEFT)
+                    )
                 )
             )
             self.wait(10)

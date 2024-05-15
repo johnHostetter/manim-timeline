@@ -13,7 +13,9 @@ light_theme_style = {
 
 class Lukasiewicz(Slide):
     def construct(self):
-        paragraph, source_text, person, signature_group = self.draw(self, origin=ORIGIN, scale=1.0)
+        paragraph, source_text, person, signature_group = self.draw(
+            self, origin=ORIGIN, scale=1.0
+        )
         self.wait(10)
         self.play(
             FadeOut(Group(VGroup(paragraph, person), signature_group), run_time=2)

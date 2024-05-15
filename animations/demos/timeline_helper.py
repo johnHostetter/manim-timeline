@@ -84,7 +84,7 @@ def create_timeline_layout(timeline_events: List[TimelineEvent]) -> dict:
             for publication in list(timeline_event.values())[0]:
                 spacing = 5  # a good spacing for the timeline I found works well
                 if isinstance(prev_timeline_event, str) and isinstance(
-                        publication, str
+                    publication, str
                 ):
                     # two consecutive strings do not need as much spacing
                     spacing = 1

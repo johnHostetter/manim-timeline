@@ -8,8 +8,15 @@ from manim_slides import Slide
 from animations.demos.graph_example import MyGraph, GraphPair
 from animations.beamer.presentation.bibtex import BibTexManager
 from animations.beamer.lists import ItemizedList, BulletedList as BL
-from animations.beamer.slides import SlideShow, SlideWithList, SlideWithTable, SlideWithTables
-from animations.beamer.presentation.studies.pyrenees import IntelligentTutoringSystemResults
+from animations.beamer.slides import (
+    SlideShow,
+    SlideWithList,
+    SlideWithTable,
+    SlideWithTables,
+)
+from animations.beamer.presentation.studies.pyrenees import (
+    IntelligentTutoringSystemResults,
+)
 
 config.background_color = WHITE
 light_theme_style = {
@@ -22,17 +29,22 @@ class LERS(SlideShow):
     def __init__(self, **kwargs):
         super().__init__(
             slides=[
-                LERSDiagram(), get_example_of_lers(), LERSResults(), get_original_rules(),
-                get_natural_language_rules(), lers_summary()
-            ], **kwargs
+                LERSDiagram(),
+                get_example_of_lers(),
+                LERSResults(),
+                get_original_rules(),
+                get_natural_language_rules(),
+                lers_summary(),
+            ],
+            **kwargs,
         )
 
 
 def gather_items_to_remove(
-        grouped_vertices,
-        digraph: DiGraph,
-        all_vertices_to_remove: Set[int],
-        all_edges_to_remove: Set[Tuple[int]],
+    grouped_vertices,
+    digraph: DiGraph,
+    all_vertices_to_remove: Set[int],
+    all_edges_to_remove: Set[Tuple[int]],
 ):
     edges_to_remove: Set[Tuple[int]] = set()
     vertices_to_remove: Set[int] = set()
@@ -41,12 +53,13 @@ def gather_items_to_remove(
             e for e in digraph.edges.keys() if e[0] == premise or e[1] == premise
         }
         inner_vertices_indices_to_remove: Set[int] = {
-                                                         vertex_index for edge in
-                                                         inner_edge_keys_to_remove
-                                                         for vertex_index in edge
-                                                     } - set(
-            grouped_vertices[0])  # remove any input vertices from being faded out
-        inner_vertices_indices_to_remove -= set(grouped_vertices[2])  # do not remove rule vertices
+            vertex_index for edge in inner_edge_keys_to_remove for vertex_index in edge
+        } - set(
+            grouped_vertices[0]
+        )  # remove any input vertices from being faded out
+        inner_vertices_indices_to_remove -= set(
+            grouped_vertices[2]
+        )  # do not remove rule vertices
 
         edges_to_remove.update(inner_edge_keys_to_remove)
         vertices_to_remove.update(inner_vertices_indices_to_remove)
@@ -65,7 +78,7 @@ def gather_items_to_remove(
 
     return (
         all_vertices_to_remove.union(vertices_to_remove),
-        all_edges_to_remove.union(edges_to_remove)
+        all_edges_to_remove.union(edges_to_remove),
     )
 
 
@@ -106,28 +119,31 @@ class LERSDiagram(Slide, MovingCameraScene):
         v_group: VGroup = VGroup()
         for key, value in self.graphs.items():
             new_item = VGroup(
-                Text(
-                    key, font_size=18, color=BLACK
-                ).scale(scale_factor=scale).next_to(value.digraph, UP),
-                value.digraph
+                Text(key, font_size=18, color=BLACK)
+                .scale(scale_factor=scale)
+                .next_to(value.digraph, UP),
+                value.digraph,
             )
             v_group.add(new_item)
 
         v_group.scale(scale_factor=scale).move_to(origin)
         if animate:
-            target_scene.camera.frame.move_to(v_group.get_center()).set(width=v_group.width * 3.0)
+            target_scene.camera.frame.move_to(v_group.get_center()).set(
+                width=v_group.width * 3.0
+            )
             target_scene.play(Create(v_group))
             target_scene.wait(3)
             vs, es = gather_items_to_remove(
-                grouped_vertices, digraph=value.digraph,
+                grouped_vertices,
+                digraph=value.digraph,
                 all_vertices_to_remove=premises_to_remove,
-                all_edges_to_remove=set()
+                all_edges_to_remove=set(),
             )
             objects_to_fade_out = VGroup(*[digraph.vertices[i] for i in vs])
-            indications = [Flash(digraph.vertices[i], color=RED, line_stroke_width=3) for i in vs]
-            objects_to_fade_out.add(
-                *[digraph.edges[e] for e in es]
-            )
+            indications = [
+                Flash(digraph.vertices[i], color=RED, line_stroke_width=3) for i in vs
+            ]
+            objects_to_fade_out.add(*[digraph.edges[e] for e in es])
 
             target_scene.wait(1)
             target_scene.next_slide(loop=True)
@@ -171,7 +187,7 @@ def get_example_of_lers():
                     MathTex(r"\mu_3").scale(1.5),
                     MathTex(r"\mu_4").scale(1.5),
                     Text("Decision"),
-                ]
+                ],
             ),
             Table(
                 [
@@ -186,11 +202,11 @@ def get_example_of_lers():
                     MathTex(r"\mu_2").scale(1.5),
                     MathTex(r"\mu_4").scale(1.5),
                     Text("Decision"),
-                ]
+                ],
             ),
         ],
         captions=["Before", "After"],
-        highlighted_columns=[]
+        highlighted_columns=[],
     )
 
 
@@ -198,13 +214,19 @@ class LERSResults(IntelligentTutoringSystemResults):
     def __init__(self):
         data: List[List[str]] = [
             [
-                "CEW w/ LERS (N = 52)", ".765 (.149)", ".791 (.160)", ".026 (.609)", "1.35 (.51)"
+                "CEW w/ LERS (N = 52)",
+                ".765 (.149)",
+                ".791 (.160)",
+                ".026 (.609)",
+                "1.35 (.51)",
             ],
+            ["CEW (N = 58)", ".749 (.164)", ".769 (.206)", ".073 (.597)", "1.31 (.57)"],
             [
-                "CEW (N = 58)", ".749 (.164)", ".769 (.206)", ".073 (.597)", "1.31 (.57)"
-            ],
-            [
-                "Expert (N = 54)", ".754 (.184)", ".716 (.213)", "-.247 (.605)", "1.62 (.61)"
+                "Expert (N = 54)",
+                ".754 (.184)",
+                ".716 (.213)",
+                "-.247 (.605)",
+                "1.62 (.61)",
             ],
         ]
         super().__init__(data, highlighted_columns=[2, 3])
@@ -226,15 +248,15 @@ def format_rule_table(data: list[list[str]]) -> Table:
         col_labels=[
             Text("Rule", weight=BOLD),
             Text("IF", weight=BOLD),
-            Text("THEN", weight=BOLD)
-        ]
+            Text("THEN", weight=BOLD),
+        ],
     )
 
     return table
 
 
 def make_rule_slide(
-        title: str, data: list[list[str]], caption: str, width_buffer: float = 3.0
+    title: str, data: list[list[str]], caption: str, width_buffer: float = 3.0
 ) -> SlideWithTable:
     """
     Create a slide showing the rules from the LERS study.
@@ -256,7 +278,7 @@ def make_rule_slide(
         table=table.scale(scale_factor=0.75),
         caption=caption,
         highlighted_columns=[],
-        width_buffer=width_buffer
+        width_buffer=width_buffer,
     )
 
 
@@ -275,7 +297,7 @@ def get_original_rules() -> SlideWithTable:
             ∧ nStepSinceLastWrongKCSession is high
             ∧ pctCorrectAdd3Apply is high
             """,
-            "Example"
+            "Example",
         ],
         [
             "2",
@@ -283,7 +305,7 @@ def get_original_rules() -> SlideWithTable:
             timeOnTutoringSessionPS is high ∧ nCorrectKC is typical
             ∧ pctCorrectAdd2Apply is high ∧ pctCorrectAdd3All is average
             """,
-            "Solve Alone"
+            "Solve Alone",
         ],
         [
             "3",
@@ -291,15 +313,15 @@ def get_original_rules() -> SlideWithTable:
             nKCsSessionPS is high ∧ pctCorrectDeMorSelect is most
             ∧ pctCorrectDeMorApply is about half
             """,
-            "Work Together"
-        ]
+            "Work Together",
+        ],
     ]
 
     return make_rule_slide(
         title="Example of Model Complexity",
         data=data,
         caption="KC is a knowledge component (e.g., Complement Theorem).",
-        width_buffer=3.0
+        width_buffer=3.0,
     )
 
 
@@ -320,7 +342,7 @@ def get_natural_language_rules() -> SlideWithTable:
             percentage of correct applications for Addition
             Theorem of 3 Events.
             """,
-            "Example"
+            "Example",
         ],
         [
             "2",
@@ -332,7 +354,7 @@ def get_natural_language_rules() -> SlideWithTable:
             for 2 events, and an average success rate in correctly
             applying the Addition Theorem for 3 events.
             """,
-            "Solve Alone"
+            "Solve Alone",
         ],
         [
             "3",
@@ -344,7 +366,7 @@ def get_natural_language_rules() -> SlideWithTable:
             answered DeMorgan’s theorem apply questions is
             about half.
             """,
-            "Work Together"
+            "Work Together",
         ],
     ]
 
@@ -352,7 +374,7 @@ def get_natural_language_rules() -> SlideWithTable:
         title="Computing With Words",
         data=data,
         caption="KC is a knowledge component (e.g., Complement Theorem).",
-        width_buffer=6.0
+        width_buffer=6.0,
     )
 
 
