@@ -14,12 +14,12 @@ from soft.computing.organize import SelfOrganize
 from soft.computing.knowledge import KnowledgeBase
 from soft.computing.blueprints.factory import SystematicDesignProcess
 from soft.fuzzy.logic.controller import (
+    FuzzyLogicController as FLC,
     Specifications,
     Engine,
     Mapping,
     SpaceConfiguration,
 )
-from soft.fuzzy.logic.controller.impl import ZeroOrderTSK
 from soft.fuzzy.sets.continuous.impl import Gaussian, Lorentzian
 from soft.fuzzy.sets.continuous.abstract import ContinuousFuzzySet
 from soft.utilities.reproducibility import load_configuration
@@ -252,7 +252,7 @@ class MyGraph(Slide, MovingCameraScene):
         # self.plot_graph(self_organize.graph)
         # use the SelfOrganize plan and plot the resulting fuzzy logic controller
         knowledge_base: KnowledgeBase = self_organize.start()
-        flc = ZeroOrderTSK(
+        flc = FLC(
             specifications=Specifications(
                 t_norm="algebraic_product",
                 engine=Engine(
