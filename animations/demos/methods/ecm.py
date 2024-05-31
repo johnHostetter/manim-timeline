@@ -7,7 +7,7 @@ from copy import deepcopy
 from sklearn import manifold
 from sklearn.manifold import TSNE
 
-from soft.datasets import SupervisedDataset
+from soft.datasets import LabeledDataset
 from soft.utilities.reproducibility import set_rng, load_configuration
 from soft.fuzzy.unsupervised.cluster.online.ecm import (
     apply_evolving_clustering_method as ECM,
@@ -141,9 +141,7 @@ class ECMDemo(Slide, MovingCameraScene):
             with config.unfreeze():
                 config.clustering.distance_threshold = 0.4
             labeled_clusters: LabeledClusters = ECM(
-                SupervisedDataset(
-                    inputs=torch.tensor(tsne_X[: iter + 1]), targets=None
-                ),
+                LabeledDataset(data=torch.tensor(tsne_X[: iter + 1]), labels=None),
                 config=config,
             )
             new_clusters_supports = np.array(labeled_clusters.supports)

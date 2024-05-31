@@ -9,7 +9,7 @@ from manim import *
 from manim_slides import Slide
 
 from animations.common import make_axes, AxisConfig, MANIM_BLUE
-from soft.datasets import SupervisedDataset
+from soft.datasets import LabeledDataset
 from soft.computing.organize import SelfOrganize
 from soft.computing.knowledge import KnowledgeBase
 from soft.computing.blueprints.factory import SystematicDesignProcess
@@ -39,8 +39,8 @@ def get_self_organize(input_size: int = 4, output_size: int = 1) -> SelfOrganize
     return SystematicDesignProcess(
         algorithms=["clip", "ecm", "wang_mendel"], config=soft_config
     ).build(
-        training_data=SupervisedDataset(
-            inputs=torch.rand((250, input_size)), targets=torch.rand((250, output_size))
+        training_data=LabeledDataset(
+            data=torch.rand((250, input_size)), labels=torch.rand((250, output_size))
         )
     )
 
