@@ -5,7 +5,8 @@ import torch
 
 from manim import *
 from manim_slides import Slide
-from soft.datasets import SupervisedDataset
+from soft.datasets import LabeledDataset
+from soft.fuzzy.relation.continuous.tnorm import TNorm
 from soft.fuzzy.logic.rules import LinguisticVariables, Rule
 from soft.utilities.reproducibility import set_rng, load_configuration
 from soft.fuzzy.sets.continuous.impl import Gaussian
@@ -95,7 +96,7 @@ class WMDemo(Slide):
         )
 
         linguistic_variables: LinguisticVariables = CLIP(
-            SupervisedDataset(inputs=X, targets=None), my_config
+            LabeledDataset(data=X, labels=None), my_config
         )
         terms: List[Gaussian] = linguistic_variables.inputs
         for term in terms:
@@ -202,8 +203,9 @@ class WMDemo(Slide):
         for idx, exemplar in enumerate(exemplars):
             selected_exemplars = exemplars[: idx + 1]
             new_rules: Set[Rule] = wang_mendel_method(
-                dataset=SupervisedDataset(inputs=selected_exemplars, targets=None),
+                dataset=LabeledDataset(data=selected_exemplars, labels=None),
                 linguistic_variables=linguistic_variables,
+                t_norm=TNorm.PRODUCT,
             )
             diff_rules: List[Rule] = [
                 rule for rule in new_rules if rule.premise not in old_rules

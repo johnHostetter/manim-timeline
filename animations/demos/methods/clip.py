@@ -1,6 +1,6 @@
 from manim import *
 from manim_slides import Slide
-from soft.datasets import SupervisedDataset
+from soft.datasets import LabeledDataset
 from soft.fuzzy.logic.rules import LinguisticVariables
 from soft.utilities.reproducibility import set_rng, load_configuration
 from animations.common import (
@@ -288,7 +288,7 @@ class CLIPDemo(Slide, MovingCameraScene):
                 with config.unfreeze():
                     config.fuzzy.partition.adjustment = 0.2
                 linguistic_variables: LinguisticVariables = CLIP(
-                    dataset=SupervisedDataset(inputs=selected_X, targets=None),
+                    dataset=LabeledDataset(data=selected_X, labels=None),
                     config=config,
                 )
                 new_terms = linguistic_variables.inputs[0]
