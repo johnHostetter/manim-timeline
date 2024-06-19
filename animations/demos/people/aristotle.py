@@ -1,7 +1,7 @@
 from manim import *
 from manim_slides import Slide
 
-from animations.demos.people.einstein import person_with_quote
+from mtimeline.quotes import person_with_quote
 from soft.utilities.reproducibility import path_to_project_root
 
 config.background_color = WHITE

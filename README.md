@@ -1,4 +1,4 @@
-# manim-timeline: A Fun Recap of Literature Review!
+# manim-timeline: A Fun Recap of Literature Review! :tada:
 
 This repository is meant to complement [manim-slides](https://github.com/jeertmans/manim-slides), and does not override it. 
 
@@ -8,7 +8,7 @@ and interactive than typical PowerPoint slides; it allows the presenter to provi
 and how this led to more recent advancements in the field of interest. manim-slides also utilizes [manim-beamer](https://github.com/johnHostetter/manim-beamer)
 so intermittent slides on the timeline are styled similar to LaTeX Beamer for additional professionalism.
 
-## Troubleshooting:
+## Troubleshooting :worried:
 - If you are having trouble with installing the `manim-beamer` package, please try the following:
 
   `

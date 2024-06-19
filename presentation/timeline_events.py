@@ -4,6 +4,7 @@ This script is used to assist in the creation of a timeline of events.
 from mbeamer.slides import PromptSlide
 from mbeamer.bibtex import BibTexManager
 from mbeamer.images import CaptionedSVG, CaptionedJPG
+from mtimeline.timeline_helper import TimelineEvent
 from presentation.conclusion.existing_issues import curr_limitations
 from presentation.conclusion.new_horizons import proposed_studies
 from presentation.conclusion.plan import proposed_plan
@@ -19,7 +20,6 @@ from animations.demos.people.lukasiewicz import Lukasiewicz
 from animations.demos.people.max_black import MaxBlack
 from animations.demos.people.plato import PlatoTheoryOfForms
 from animations.demos.people.zadeh import Zadeh
-from animations.demos.timeline_helper import TimelineEvent
 from soft.utilities.reproducibility import path_to_project_root
 
 

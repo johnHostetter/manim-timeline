@@ -1,5 +1,5 @@
-from animations.demos.timeline import Timeline
-from animations.demos.timeline_helper import TimelineConfig
+from mtimeline.timeline import Timeline
+from mtimeline.timeline_helper import TimelineConfig
 from presentation.timeline_events import (
     get_historical_context,
     from_zadeh_to_nfn,
