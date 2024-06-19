@@ -12,5 +12,5 @@ so intermittent slides on the timeline are styled similar to LaTeX Beamer for ad
 - If you are having trouble with installing the `manim-beamer` package, please try the following:
 
   `
-  pip install -e "git+https://github.com/johnHostetter/manim-beamer.git/#egg=mbeamer&subdirectory=beamer"
+  python -m pip install git+https://github.com/johnHostetter/manim-beamer.git@main#egg=mbeamer
   `

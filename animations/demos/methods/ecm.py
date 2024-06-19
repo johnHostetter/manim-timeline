@@ -7,6 +7,7 @@ from copy import deepcopy
 from sklearn import manifold
 from sklearn.manifold import TSNE
 
+from mbeamer import MANIM_BLUE
 from soft.datasets import LabeledDataset
 from soft.utilities.reproducibility import set_rng, load_configuration
 from soft.fuzzy.unsupervised.cluster.online.ecm import (

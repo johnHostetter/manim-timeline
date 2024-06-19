@@ -1,10 +1,11 @@
 from typing import Set
 
-import numpy as np
 import torch
 
 from manim import *
 from manim_slides import Slide
+from mbeamer import MANIM_BLUE
+
 from soft.datasets import LabeledDataset
 from soft.fuzzy.relation.continuous.tnorm import TNorm
 from soft.fuzzy.logic.rules import LinguisticVariables, Rule
@@ -18,7 +19,7 @@ from soft.fuzzy.logic.rules.creation.wang_mendel import wang_mendel_method
 from soft.fuzzy.unsupervised.granulation.online.clip import (
     apply_categorical_learning_induced_partitioning as CLIP,
 )
-from animations.common import ItemColor, get_data_and_env, display_cart_pole, MANIM_BLUE
+from animations.common import ItemColor, get_data_and_env, display_cart_pole
 
 set_rng(0)
 config.disable_caching = True  # may need to disable caching for the timeline

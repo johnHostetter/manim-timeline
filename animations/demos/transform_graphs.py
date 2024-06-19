@@ -1,4 +1,3 @@
-from functools import partial
 from dataclasses import dataclass
 from typing import Tuple, List as ListType, Union as UnionType
 
@@ -7,12 +6,9 @@ from manim import *
 import igraph as ig
 
 from animations.demos.graph_example import MyGraph
-from animations.common import make_axes, AxisConfig, MANIM_BLUE
 from soft.datasets import LabeledDataset
 from soft.computing.organize import SelfOrganize
 from soft.computing.blueprints.factory import SystematicDesignProcess
-from soft.fuzzy.sets.continuous.impl import Gaussian, Lorentzian
-from soft.fuzzy.sets.continuous.abstract import ContinuousFuzzySet
 from soft.utilities.reproducibility import load_configuration
 
 config.background_color = WHITE

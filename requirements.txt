@@ -22,7 +22,7 @@ ManimPango==0.5.0
 mapbox-earcut==1.0.1
 markdown-it-py==3.0.0
 MarkupSafe==2.1.5
--e git+https://github.com/johnHostetter/manim-beamer.git/@f00b70052d1db5f668347d50372e661951d546ac#egg=mbeamer&subdirectory=beamer
+mbeamer @ git+https://github.com/johnHostetter/manim-beamer.git@867d01dccd0cf3e5ca26979811bd06652a19fc88
 mccabe==0.7.0
 mdurl==0.1.2
 moderngl==5.10.0

@@ -9,10 +9,6 @@ import matplotlib.pyplot as plt
 from manim import *
 from d3rlpy.datasets import get_cartpole
 
-from experiments.reinforcement.common import CustomDataset
-
-MANIM_BLUE = ManimColor("#58C4DD")
-
 
 @dataclass
 class ItemColor:

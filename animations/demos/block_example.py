@@ -1,6 +1,6 @@
 from manim import *
 
-from animations.beamer.blocks import ExampleBlock
+from mbeamer.blocks import ExampleBlock
 
 config.background_color = WHITE
 light_theme_style = {

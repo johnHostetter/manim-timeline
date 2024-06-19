@@ -2,15 +2,15 @@ import igraph as ig
 from manim import *
 from manim_slides import Slide
 
-from animations.common import MANIM_BLUE
+from mbeamer import MANIM_BLUE
+from mbeamer.images import CaptionedSVG, CaptionedJPG
+from mbeamer.slides import SlideWithBlocks, PromptSlide, SlideWithList
 from animations.demos.graph_example import GraphPair
-from animations.beamer.slides import SlideWithBlocks, PromptSlide, SlideWithList
 from animations.demos.timeline_helper import (
     create_timeline_layout,
     TimelineConfig,
     TimelineEvent,
 )
-from animations.demos.ww2 import CaptionedSVG, CaptionedJPG
 
 config.disable_caching = True  # may need to disable caching for the timeline
 config.background_color = WHITE
