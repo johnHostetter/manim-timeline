@@ -32,10 +32,7 @@ class Einstein(Scene):
             / "Albert_Einstein_signature_1934.svg"
         ).scale(0.5)
         person_svg = SVGMobject(
-            path_to_project_root()
-            / "assets"
-            / "people"
-            / "Einstein1.svg"
+            path_to_project_root() / "assets" / "people" / "Einstein1.svg"
         ).scale(2.0)
         paragraph, source, person, signature_group = quotable_person(
             scene,

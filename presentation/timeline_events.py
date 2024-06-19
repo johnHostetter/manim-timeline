@@ -1,6 +1,7 @@
 """
 This script is used to assist in the creation of a timeline of events.
 """
+
 from mbeamer.slides import PromptSlide
 from mbeamer.bibtex import BibTexManager
 from mbeamer.images import CaptionedSVG, CaptionedJPG
@@ -31,10 +32,7 @@ def make_ww2_slide(file_name: str, poi: int, caption: str) -> TimelineEvent:
         era_notation="CE",
         event="World War II",
         animation=CaptionedSVG(
-            path=path_to_project_root()
-            / "assets"
-            / "ww2"
-            / f"{file_name}.svg",
+            path=path_to_project_root() / "assets" / "ww2" / f"{file_name}.svg",
             caption=caption,
         ),
         poi=poi,

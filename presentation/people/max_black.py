@@ -29,10 +29,7 @@ class MaxBlack(Scene):
             "Max Black", font="TeX Gyre Termes", color=BLACK
         )  # .scale(0.7)
         person_svg = SVGMobject(
-            path_to_project_root()
-            / "assets"
-            / "people"
-            / "MaxBlack.svg"
+            path_to_project_root() / "assets" / "people" / "MaxBlack.svg"
         ).scale(2.0)
         paragraph, source, person, signature_group = quotable_person(
             scene,

@@ -27,10 +27,7 @@ class PlatoTheoryOfForms(MovingCameraScene):
     @staticmethod
     def draw(scene, origin, scale, animate: bool = True):
         bust_svg = SVGMobject(
-            path_to_project_root()
-            / "assets"
-            / "people"
-            / "plato_bust.svg"
+            path_to_project_root() / "assets" / "people" / "plato_bust.svg"
         ).scale(2.5)
 
         header = Text(
@@ -46,9 +43,7 @@ class PlatoTheoryOfForms(MovingCameraScene):
         )
 
         cave = SVGMobject(
-            path_to_project_root()
-            / "assets"
-            / "plato_cave_colored.svg"
+            path_to_project_root() / "assets" / "plato_cave_colored.svg"
         ).scale(2.5)
 
         VGroup(header, sub_header.next_to(header, DOWN)).to_corner(UP, buff=0.5)
@@ -112,10 +107,7 @@ class PlatoTheoryOfForms(MovingCameraScene):
             "Πλάτων (Plato)", font="TeX Gyre Termes", color=BLACK
         )  # .scale(0.7)
         person_svg = SVGMobject(
-            path_to_project_root()
-            / "assets"
-            / "people"
-            / "plato.svg"
+            path_to_project_root() / "assets" / "people" / "plato.svg"
         ).scale(2.0)
         paragraph, source, person, signature_group = quotable_person(
             scene,

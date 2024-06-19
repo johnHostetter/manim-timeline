@@ -27,10 +27,7 @@ class Socrates(Scene):
             "Σωκράτης (Socrates)", font="TeX Gyre Termes", color=BLACK
         )  # .scale(0.7)
         person_svg = SVGMobject(
-            path_to_project_root()
-            / "assets"
-            / "people"
-            / "socrates.svg"
+            path_to_project_root() / "assets" / "people" / "socrates.svg"
         ).scale(2.0)
         paragraph, source, person, signature_group = quotable_person(
             scene,

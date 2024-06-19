@@ -34,10 +34,7 @@ class BertrandRussell(Slide):
             / "Bertrand_Russell_signature.svg"
         ).scale(0.5)
         person_svg = SVGMobject(
-            path_to_project_root()
-            / "assets"
-            / "people"
-            / "Bertrand_Russell_1949.svg"
+            path_to_project_root() / "assets" / "people" / "Bertrand_Russell_1949.svg"
         ).scale(2.0)
         paragraph, source, person, signature_group = quotable_person(
             scene,
