@@ -14,13 +14,12 @@ from soft.fuzzy.unsupervised.cluster.online.ecm import (
     apply_evolving_clustering_method as ECM,
     LabeledClusters,
 )
-from animations.common import (
+from examples.common import (
     ItemColor,
     make_axes,
     display_cart_pole,
     get_data_and_env,
     AxisConfig,
-    MANIM_BLUE,
 )
 
 set_rng(2)

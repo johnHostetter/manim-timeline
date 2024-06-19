@@ -8,18 +8,18 @@ from mtimeline.timeline_helper import TimelineEvent
 from presentation.conclusion.existing_issues import curr_limitations
 from presentation.conclusion.new_horizons import proposed_studies
 from presentation.conclusion.plan import proposed_plan
+from presentation.methods.clip import CLIPDemo
+from presentation.methods.cql import CQLDemo
+from presentation.methods.ecm import ECMDemo
+from presentation.people.zadeh import Zadeh
+from presentation.people.godel import Godel
+from presentation.people.einstein import Einstein
+from presentation.people.max_black import MaxBlack
+from presentation.people.aristotle import Aristotle
+from presentation.people.lukasiewicz import Lukasiewicz
+from presentation.people.plato import PlatoTheoryOfForms
+from presentation.people.bertrand_russell import BertrandRussell
 from presentation.introduction.linguistics import define_linguistics
-from animations.demos.methods.clip import CLIPDemo
-from animations.demos.methods.cql import CQLDemo
-from animations.demos.methods.ecm import ECMDemo
-from animations.demos.people.aristotle import Aristotle
-from animations.demos.people.bertrand_russell import BertrandRussellQuote
-from animations.demos.people.einstein import EinsteinQuote
-from animations.demos.people.godel import GodelQuote
-from animations.demos.people.lukasiewicz import Lukasiewicz
-from animations.demos.people.max_black import MaxBlack
-from animations.demos.people.plato import PlatoTheoryOfForms
-from animations.demos.people.zadeh import Zadeh
 from soft.utilities.reproducibility import path_to_project_root
 
 
@@ -32,8 +32,6 @@ def make_ww2_slide(file_name: str, poi: int, caption: str) -> TimelineEvent:
         event="World War II",
         animation=CaptionedSVG(
             path=path_to_project_root()
-            / "animations"
-            / "demos"
             / "assets"
             / "ww2"
             / f"{file_name}.svg",
@@ -83,7 +81,7 @@ def get_historical_context() -> list:
             era="Common Era",
             era_notation="CE",
             event="Albert Einstein",
-            animation=EinsteinQuote,
+            animation=Einstein,
         ),
         TimelineEvent(
             start_year=1878,
@@ -101,7 +99,7 @@ def get_historical_context() -> list:
             era="Common Era",
             era_notation="CE",
             event="Bertrand Russell",
-            animation=BertrandRussellQuote,
+            animation=BertrandRussell,
         ),
         TimelineEvent(
             start_year=1906,
@@ -110,7 +108,7 @@ def get_historical_context() -> list:
             era="Common Era",
             era_notation="CE",
             event="Kurt Gödel",
-            animation=GodelQuote,
+            animation=Godel,
         ),
         TimelineEvent(
             start_year=1909,
@@ -396,8 +394,6 @@ def expected_timeline():
         "May to June 2024: Implement experiments",
         CaptionedJPG(
             path=path_to_project_root()
-            / "animations"
-            / "demos"
             / "assets"
             / "people"
             / "pictures"

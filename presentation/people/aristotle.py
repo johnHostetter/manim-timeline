@@ -1,7 +1,7 @@
 from manim import *
 from manim_slides import Slide
 
-from mtimeline.quotes import person_with_quote
+from mtimeline.quotes import quotable_person
 from soft.utilities.reproducibility import path_to_project_root
 
 config.background_color = WHITE
@@ -29,13 +29,11 @@ class Aristotle(Slide):
         )  # .scale(0.7)
         person_svg = SVGMobject(
             path_to_project_root()
-            / "animations"
-            / "demos"
             / "assets"
             / "people"
             / "aristotle-2.svg"
         ).scale(2.0)
-        paragraph, source, person, signature_group = person_with_quote(
+        paragraph, source, person, signature_group = quotable_person(
             scene,
             person_svg=person_svg,
             quote=(

@@ -5,7 +5,7 @@ import torch
 from manim import *
 import igraph as ig
 
-from animations.demos.graph_example import MyGraph
+from examples.graph_example import MyGraph
 from soft.datasets import LabeledDataset
 from soft.computing.organize import SelfOrganize
 from soft.computing.blueprints.factory import SystematicDesignProcess

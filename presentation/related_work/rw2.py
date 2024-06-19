@@ -1,4 +1,4 @@
-from presentation.timeline_chapters import RW2
+from presentation.chapters import RW2
 
 
 if __name__ == "__main__":

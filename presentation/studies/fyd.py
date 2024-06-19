@@ -5,7 +5,7 @@ from manim import *
 from manim_slides import Slide
 
 from mbeamer.blocks import AlertBlock, ExampleBlock
-from animations.demos.graph_example import MyGraph, GraphPair
+from examples.graph_example import MyGraph, GraphPair
 from mbeamer.slides import (
     SlideShow,
     SlideWithList,

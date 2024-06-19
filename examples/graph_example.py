@@ -9,7 +9,7 @@ from manim import *
 from manim_slides import Slide
 
 from mbeamer import MANIM_BLUE
-from animations.common import make_axes, AxisConfig
+from examples.common import make_axes, AxisConfig
 from soft.datasets import LabeledDataset
 from soft.computing.organize import SelfOrganize
 from soft.computing.knowledge import KnowledgeBase

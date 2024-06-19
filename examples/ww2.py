@@ -1,7 +1,5 @@
 from manim import *
 
-from soft.utilities.reproducibility import path_to_project_root
-
 config.background_color = WHITE
 light_theme_style = {
     "fill_color": BLACK,
@@ -40,9 +38,8 @@ class WW2(MovingCameraScene):
         for svg_file_name, caption in zip(svg_file_names, captions):
             svg = (
                 SVGMobject(
-                    path_to_project_root()
-                    / "animations"
-                    / "demos"
+                    Path(__file__).parent.parent
+                    / "assets"
                     / "ww2"
                     / f"{svg_file_name}.svg"
                 )

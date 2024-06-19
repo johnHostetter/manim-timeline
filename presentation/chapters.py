@@ -1,5 +1,5 @@
 from mtimeline.timeline import Timeline
-from mtimeline.timeline_helper import TimelineConfig
+from mtimeline.timeline_helper import TimelineCatchUp
 from presentation.timeline_events import (
     get_historical_context,
     from_zadeh_to_nfn,
@@ -24,25 +24,6 @@ class History(Timeline):
             timeline_events=get_historical_context() + from_zadeh_to_nfn(),
             incl_ending=False,
             globally_enable_animation=True,
-            **kwargs
-        )
-
-
-class TimelineCatchUp(Timeline):
-    """
-    Adds the prior events without animations and then adds the new events with animations.
-    """
-
-    def __init__(self, prior_events, new_events, incl_ending=False, **kwargs):
-        super().__init__(
-            timeline_events=(
-                [TimelineConfig(draw_animations=False)]
-                + prior_events
-                + [TimelineConfig(draw_animations=True)]
-                + new_events
-            ),
-            globally_enable_animation=False,
-            incl_ending=incl_ending,
             **kwargs
         )
 

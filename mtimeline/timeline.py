@@ -5,12 +5,12 @@ from manim_slides import Slide
 from mbeamer import MANIM_BLUE
 from mbeamer.images import CaptionedSVG, CaptionedJPG
 from mbeamer.slides import SlideWithBlocks, PromptSlide, SlideWithList
-from animations.demos.graph_example import GraphPair
-from animations.demos.timeline_helper import (
+from mtimeline.timeline_helper import (
     create_timeline_layout,
     TimelineConfig,
     TimelineEvent,
 )
+from examples.graph_example import GraphPair
 
 config.disable_caching = True  # may need to disable caching for the timeline
 config.background_color = WHITE

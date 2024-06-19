@@ -4,6 +4,8 @@ from dataclasses import dataclass
 from manim_slides import Slide
 from manim import Scene, MovingCameraScene
 
+from mtimeline.timeline import Timeline
+
 
 @dataclass
 class TimelineEvent:
@@ -101,3 +103,22 @@ def create_timeline_layout(timeline_events: List[TimelineEvent]) -> dict:
                     continue
                 prev_timeline_event = publication
     return digraph_layout
+
+
+class TimelineCatchUp(Timeline):
+    """
+    Adds the prior events without animations and then adds the new events with animations.
+    """
+
+    def __init__(self, prior_events, new_events, incl_ending=False, **kwargs):
+        super().__init__(
+            timeline_events=(
+                [TimelineConfig(draw_animations=False)]
+                + prior_events
+                + [TimelineConfig(draw_animations=True)]
+                + new_events
+            ),
+            globally_enable_animation=False,
+            incl_ending=incl_ending,
+            **kwargs
+        )

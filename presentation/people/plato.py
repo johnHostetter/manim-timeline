@@ -1,6 +1,6 @@
 from manim import *
 
-from mtimeline.quotes import person_with_quote
+from mtimeline.quotes import quotable_person
 from soft.utilities.reproducibility import path_to_project_root
 
 
@@ -28,8 +28,6 @@ class PlatoTheoryOfForms(MovingCameraScene):
     def draw(scene, origin, scale, animate: bool = True):
         bust_svg = SVGMobject(
             path_to_project_root()
-            / "animations"
-            / "demos"
             / "assets"
             / "people"
             / "plato_bust.svg"
@@ -49,8 +47,6 @@ class PlatoTheoryOfForms(MovingCameraScene):
 
         cave = SVGMobject(
             path_to_project_root()
-            / "animations"
-            / "demos"
             / "assets"
             / "plato_cave_colored.svg"
         ).scale(2.5)
@@ -75,8 +71,6 @@ class PlatoTheoryOfForms(MovingCameraScene):
 
         # imperfect_circle = SVGMobject(
         #     path_to_project_root()
-        #     / "animations"
-        #     / "demos"
         #     / "assets"
         #     / "imperfect_circle.svg"
         # ).scale(2.5)
@@ -119,13 +113,11 @@ class PlatoTheoryOfForms(MovingCameraScene):
         )  # .scale(0.7)
         person_svg = SVGMobject(
             path_to_project_root()
-            / "animations"
-            / "demos"
             / "assets"
             / "people"
             / "plato.svg"
         ).scale(2.0)
-        paragraph, source, person, signature_group = person_with_quote(
+        paragraph, source, person, signature_group = quotable_person(
             scene,
             person_svg=person_svg,
             quote=(

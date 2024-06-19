@@ -1,6 +1,6 @@
 from manim import *
 
-from mtimeline.quotes import person_with_quote
+from mtimeline.quotes import quotable_person
 from soft.utilities.reproducibility import path_to_project_root
 
 config.background_color = WHITE
@@ -10,7 +10,7 @@ light_theme_style = {
 }
 
 
-class Zadeh(Scene):
+class Einstein(Scene):
     def construct(self):
         paragraph, source, person, signature_group = self.draw(
             self, origin=ORIGIN, scale=1.0
@@ -24,38 +24,37 @@ class Zadeh(Scene):
         self.wait(2)
 
     @staticmethod
-    def draw(scene, origin, scale, animate=True):
-        signature = Text(
-            "Lotfi A. Zadeh", font="TeX Gyre Termes", color=BLACK
-        )  # .scale(0.7)
+    def draw(scene, origin, scale, animate: bool = True):
+        signature = SVGMobject(
+            path_to_project_root()
+            / "assets"
+            / "signatures"
+            / "Albert_Einstein_signature_1934.svg"
+        ).scale(0.5)
         person_svg = SVGMobject(
             path_to_project_root()
-            / "animations"
-            / "demos"
             / "assets"
             / "people"
-            / "Lotfi-Zadeh-in-the-year-1958-a-young-professor-of-Electrical-Engineering-in-New-York-3_W640.svg"
+            / "Einstein1.svg"
         ).scale(2.0)
-        paragraph, source, person, signature_group = person_with_quote(
+        paragraph, source, person, signature_group = quotable_person(
             scene,
             person_svg=person_svg,
             quote=(
-                # '"As complexity rises, precise statements \nlose meaning '
-                # 'and meaningful \nstatements lose precision."'
-                '"Fuzzy logic is not fuzzy. Basically, fuzzy logic is a \n'
-                'precise logic of imprecision and approximate \nreasoning."'
+                '"As far as the laws of mathematics refer to reality,\nthey are not certain; '
+                'And as far as they are certain, \nthey do not refer to reality."'
             ),
-            # source="(Is there a need for fuzzy logic?, 2008)",
-            source="(Zadeh, 2008)",
+            # originally published in 1921 as a lecture delivered by Einstein at the Prussian Academy of Sciences
+            source="(Geometry and Experience, 1921)",
             signature=signature,
             origin=origin,
             scale=scale,
-            left_shift=1.25,
+            left_shift=1,
             animate=animate,
         )
         return paragraph, source, person, signature_group
 
 
 if __name__ == "__main__":
-    c = Zadeh()
+    c = Einstein()
     c.render()

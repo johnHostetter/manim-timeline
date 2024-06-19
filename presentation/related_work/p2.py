@@ -1,4 +1,4 @@
-from presentation.timeline_chapters import P2
+from presentation.chapters import P2
 
 
 if __name__ == "__main__":

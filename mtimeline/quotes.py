@@ -18,7 +18,7 @@ from manim import (
 )
 
 
-def person_with_quote(
+def quotable_person(
     scene: Scene,
     person_svg: SVGMobject,
     quote: str,
@@ -28,7 +28,7 @@ def person_with_quote(
     scale: float,
     left_shift: float = 0.5,
     animate: bool = True,
-):
+) -> (Paragraph, Text, SVGMobject, VGroup):
     paragraph = (
         Paragraph(quote, font="TeX Gyre Termes", slant=ITALIC, color=BLACK)
         .scale(0.7)

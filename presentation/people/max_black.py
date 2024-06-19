@@ -1,6 +1,6 @@
 from manim import *
 
-from mtimeline.quotes import person_with_quote
+from mtimeline.quotes import quotable_person
 from soft.utilities.reproducibility import path_to_project_root
 
 config.background_color = WHITE
@@ -10,7 +10,7 @@ light_theme_style = {
 }
 
 
-class EinsteinQuote(Scene):
+class MaxBlack(Scene):
     def construct(self):
         paragraph, source, person, signature_group = self.draw(
             self, origin=ORIGIN, scale=1.0
@@ -25,40 +25,33 @@ class EinsteinQuote(Scene):
 
     @staticmethod
     def draw(scene, origin, scale, animate: bool = True):
-        signature = SVGMobject(
-            path_to_project_root()
-            / "animations"
-            / "demos"
-            / "assets"
-            / "signatures"
-            / "Albert_Einstein_signature_1934.svg"
-        ).scale(0.5)
+        signature = Text(
+            "Max Black", font="TeX Gyre Termes", color=BLACK
+        )  # .scale(0.7)
         person_svg = SVGMobject(
             path_to_project_root()
-            / "animations"
-            / "demos"
             / "assets"
             / "people"
-            / "Einstein1.svg"
+            / "MaxBlack.svg"
         ).scale(2.0)
-        paragraph, source, person, signature_group = person_with_quote(
+        paragraph, source, person, signature_group = quotable_person(
             scene,
             person_svg=person_svg,
             quote=(
-                '"As far as the laws of mathematics refer to reality,\nthey are not certain; '
-                'And as far as they are certain, \nthey do not refer to reality."'
+                '"It is a paradox, whose importance \nfamiliarity fails to diminish, \nthat '
+                "the most highly developed \nand useful scientific theories are \nostensibly "
+                'expressed in terms of \nobjects never encountered in experience."'
             ),
-            # originally published in 1921 as a lecture delivered by Einstein at the Prussian Academy of Sciences
-            source="(Geometry and Experience, 1921)",
+            source="(Vagueness. An Exercise in Logical Analysis, 1937)",
             signature=signature,
             origin=origin,
             scale=scale,
-            left_shift=1,
+            left_shift=1.5,
             animate=animate,
         )
         return paragraph, source, person, signature_group
 
 
 if __name__ == "__main__":
-    c = EinsteinQuote()
+    c = MaxBlack()
     c.render()

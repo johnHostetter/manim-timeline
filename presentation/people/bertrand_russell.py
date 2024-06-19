@@ -1,7 +1,7 @@
 from manim import *
 from manim_slides import Slide
 
-from mtimeline.quotes import person_with_quote
+from mtimeline.quotes import quotable_person
 from soft.utilities.reproducibility import path_to_project_root
 
 config.background_color = WHITE
@@ -11,7 +11,7 @@ light_theme_style = {
 }
 
 
-class BertrandRussellQuote(Slide):
+class BertrandRussell(Slide):
     def construct(self):
         # load the PySoft logo as a manim SVGMobject
         paragraph, source, person, signature_group = self.draw(
@@ -29,21 +29,17 @@ class BertrandRussellQuote(Slide):
     def draw(scene, origin, scale, animate: bool = True):
         signature = SVGMobject(
             path_to_project_root()
-            / "animations"
-            / "demos"
             / "assets"
             / "signatures"
             / "Bertrand_Russell_signature.svg"
         ).scale(0.5)
         person_svg = SVGMobject(
             path_to_project_root()
-            / "animations"
-            / "demos"
             / "assets"
             / "people"
             / "Bertrand_Russell_1949.svg"
         ).scale(2.0)
-        paragraph, source, person, signature_group = person_with_quote(
+        paragraph, source, person, signature_group = quotable_person(
             scene,
             person_svg=person_svg,
             quote=(
@@ -106,5 +102,5 @@ class BertrandRussellQuote(Slide):
 
 
 if __name__ == "__main__":
-    c = BertrandRussellQuote()
+    c = BertrandRussell()
     c.render()

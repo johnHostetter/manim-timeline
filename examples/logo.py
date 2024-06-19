@@ -3,12 +3,18 @@ from manim import *
 
 from soft.utilities.reproducibility import path_to_project_root
 
+config.background_color = WHITE
+light_theme_style = {
+    "fill_color": BLACK,
+    "background_stroke_color": WHITE,
+}
+
 
 class PySoftLogo(MovingCameraScene):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        background = ImageMobject("background.png").scale(2).set_color("#FFFFFF")
-        self.add(background)
+        # background = ImageMobject("background.png").scale(2).set_color("#FFFFFF")
+        # self.add(background)
 
     def construct(self):
         # load the PySoft logo as a manim SVGMobject
