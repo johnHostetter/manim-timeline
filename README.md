@@ -7,3 +7,10 @@ with time-stamped publications as well as offer simple transitions to full-scree
 and interactive than typical PowerPoint slides; it allows the presenter to provide historical context, rapid coverage of related work, 
 and how this led to more recent advancements in the field of interest. manim-slides also utilizes [manim-beamer](https://github.com/johnHostetter/manim-beamer)
 so intermittent slides on the timeline are styled similar to LaTeX Beamer for additional professionalism.
+
+## Troubleshooting:
+- If you are having trouble with installing the `manim-beamer` package, please try the following:
+
+  `
+  pip install -e "git+https://github.com/johnHostetter/manim-beamer.git/#egg=mbeamer&subdirectory=beamer"
+  `
