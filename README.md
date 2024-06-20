@@ -8,6 +8,8 @@ and interactive than typical PowerPoint slides; it allows the presenter to provi
 and how this led to more recent advancements in the field of interest. manim-slides also utilizes [manim-beamer](https://github.com/johnHostetter/manim-beamer)
 so intermittent slides on the timeline are styled similar to LaTeX Beamer for additional professionalism.
 
+https://github.com/johnHostetter/manim-timeline/assets/35469358/9831fc2b-b51d-4942-9ab1-5b911b62ca52
+
 ## Troubleshooting :worried:
 - If you are having trouble with installing the `manim-beamer` package, please try the following:
 
