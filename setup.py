@@ -9,5 +9,5 @@ setup(
     version="1.0",
     author="John Wesley Hostetter",
     author_email="jhostetter16@gmail.com",
-    packages=["mtimeline"],
+    packages=["mtimeline", "presentation"],
 )

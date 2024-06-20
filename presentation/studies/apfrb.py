@@ -2,10 +2,11 @@ import igraph as ig
 from manim import *
 from manim_slides import Slide
 
-from examples.graph_example import MyGraph, GraphPair
+from mtimeline.graph import GraphPair
 from mbeamer.slides import SlideShow, SlideWithList
 from mbeamer.bibtex import BibTexManager
 from mbeamer.lists import ItemizedList, BulletedList as BL
+from presentation.graph.demo import MyGraph
 from presentation.studies.pyrenees import (
     IntelligentTutoringSystemResults,
 )

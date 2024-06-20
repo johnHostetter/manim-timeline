@@ -8,18 +8,17 @@ from sklearn import manifold
 from sklearn.manifold import TSNE
 
 from mbeamer import MANIM_BLUE
+from mtimeline import ItemColor
+from mtimeline.axes import make_axes, AxisConfig
 from soft.datasets import LabeledDataset
 from soft.utilities.reproducibility import set_rng, load_configuration
 from soft.fuzzy.unsupervised.cluster.online.ecm import (
     apply_evolving_clustering_method as ECM,
     LabeledClusters,
 )
-from examples.common import (
-    ItemColor,
-    make_axes,
+from presentation.cart_pole import (
     display_cart_pole,
     get_data_and_env,
-    AxisConfig,
 )
 
 set_rng(2)

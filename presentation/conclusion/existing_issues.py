@@ -79,3 +79,8 @@ def curr_limitations() -> SlideWithBlocks:
             example_block_3,
         ],
     )
+
+
+if __name__ == "__main__":
+    beamer_slide = curr_limitations()
+    beamer_slide.render()

@@ -4,8 +4,8 @@ import igraph as ig
 from manim import *
 from manim_slides import Slide
 
+from mtimeline.graph import GraphPair
 from mbeamer.blocks import AlertBlock, ExampleBlock
-from examples.graph_example import MyGraph, GraphPair
 from mbeamer.slides import (
     SlideShow,
     SlideWithList,
@@ -19,6 +19,7 @@ from mbeamer.lists import (
     DisadvantagesList,
     AdvantagesList,
 )
+from presentation.graph.demo import MyGraph
 from presentation.studies.pyrenees import (
     IntelligentTutoringSystemResults,
 )

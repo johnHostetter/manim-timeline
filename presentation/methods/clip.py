@@ -1,5 +1,7 @@
 from manim import *
 from manim_slides import Slide
+from mtimeline import ItemColor
+from mtimeline.axes import make_axes, AxisConfig
 from soft.datasets import LabeledDataset
 from soft.fuzzy.logic.rules import LinguisticVariables
 from soft.utilities.reproducibility import set_rng, load_configuration
@@ -8,12 +10,7 @@ from soft.fuzzy.unsupervised.granulation.online.clip import (
     apply_categorical_learning_induced_partitioning as CLIP,
 )
 from unit_tests.computing.test_self_organize import get_cart_pole_example_data
-from examples.common import (
-    ItemColor,
-    make_axes,
-    get_data_and_env,
-    AxisConfig,
-)
+
 
 set_rng(1)
 

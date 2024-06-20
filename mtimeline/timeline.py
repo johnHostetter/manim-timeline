@@ -10,7 +10,7 @@ from mtimeline.timeline_helper import (
     TimelineConfig,
     TimelineEvent,
 )
-from examples.graph_example import GraphPair
+from mtimeline.graph import GraphPair
 
 config.disable_caching = True  # may need to disable caching for the timeline
 config.background_color = WHITE

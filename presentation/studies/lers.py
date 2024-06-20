@@ -5,7 +5,7 @@ import igraph as ig
 from manim import *
 from manim_slides import Slide
 
-from examples.graph_example import MyGraph, GraphPair
+from mtimeline.graph import GraphPair
 from mbeamer.bibtex import BibTexManager
 from mbeamer.lists import ItemizedList, BulletedList as BL
 from mbeamer.slides import (
@@ -14,6 +14,7 @@ from mbeamer.slides import (
     SlideWithTable,
     SlideWithTables,
 )
+from presentation.graph.demo import MyGraph
 from presentation.studies.pyrenees import (
     IntelligentTutoringSystemResults,
 )
