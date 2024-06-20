@@ -393,9 +393,9 @@ def expected_timeline():
         CaptionedJPG(
             path=path_to_project_root()
             / "assets"
-            / "people"
-            / "pictures"
-            / "evelyn_prenatal_picture.jpg",
+            / "static"
+            / "evelyn"
+            / "prenatal.jpg",
             caption="Evelyn is due to be born (June 29, 2024).",
         ),
         "July to August 2024: Attempt proof & begin job search",
