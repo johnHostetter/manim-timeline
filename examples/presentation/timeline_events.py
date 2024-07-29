@@ -4,22 +4,22 @@ This script is used to assist in the creation of a timeline of events.
 
 from manim_beamer.slides import PromptSlide
 from manim_beamer.bibtex import BibTexManager
-from manim_beamer.images import CaptionedSVG, CaptionedJPG
+from manim_beamer.images import CaptionedSVG  #, CaptionedJPG
 from manim_timeline.timeline_helper import TimelineEvent
 from manim_timeline.utils import get_project_root
-from presentation.conclusion.existing_issues import curr_limitations
-from presentation.conclusion.new_horizons import proposed_studies
-from presentation.conclusion.plan import proposed_plan
-from presentation.methods.cql import CQLDemo
+# from presentation.conclusion.existing_issues import curr_limitations
+# from presentation.conclusion.new_horizons import proposed_studies
+# from presentation.conclusion.plan import proposed_plan
+from examples.presentation.methods.cql import CQLDemo
 from examples.presentation.people.zadeh import Zadeh
 from examples.presentation.people.godel import Godel
 # from presentation.people.einstein import Einstein
 from examples.presentation.people.max_black import MaxBlack
 # from presentation.people.aristotle import Aristotle
 from examples.presentation.people.lukasiewicz import Lukasiewicz
-from examples.presentation.people.plato import PlatoTheoryOfForms
+# from examples.presentation.people.plato import PlatoTheoryOfForms
 from examples.presentation.people.bertrand_russell import BertrandRussell
-from presentation.introduction.linguistics import define_linguistics
+from examples.presentation.introduction.linguistics import define_linguistics
 
 
 def make_ww2_slide(file_name: str, poi: int, caption: str) -> TimelineEvent:
@@ -341,7 +341,6 @@ def from_wang_mendel_to_apfrb():
         PromptSlide(prompt="Part I: Translation", skip=True),
         bib_manager.cite_entry(bib_manager["hostetter2023leveraging"]),  # 2023 APFRB
     ]
-
 
 # def from_apfrb_to_cew():
 #     bib_manager = BibTexManager(path=get_project_root() / "presentation" / "ref.bib")
