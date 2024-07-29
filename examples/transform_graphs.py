@@ -5,31 +5,14 @@ import torch
 from manim import *
 import igraph as ig
 
-from examples.graph_example import MyGraph
-from soft.datasets import LabeledDataset
-from soft.computing.organize import SelfOrganize
-from soft.computing.blueprints.factory import SystematicDesignProcess
-from soft.utilities.reproducibility import load_configuration
+from mtimeline.graph import MyGraph
+from presentation.graph.demo import get_self_organize
 
 config.background_color = WHITE
 light_theme_style = {
     "fill_color": BLACK,
     "background_stroke_color": WHITE,
 }
-
-
-# https://stackoverflow.com/questions/76175939/manim-add-labels-near-vertices
-def get_self_organize(input_size: int = 4, output_size: int = 1) -> SelfOrganize:
-    soft_config = load_configuration()
-    with soft_config.unfreeze():
-        soft_config.clustering.distance_threshold = 0.2
-    return SystematicDesignProcess(
-        algorithms=["clip", "ecm", "wang_mendel"], config=soft_config
-    ).build(
-        training_data=LabeledDataset(
-            data=torch.rand((250, input_size)), labels=torch.rand((250, output_size))
-        )
-    )
 
 
 @dataclass

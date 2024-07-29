@@ -10,7 +10,7 @@ from manim_timeline.timeline_helper import (
     TimelineConfig,
     TimelineEvent,
 )
-from manim_timeline.graph_helper import GraphPair
+from manim_timeline.graph import GraphPair
 
 config.disable_caching = True  # may need to disable caching for the timeline
 config.background_color = WHITE

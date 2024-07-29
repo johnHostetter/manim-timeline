@@ -1,7 +1,7 @@
 from manim import *
 
 
-from soft.utilities.reproducibility import path_to_project_root
+from manim_timeline.utils import get_project_root
 
 config.background_color = WHITE
 light_theme_style = {

@@ -1,12 +1,19 @@
-from typing import Tuple, Union
+from typing import Union, Tuple
 from dataclasses import dataclass
 
 import igraph as ig
-from manim import DiGraph, Dot
+from manim import (
+    DiGraph,
+    Dot,
+)
 
 
 @dataclass
 class GraphPair:
+    """
+    Pair of igraph.Graph and manim.DiGraph representations of a graph.
+    """
+
     igraph: ig.Graph  # the igraph.Graph representation of the graph
     digraph: DiGraph  # the manim representation of the igraph.Graph
 
