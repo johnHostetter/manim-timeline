@@ -1,7 +1,7 @@
 from manim import *
 
-from mtimeline.quotes import quotable_person
-from soft.utilities.reproducibility import path_to_project_root
+from manim_timeline.quotes import quotable_person
+from manim_timeline.utils import get_project_root
 
 
 config.background_color = WHITE
@@ -27,7 +27,7 @@ class PlatoTheoryOfForms(MovingCameraScene):
     @staticmethod
     def draw(scene, origin, scale, animate: bool = True):
         bust_svg = SVGMobject(
-            path_to_project_root() / "assets" / "people" / "plato_bust.svg"
+            get_project_root() / "assets" / "people" / "plato_bust.svg"
         ).scale(2.5)
 
         header = Text(
@@ -43,7 +43,7 @@ class PlatoTheoryOfForms(MovingCameraScene):
         )
 
         cave = SVGMobject(
-            path_to_project_root() / "assets" / "plato_cave_colored.svg"
+            get_project_root() / "assets" / "plato_cave_colored.svg"
         ).scale(2.5)
 
         VGroup(header, sub_header.next_to(header, DOWN)).to_corner(UP, buff=0.5)
@@ -107,7 +107,7 @@ class PlatoTheoryOfForms(MovingCameraScene):
             "Πλάτων (Plato)", font="TeX Gyre Termes", color=BLACK
         )  # .scale(0.7)
         person_svg = SVGMobject(
-            path_to_project_root() / "assets" / "people" / "plato.svg"
+            get_project_root() / "assets" / "people" / "plato.svg"
         ).scale(2.0)
         paragraph, source, person, signature_group = quotable_person(
             scene,

@@ -1,7 +1,7 @@
 from manim import *
 
-from mtimeline.quotes import quotable_person
-from soft.utilities.reproducibility import path_to_project_root
+from manim_timeline.utils import get_project_root
+from manim_timeline.quotes import quotable_person
 
 config.background_color = WHITE
 light_theme_style = {
@@ -27,7 +27,7 @@ class Socrates(Scene):
             "Σωκράτης (Socrates)", font="TeX Gyre Termes", color=BLACK
         )  # .scale(0.7)
         person_svg = SVGMobject(
-            path_to_project_root() / "assets" / "people" / "socrates.svg"
+            get_project_root() / "assets" / "people" / "socrates.svg"
         ).scale(2.0)
         paragraph, source, person, signature_group = quotable_person(
             scene,

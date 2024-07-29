@@ -1,6 +1,6 @@
 from manim import *
 
-from mbeamer.slides import SlideShow
+from manim_beamer.slides import SlideShow
 from presentation.introduction.dnn import (
     pros_and_cons as dnn_pros_and_cons,
 )

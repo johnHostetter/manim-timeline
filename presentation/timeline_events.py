@@ -2,10 +2,11 @@
 This script is used to assist in the creation of a timeline of events.
 """
 
-from mbeamer.slides import PromptSlide
-from mbeamer.bibtex import BibTexManager
-from mbeamer.images import CaptionedSVG, CaptionedJPG
-from mtimeline.timeline_helper import TimelineEvent
+from manim_beamer.slides import PromptSlide
+from manim_beamer.bibtex import BibTexManager
+from manim_beamer.images import CaptionedSVG, CaptionedJPG
+from manim_timeline.timeline_helper import TimelineEvent
+from manim_timeline.utils import get_project_root
 from presentation.conclusion.existing_issues import curr_limitations
 from presentation.conclusion.new_horizons import proposed_studies
 from presentation.conclusion.plan import proposed_plan
@@ -21,7 +22,6 @@ from presentation.people.lukasiewicz import Lukasiewicz
 from presentation.people.plato import PlatoTheoryOfForms
 from presentation.people.bertrand_russell import BertrandRussell
 from presentation.introduction.linguistics import define_linguistics
-from soft.utilities.reproducibility import path_to_project_root
 
 
 def make_ww2_slide(file_name: str, poi: int, caption: str) -> TimelineEvent:
@@ -32,7 +32,7 @@ def make_ww2_slide(file_name: str, poi: int, caption: str) -> TimelineEvent:
         era_notation="CE",
         event="World War II",
         animation=CaptionedSVG(
-            path=path_to_project_root() / "assets" / "ww2" / f"{file_name}.svg",
+            path=get_project_root() / "assets" / "ww2" / f"{file_name}.svg",
             caption=caption,
         ),
         poi=poi,
@@ -163,7 +163,7 @@ def get_historical_context() -> list:
 
 
 def from_zadeh_to_nfn():
-    bib_manager = BibTexManager()
+    bib_manager = BibTexManager(path=get_project_root() / "presentation" / "ref.bib")
     return [
         bib_manager.cite_entry(bib_manager["zadeh_fuzzy_sets"]),  # 1965
         bib_manager.cite_entry(bib_manager["fuzzy_dp"]),  # 1970
@@ -188,7 +188,7 @@ def from_nfn_to_wang_mendel():
     Returns:
 
     """
-    bib_manager = BibTexManager()
+    bib_manager = BibTexManager(path=get_project_root() / "presentation" / "ref.bib")
     return [
         # online fuzzy RL
         {
@@ -211,7 +211,7 @@ def from_wang_mendel_to_apfrb():
     Returns:
 
     """
-    bib_manager = BibTexManager()
+    bib_manager = BibTexManager(path=get_project_root() / "presentation" / "ref.bib")
     return [
         # defend fuzzy logic
         {
@@ -346,7 +346,7 @@ def from_wang_mendel_to_apfrb():
 
 
 def from_apfrb_to_cew():
-    bib_manager = BibTexManager()
+    bib_manager = BibTexManager(path=get_project_root() / "presentation" / "ref.bib")
     return [
         PromptSlide(prompt="Part II: Self-Organization", skip=True),
         bib_manager.cite_entry(bib_manager["hostetter2023self"]),  # 2023 CEW
@@ -362,7 +362,7 @@ def from_cew_to_lers():
 
 
 def from_lers_to_llm():
-    bib_manager = BibTexManager()
+    bib_manager = BibTexManager(path=get_project_root() / "presentation" / "ref.bib")
     return [
         bib_manager.cite_entry(bib_manager["hostetter2023latent"]),  # 2023 LLM
     ]
@@ -391,7 +391,7 @@ def expected_timeline():
         PromptSlide(prompt="Expected Timeline", skip=True),
         "May to June 2024: Implement experiments",
         CaptionedJPG(
-            path=path_to_project_root()
+            path=get_project_root()
             / "assets"
             / "people"
             / "pictures"

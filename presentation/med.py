@@ -1,6 +1,6 @@
 from manim import *
 
-from mbeamer.slides import SlideShow
+from manim_beamer.slides import SlideShow
 from presentation.prototype.avoiding_invalid import (
     avoiding_invalid_selections,
 )

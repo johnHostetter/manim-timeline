@@ -4,16 +4,16 @@ import igraph as ig
 from manim import *
 from manim_slides import Slide
 
-from mbeamer.blocks import AlertBlock, ExampleBlock
+from manim_beamer.blocks import AlertBlock, ExampleBlock
 from examples.graph_example import MyGraph, GraphPair
-from mbeamer.slides import (
+from manim_beamer.slides import (
     SlideShow,
     SlideWithList,
     SlideWithBlocks,
     SlideWithTable,
 )
-from mbeamer.bibtex import BibTexManager
-from mbeamer.lists import (
+from manim_beamer.bibtex import BibTexManager
+from manim_beamer.lists import (
     ItemizedList,
     BulletedList as BL,
     DisadvantagesList,
@@ -22,6 +22,7 @@ from mbeamer.lists import (
 from presentation.studies.pyrenees import (
     IntelligentTutoringSystemResults,
 )
+from manim_timeline.utils import get_project_root
 
 config.background_color = WHITE
 light_theme_style = {
@@ -76,7 +77,7 @@ def get_fyd_formula() -> SlideWithBlocks:
     #         ]
     #     ),
     # )
-    bibtex_manager = BibTexManager()
+    bibtex_manager = BibTexManager(path=get_project_root() / "presentation" / "ref.bib")
     myTemplate = TexTemplate()
     myTemplate.add_to_preamble(r"\usepackage{mathrsfs}")
     alert_block = AlertBlock(
@@ -179,7 +180,7 @@ def fyd_summary() -> SlideWithList:
     Returns:
         The slide with a short summary.
     """
-    bibtex_manager = BibTexManager()
+    bibtex_manager = BibTexManager(path=get_project_root() / "presentation" / "ref.bib")
     return SlideWithList(
         title="Exploiting Frequent-Yet-Discernible Patterns",
         subtitle="Improving the Viability of Human-Readable Fuzzy Rules in Reinforcement Learning",

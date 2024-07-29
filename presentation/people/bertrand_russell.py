@@ -1,8 +1,8 @@
 from manim import *
 from manim_slides import Slide
 
-from mtimeline.quotes import quotable_person
-from soft.utilities.reproducibility import path_to_project_root
+from manim_timeline.utils import get_project_root
+from manim_timeline.quotes import quotable_person
 
 config.background_color = WHITE
 light_theme_style = {
@@ -28,13 +28,13 @@ class BertrandRussell(Slide):
     @staticmethod
     def draw(scene, origin, scale, animate: bool = True):
         signature = SVGMobject(
-            path_to_project_root()
+            get_project_root()
             / "assets"
             / "signatures"
             / "Bertrand_Russell_signature.svg"
         ).scale(0.5)
         person_svg = SVGMobject(
-            path_to_project_root() / "assets" / "people" / "Bertrand_Russell_1949.svg"
+            get_project_root() / "assets" / "people" / "Bertrand_Russell_1949.svg"
         ).scale(2.0)
         paragraph, source, person, signature_group = quotable_person(
             scene,

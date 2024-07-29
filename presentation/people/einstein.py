@@ -1,7 +1,7 @@
 from manim import *
 
-from mtimeline.quotes import quotable_person
-from soft.utilities.reproducibility import path_to_project_root
+from manim_timeline.utils import get_project_root
+from manim_timeline.quotes import quotable_person
 
 config.background_color = WHITE
 light_theme_style = {
@@ -26,13 +26,13 @@ class Einstein(Scene):
     @staticmethod
     def draw(scene, origin, scale, animate: bool = True):
         signature = SVGMobject(
-            path_to_project_root()
+            get_project_root()
             / "assets"
             / "signatures"
             / "Albert_Einstein_signature_1934.svg"
         ).scale(0.5)
         person_svg = SVGMobject(
-            path_to_project_root() / "assets" / "people" / "Einstein1.svg"
+            get_project_root() / "assets" / "people" / "Einstein1.svg"
         ).scale(2.0)
         paragraph, source, person, signature_group = quotable_person(
             scene,

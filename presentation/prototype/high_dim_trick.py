@@ -1,7 +1,9 @@
 from manim import *
 
-from mbeamer.bibtex import BibTexManager
-from mbeamer.slides import SlideWithList, SlideWithBlocks
+from manim_beamer.bibtex import BibTexManager
+from manim_beamer.slides import SlideWithList, SlideWithBlocks
+
+from manim_timeline.utils import get_project_root
 
 config.background_color = WHITE
 light_theme_style = {
@@ -17,7 +19,7 @@ def high_dim_trick() -> SlideWithList:
     Returns:
         The slide describing how Gumbel noise is used to add stochasticity.
     """
-    bibtex_manager = BibTexManager()
+    bibtex_manager = BibTexManager(path=get_project_root() / "presentation" / "ref.bib")
     return SlideWithBlocks(
         title="High-Dimensional Inference",
         subtitle=bibtex_manager.cite_entry(

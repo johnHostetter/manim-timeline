@@ -1,8 +1,8 @@
 from manim import *
 
-from mbeamer.slides import SlideWithBlocks
-from mbeamer.blocks import AlertBlock, ExampleBlock, RemarkBlock
-from mbeamer.lists import DisadvantagesList, AdvantagesList, ItemizedList
+from manim_beamer.slides import SlideWithBlocks
+from manim_beamer.blocks import AlertBlock, ExampleBlock, RemarkBlock
+from manim_beamer.lists import DisadvantagesList, AdvantagesList, ItemizedList
 from presentation.studies.fyd import get_scalar_cardinality
 
 config.background_color = WHITE

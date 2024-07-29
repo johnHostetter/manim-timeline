@@ -3,9 +3,10 @@ from manim import *
 from manim_slides import Slide
 
 from examples.graph_example import MyGraph, GraphPair
-from mbeamer.slides import SlideShow, SlideWithList
-from mbeamer.bibtex import BibTexManager
-from mbeamer.lists import ItemizedList, BulletedList as BL
+from manim_beamer.slides import SlideShow, SlideWithList
+from manim_beamer.bibtex import BibTexManager
+from manim_beamer.lists import ItemizedList, BulletedList as BL
+from manim_timeline.utils import get_project_root
 from presentation.studies.pyrenees import (
     IntelligentTutoringSystemResults,
 )
@@ -59,7 +60,7 @@ def apfrb_summary() -> SlideWithList:
     Returns:
         The slide with a list of studies.
     """
-    bibtex_manager = BibTexManager()
+    bibtex_manager = BibTexManager(path=get_project_root() / "presentation" / "ref.bib")
     beamer_list = BL(
         items=[
             bibtex_manager.cite_entry(

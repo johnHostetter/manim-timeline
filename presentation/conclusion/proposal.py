@@ -1,6 +1,6 @@
 from manim import *
 
-from mbeamer.slides import SlideShow
+from manim_beamer.slides import SlideShow
 from presentation.conclusion.plan import proposed_plan
 from presentation.conclusion.new_horizons import proposed_studies
 from presentation.conclusion.existing_issues import curr_limitations

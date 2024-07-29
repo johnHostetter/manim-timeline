@@ -6,9 +6,10 @@ from manim import *
 from manim_slides import Slide
 
 from examples.graph_example import MyGraph, GraphPair
-from mbeamer.bibtex import BibTexManager
-from mbeamer.lists import ItemizedList, BulletedList as BL
-from mbeamer.slides import (
+from manim_timeline.utils import get_project_root
+from manim_beamer.bibtex import BibTexManager
+from manim_beamer.lists import ItemizedList, BulletedList as BL
+from manim_beamer.slides import (
     SlideShow,
     SlideWithList,
     SlideWithTable,
@@ -17,6 +18,7 @@ from mbeamer.slides import (
 from presentation.studies.pyrenees import (
     IntelligentTutoringSystemResults,
 )
+from utils import get_project_root
 
 config.background_color = WHITE
 light_theme_style = {
@@ -385,7 +387,7 @@ def lers_summary() -> SlideWithList:
     Returns:
         The slide with a short summary.
     """
-    bibtex_manager = BibTexManager()
+    bibtex_manager = BibTexManager(path=get_project_root() / "presentation" / "ref.bib")
     return SlideWithList(
         title="A Minimal Discriminant Description of Fuzzy Rules",
         subtitle="Testing the Viability of Human-Readable Fuzzy Rules in Reinforcement Learning",

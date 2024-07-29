@@ -4,7 +4,7 @@ import torch
 
 from manim import *
 from manim_slides import Slide
-from mbeamer import MANIM_BLUE
+from manim_beamer import MANIM_BLUE
 
 from soft.datasets import LabeledDataset
 from soft.fuzzy.relation.continuous.tnorm import TNorm

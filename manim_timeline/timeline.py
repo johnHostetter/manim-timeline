@@ -2,9 +2,9 @@ import igraph as ig
 from manim import *
 from manim_slides import Slide
 
-from mbeamer import MANIM_BLUE
-from mbeamer.images import CaptionedSVG, CaptionedJPG
-from mbeamer.slides import SlideWithBlocks, PromptSlide, SlideWithList
+from manim_beamer import MANIM_BLUE
+from manim_beamer.images import CaptionedSVG, CaptionedJPG
+from manim_beamer.slides import SlideWithBlocks, PromptSlide, SlideWithList
 from mtimeline.timeline_helper import (
     create_timeline_layout,
     TimelineConfig,
@@ -22,7 +22,7 @@ light_theme_style = {
 
 class Timeline(Slide, MovingCameraScene):
     def __init__(
-        self, timeline_events, incl_ending, globally_enable_animation, **kwargs
+            self, timeline_events, incl_ending, globally_enable_animation, **kwargs
     ):
         super().__init__(**kwargs)
         self.timeline_events = timeline_events
@@ -329,7 +329,7 @@ class Timeline(Slide, MovingCameraScene):
 
                 if self.globally_enable_animation:
                     if isinstance(slide, TimelineEvent) or isinstance(
-                        slide, PromptSlide
+                            slide, PromptSlide
                     ):
                         if not slide.skip:
                             # now zoom in on the event
@@ -354,7 +354,7 @@ class Timeline(Slide, MovingCameraScene):
                     # if slide.skip:
                     #     origin_to_draw_at = boundary.get_center()
                     if isinstance(event, CaptionedSVG) or isinstance(
-                        event, CaptionedJPG
+                            event, CaptionedJPG
                     ):
                         event.draw(
                             origin=origin_to_draw_at,
@@ -370,7 +370,7 @@ class Timeline(Slide, MovingCameraScene):
                             animate=self.globally_enable_animation,
                         )
                 elif isinstance(slide, SlideWithBlocks) or isinstance(
-                    slide, SlideWithList
+                        slide, SlideWithList
                 ):
                     slide.draw(
                         origin=boundary.get_top() - (boundary.height / 10),
@@ -476,7 +476,7 @@ class Timeline(Slide, MovingCameraScene):
                 self.camera.frame.animate.move_to(
                     self.paired_graphs.digraph.vertices[
                         len(self.digraph_layout) - 1
-                    ].get_center()
+                        ].get_center()
                 ).set(width=20),
                 run_time=self.time_until_back_to_last_spot,
             )
@@ -578,3 +578,22 @@ class Timeline(Slide, MovingCameraScene):
         self.wait(1)
         self.next_slide()
         self.play(FadeOut(standby_text[last_idx]))
+
+
+class TimelineCatchUp(Timeline):
+    """
+    Adds the prior events without animations and then adds the new events with animations.
+    """
+
+    def __init__(self, prior_events, new_events, incl_ending=False, **kwargs):
+        super().__init__(
+            timeline_events=(
+                    [TimelineConfig(draw_animations=False)]
+                    + prior_events
+                    + [TimelineConfig(draw_animations=True)]
+                    + new_events
+            ),
+            globally_enable_animation=False,
+            incl_ending=incl_ending,
+            **kwargs
+        )

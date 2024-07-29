@@ -1,12 +1,13 @@
 from manim import *
 
-from mbeamer.slides import SlideDiagram
-from mbeamer.bibtex import BibTexManager
-from mbeamer.slides import SlideShow, SlideWithList
-from mbeamer.lists import ItemizedList, BulletedList as BL
+from manim_beamer.slides import SlideDiagram
+from manim_beamer.bibtex import BibTexManager
+from manim_beamer.slides import SlideShow, SlideWithList
+from manim_beamer.lists import ItemizedList, BulletedList as BL
 from presentation.studies.pyrenees import (
     IntelligentTutoringSystemResults,
 )
+from manim_timeline.utils import get_project_root
 
 config.background_color = WHITE
 light_theme_style = {
@@ -23,7 +24,7 @@ class CEW(SlideShow):
 class CEWDiagram(SlideDiagram):
     def __init__(self, **kwargs):
         super().__init__(
-            path="images/cew_diagram.png",
+            path=get_project_root() / "assets" / "images" / "cew_diagram.png",
             caption="A diagram of the CLIP-ECM-Wang-Mendel (CEW)\n"
             "systematic design process of NFNs.",
             original_image_scale=1.00,
@@ -59,7 +60,7 @@ def cew_summary() -> SlideWithList:
     Returns:
         The slide with a short summary.
     """
-    bibtex_manager = BibTexManager()
+    bibtex_manager = BibTexManager(path=get_project_root() / "presentation" / "ref.bib")
     return SlideWithList(
         title="Offline Model-Free Fuzzy Reinforcement Learning",
         subtitle="A Preliminary Systematic Design Process of NFNs",

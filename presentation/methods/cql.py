@@ -1,7 +1,7 @@
 from manim import *
 from manim_slides import Slide
 
-from mbeamer import MANIM_BLUE
+from manim_beamer import MANIM_BLUE
 
 config.background_color = WHITE
 

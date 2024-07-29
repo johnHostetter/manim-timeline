@@ -14,5 +14,5 @@ https://github.com/johnHostetter/manim-timeline/assets/35469358/9831fc2b-b51d-49
 - If you are having trouble with installing the `manim-beamer` package, please try the following:
 
   `
-  python -m pip install git+https://github.com/johnHostetter/manim-beamer.git@main#egg=mbeamer
+  python -m pip install git+https://github.com/johnHostetter/manim-beamer.git@main#egg=manim_beamer
   `

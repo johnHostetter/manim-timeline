@@ -1,7 +1,7 @@
 from manim import *
 
-from mbeamer.slides import SlideWithList
-from mbeamer.lists import ItemizedList, BulletedList as BL
+from manim_beamer.slides import SlideWithList
+from manim_beamer.lists import ItemizedList, BulletedList as BL
 
 config.background_color = WHITE
 light_theme_style = {

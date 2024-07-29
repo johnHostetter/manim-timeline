@@ -1,9 +1,10 @@
 from manim import *
 
-from mbeamer.bibtex import BibTexManager
-from mbeamer.slides import SlideWithBlocks
-from mbeamer.blocks import AlertBlock, ExampleBlock
-from mbeamer.lists import ItemizedList, AdvantagesList, DisadvantagesList
+from manim_beamer.bibtex import BibTexManager
+from manim_beamer.slides import SlideWithBlocks
+from manim_beamer.blocks import AlertBlock, ExampleBlock
+from manim_beamer.lists import ItemizedList, AdvantagesList, DisadvantagesList
+from manim_timeline.utils import get_project_root
 
 config.background_color = WHITE
 light_theme_style = {
@@ -20,7 +21,7 @@ def pros_and_cons() -> SlideWithBlocks:
     Returns:
         The slide with the two blocks.
     """
-    bib = BibTexManager()
+    bib = BibTexManager(path=get_project_root() / "presentation" / "ref.bib")
     example_block = ExampleBlock(
         title="Advantages of NFNs",
         content=AdvantagesList(

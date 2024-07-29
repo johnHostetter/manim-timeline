@@ -8,7 +8,7 @@ import igraph as ig
 from manim import *
 from manim_slides import Slide
 
-from mbeamer import MANIM_BLUE
+from manim_beamer import MANIM_BLUE
 from examples.common import make_axes, AxisConfig
 from soft.datasets import LabeledDataset
 from soft.computing.organize import SelfOrganize

@@ -1,7 +1,7 @@
 from manim import *
 
-from mtimeline.quotes import quotable_person
-from soft.utilities.reproducibility import path_to_project_root
+from manim_timeline.utils import get_project_root
+from manim_timeline.quotes import quotable_person
 
 config.background_color = WHITE
 light_theme_style = {
@@ -26,14 +26,14 @@ class Godel(Scene):
     @staticmethod
     def draw(scene, origin, scale, animate: bool = True):
         signature = SVGMobject(
-            path_to_project_root()
+            get_project_root()
             / "assets"
             / "signatures"
             / "Kurt_Gödel_signature.svg",
             # color=WHITE
         ).scale(1.0)
         person_svg = SVGMobject(
-            path_to_project_root()
+            get_project_root()
             / "assets"
             / "people"
             / "Young_Kurt_Gödel_as_a_student_in_1925.svg"

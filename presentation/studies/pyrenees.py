@@ -2,7 +2,7 @@ from typing import List
 
 from manim import Table, Text, BOLD, BLACK
 
-from mbeamer.slides import SlideWithTable
+from manim_beamer.slides import SlideWithTable
 
 
 class IntelligentTutoringSystemResults(SlideWithTable):

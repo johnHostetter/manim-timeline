@@ -1,6 +1,5 @@
 from manim import *
-
-from soft.utilities.reproducibility import path_to_project_root
+from manim_timeline.utils import get_project_root
 
 config.background_color = WHITE
 light_theme_style = {
@@ -13,7 +12,7 @@ class SoritesParadox(Scene):
     def construct(self):
         # load the PySoft logo as a manim SVGMobject
         heap_svg = SVGMobject(
-            path_to_project_root()
+            get_project_root()
             / "animations"
             / "demos"
             / "images"

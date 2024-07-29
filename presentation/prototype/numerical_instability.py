@@ -1,8 +1,8 @@
 from manim import *
 
-from mbeamer.slides import SlideWithBlocks
-from mbeamer.blocks import AlertBlock, ExampleBlock
-from mbeamer.lists import DisadvantagesList, AdvantagesList
+from manim_beamer.slides import SlideWithBlocks
+from manim_beamer.blocks import AlertBlock, ExampleBlock
+from manim_beamer.lists import DisadvantagesList, AdvantagesList
 
 config.background_color = WHITE
 light_theme_style = {

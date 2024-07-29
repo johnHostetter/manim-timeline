@@ -1,7 +1,7 @@
 from manim import *
 
-from mbeamer.slides import SlideWithBlocks
-from mbeamer.blocks import AlertBlock, ExampleBlock, RemarkBlock
+from manim_beamer.slides import SlideWithBlocks
+from manim_beamer.blocks import AlertBlock, ExampleBlock, RemarkBlock
 
 config.background_color = WHITE
 light_theme_style = {

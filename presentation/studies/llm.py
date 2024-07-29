@@ -1,8 +1,10 @@
 from manim import *
 
-from mbeamer.bibtex import BibTexManager
-from mbeamer.lists import ItemizedList, BulletedList as BL
-from mbeamer.slides import SlideShow, SlideWithList, SlideDiagram
+from manim_beamer.bibtex import BibTexManager
+from manim_beamer.lists import ItemizedList, BulletedList as BL
+from manim_beamer.slides import SlideShow, SlideWithList, SlideDiagram
+
+from manim_timeline.utils import get_project_root
 
 config.background_color = WHITE
 light_theme_style = {
@@ -19,7 +21,7 @@ class LLM(SlideShow):
 class LLMDiagram(SlideDiagram):
     def __init__(self, **kwargs):
         super().__init__(
-            path="images/llm_diagram.png",
+            path=get_project_root() / "assets" / "images" / "llm_diagram.png",
             caption="A diagram of the Latent Lockstep Method (LLM)\n"
             "systematic design process of NFNs.",
             original_image_scale=1.00,
@@ -34,7 +36,7 @@ def llm_summary() -> SlideWithList:
     Returns:
         The slide with a list of studies.
     """
-    bibtex_manager = BibTexManager()
+    bibtex_manager = BibTexManager(path=get_project_root() / "presentation" / "ref.bib")
     return SlideWithList(
         title="Identifying Exemplars by Leveraging Latent Representations",
         subtitle="The Latent Lockstep Method (LLM)",

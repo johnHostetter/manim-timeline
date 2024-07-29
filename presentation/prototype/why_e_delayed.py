@@ -1,7 +1,7 @@
 from manim import *
 
-from mbeamer.slides import SlideWithBlocks
-from mbeamer.blocks import AlertBlock, ExampleBlock, RemarkBlock
+from manim_beamer.slides import SlideWithBlocks
+from manim_beamer.blocks import AlertBlock, ExampleBlock, RemarkBlock
 
 config.background_color = WHITE
 light_theme_style = {
@@ -32,3 +32,7 @@ def why_e_delayed() -> SlideWithBlocks:
         subtitle="ϵ-completeness is required to avoid numerical underflow.",
         blocks=[alert_block, remark_block, example_block],
     )
+
+
+if __name__ == "__main__":
+    why_e_delayed().render()

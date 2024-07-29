@@ -2,9 +2,9 @@ from typing import Type
 
 from manim import *
 
-from mbeamer.slides import SlideWithBlocks
-from mbeamer.blocks import AlertBlock, ExampleBlock, Block
-from mbeamer.lists import AdvantagesList, DisadvantagesList
+from manim_beamer.slides import SlideWithBlocks
+from manim_beamer.blocks import AlertBlock, ExampleBlock, Block
+from manim_beamer.lists import AdvantagesList, DisadvantagesList
 
 config.background_color = WHITE
 light_theme_style = {

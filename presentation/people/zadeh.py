@@ -1,7 +1,7 @@
 from manim import *
 
-from mtimeline.quotes import quotable_person
-from soft.utilities.reproducibility import path_to_project_root
+from manim_timeline.utils import get_project_root
+from manim_timeline.quotes import quotable_person
 
 config.background_color = WHITE
 light_theme_style = {
@@ -29,7 +29,7 @@ class Zadeh(Scene):
             "Lotfi A. Zadeh", font="TeX Gyre Termes", color=BLACK
         )  # .scale(0.7)
         person_svg = SVGMobject(
-            path_to_project_root()
+            get_project_root()
             / "assets"
             / "people"
             / "Lotfi-Zadeh-in-the-year-1958-a-young-professor-of-Electrical-Engineering-in-New-York-3_W640.svg"
