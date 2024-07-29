@@ -1,5 +1,5 @@
 from manim_timeline.timeline import Timeline
-from manim_timeline.timeline_helper import TimelineCatchUp
+from manim_timeline.timeline import TimelineCatchUp
 from presentation.timeline_events import (
     get_historical_context,
     from_zadeh_to_nfn,

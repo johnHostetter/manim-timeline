@@ -18,7 +18,6 @@ from manim_beamer.slides import (
 from presentation.studies.pyrenees import (
     IntelligentTutoringSystemResults,
 )
-from utils import get_project_root
 
 config.background_color = WHITE
 light_theme_style = {
