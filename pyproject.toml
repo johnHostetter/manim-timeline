@@ -20,3 +20,19 @@ classifiers = [
 [project.urls]
 Homepage = "https://github.com/johnHostetter/manim-timeline"
 Issues = "https://github.com/johnHostetter/manim-timeline/issues"
+
+[tool.hatch.build]
+include = [
+    "src/manim_timeline/**",
+    "LICENSE",
+    "README.md",
+]
+exclude = [
+    "tests/**",
+    "*.pyc",
+    "*.pyo",
+    ".git/**",
+    "build/**",
+    "dist/**",
+    "venv/**",
+]
