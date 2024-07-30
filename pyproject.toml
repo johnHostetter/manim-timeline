@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "manim-timeline"
-version = "0.0.1"
+version = "0.0.2"
 authors = [
   { name="John Wesley Hostetter", email="jhostetter16@gmail.com" },
 ]
