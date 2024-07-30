@@ -1,0 +1,22 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "manim-timeline"
+version = "0.0.1"
+authors = [
+  { name="John Wesley Hostetter", email="jhostetter16@gmail.com" },
+]
+description = "Seamlessly integrate history (e.g., quotes) or literature (e.g., publications) on an elegant timeline for rapid presentation."
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://github.com/johnHostetter/manim-timeline"
+Issues = "https://github.com/johnHostetter/manim-timeline/issues"
